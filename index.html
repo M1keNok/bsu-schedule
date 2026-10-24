@@ -62,7 +62,6 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* Плавные отклики на тапы (Apple Haptic Touch feel) */
     .tap-scale {
       transition: transform 0.14s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.14s ease;
       cursor: pointer;
@@ -72,7 +71,6 @@
       opacity: 0.88;
     }
 
-    /* Верхняя панель со стеклом */
     .header-bar {
       position: sticky;
       top: 0;
@@ -95,7 +93,6 @@
       transition: background 0.3s ease, border-color 0.3s ease;
     }
 
-    /* Облегченные стеклянные карточки */
     .card-glass {
       background: var(--glass-card);
       border: 1px solid var(--glass-border);
@@ -120,7 +117,6 @@
       gap: 4px;
     }
 
-    /* Круговая подсветка рамки активной пары (Border Beam) */
     .active-lesson-card {
       position: relative;
       border-radius: 20px;
@@ -162,7 +158,6 @@
       box-shadow: var(--glass-inner-bevel);
     }
 
-    /* Анимация пульсации плашки важной пары */
     .important-card {
       position: relative;
     }
@@ -182,7 +177,6 @@
       50% { opacity: 0.85; }
     }
 
-    /* Каскадная плавная анимация появления карточек при смене дня */
     @keyframes springCascade {
       from {
         opacity: 0;
@@ -198,7 +192,6 @@
       animation: springCascade 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
-    /* Сетка двух подгрупп */
     .subgroups-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -218,7 +211,6 @@
       gap: 3px;
     }
 
-    /* iOS 18 Sheet Modal Animation */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -261,7 +253,6 @@
       transform: translateY(0);
     }
 
-    /* iOS Drag Pill */
     .modal-grabber {
       width: 36px;
       height: 5px;
@@ -283,7 +274,6 @@
 </head>
 <body>
 
-  <!-- Шапка -->
   <header class="header-bar">
     <div class="header-glass">
       <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
@@ -297,7 +287,7 @@
           <div id="headerTitle" style="font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Загрузка...</div>
           <div style="display: flex; align-items: center; gap: 5px; margin-top: 2px;">
             <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; animation: pulseAura 2s infinite;"></span>
-            <span id="headerSync" style="font-size: 10.5px; color: var(--text-sub); font-weight: 500;">Деканат: проверка...</span>
+            <span id="headerSync" style="font-size: 10.5px; color: var(--text-sub); font-weight: 500;">Обновлено: загрузка...</span>
           </div>
         </div>
       </div>
@@ -305,7 +295,7 @@
       <button onclick="openSettingsModal()" class="tap-scale" style="padding: 7px 13px; border-radius: 12px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-main); font-size: 11.5px; font-weight: 700; display: flex; align-items: center; gap: 5.5px;">
         <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1 2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
         <span>Настройки</span>
       </button>
@@ -314,7 +304,6 @@
 
   <main style="flex: 1; padding: 6px 16px 16px; max-width: 480px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 11px;">
     
-    <!-- Переключатель Сегодня / Завтра с плавной анимацией -->
     <div style="background: var(--glass-card-subtle); padding: 3px; border-radius: 15px; display: flex; gap: 4px; border: 1px solid var(--border-color);">
       <button id="btnToday" onclick="switchPrimaryTab('today')" class="tap-scale" style="flex: 1; padding: 8px 6px; border-radius: 12px; border: none; font-size: 12px; font-weight: 700; transition: background 0.2s cubic-bezier(0.16,1,0.3,1), color 0.2s;">
         <span id="tabTodayTitle">Сегодня</span>
@@ -324,10 +313,8 @@
       </button>
     </div>
 
-    <!-- Список пар первичного дня -->
     <div id="primaryList" style="display: flex; flex-direction: column; gap: 10px;"></div>
 
-    <!-- Горизонтальная лента дней -->
     <div style="margin-top: 14px; display: flex; align-items: center; justify-content: space-between;">
       <span class="section-title" style="margin-bottom: 0;">Остальные дни</span>
       <span style="font-size: 10.5px; color: var(--text-sub); font-weight: 600; display: flex; align-items: center; gap: 4px;">
@@ -338,17 +325,14 @@
     
     <div id="daysScroll" class="no-scrollbar" style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;"></div>
     
-    <!-- Список пар вторичного дня -->
     <div id="secondaryList" style="display: flex; flex-direction: column; gap: 10px;"></div>
 
   </main>
 
-  <!-- МОДАЛЬНОЕ ОКНО (ПОШАГОВЫЙ СЕТАП ИЛИ ЕДИНЫЕ НАСТРОЙКИ) -->
   <div id="settingsModal" class="modal-overlay">
     <div class="modal-sheet">
       <div class="modal-grabber"></div>
 
-      <!-- Шапка модалки -->
       <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
         <div>
           <span id="modalCategoryLabel" style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-sub); letter-spacing: 0.5px;">Параметры</span>
@@ -359,10 +343,8 @@
         </button>
       </div>
 
-      <!-- Контейнер контента -->
       <div id="modalBody" class="no-scrollbar" style="overflow-y: auto; max-height: 60vh; display: flex; flex-direction: column; gap: 16px; padding-right: 2px;"></div>
 
-      <!-- Нижняя панель действий -->
       <div id="modalFooter" style="display: flex; gap: 8px; border-top: 1px solid var(--border-color); padding-top: 10px;"></div>
     </div>
   </div>
@@ -386,10 +368,51 @@
     let activeTab = 'today';
     let selectedSecondaryDay = '';
     
-    // Режимы модального окна: 'wizard' (первый запуск) или 'unified' (обычные настройки)
     let modalMode = 'unified';
     let wizardStep = 1;
     let draftProfile = { ...currentProfile };
+
+    function formatLessonTitle(rawTitle) {
+      if (!rawTitle) return 'Пара';
+      let title = rawTitle.replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?)\)/gi, '').trim();
+      title = title.replace(/\s+/g, ' ');
+
+      const aliases = [
+        { match: /безопасн(ость|\.)?\s*жизнедеят|бжд|бжч/i, to: 'БЖЧ' },
+        { match: /дистанционн.*зонд|дзз/i, to: 'ДЗЗ' },
+        { match: /информатик/i, to: 'Информатика' },
+        { match: /социально-эконом|соц.*эконом/i, to: 'Соц-эконом география' },
+        { match: /основы\s*эколог|охрана\s*природ|эколог/i, to: 'Экология' },
+        { match: /высш(ая|\.)?\s*матем/i, to: 'Вышмат' },
+        { match: /матем(атическ(ий|\.))?\s*анализ/i, to: 'Матанализ' },
+        { match: /истор(ия|\.)?\s*беларус/i, to: 'История Беларуси' },
+        { match: /физическ(ая|\.)?\s*культ/i, to: 'Физкультура' },
+        { match: /топограф(ия|\.)?.*геодез/i, to: 'Топография и геодезия' },
+        { match: /геоинформационн|гис/i, to: 'ГИС-технологии' },
+        { match: /метеоролог/i, to: 'Метеорология и климат' },
+        { match: /почвоведен/i, to: 'Почвоведение' },
+        { match: /геолог/i, to: 'Геология' },
+        { match: /геоморфолог/i, to: 'Геоморфология' },
+      ];
+
+      for (const item of aliases) {
+        if (item.match.test(title)) return item.to;
+      }
+
+      if (title.length > 3 && title === title.toUpperCase()) {
+        return title.charAt(0) + title.slice(1).toLowerCase();
+      }
+
+      return title;
+    }
+
+    function detectLessonType(text) {
+      if (/лекц/i.test(text)) return { label: 'Лекция', color: '#10b981', bg: 'rgba(16,185,129,0.1)' };
+      if (/лаб/i.test(text)) return { label: 'Лабораторная', color: '#6366f1', bg: 'rgba(99,102,241,0.1)' };
+      if (/практ/i.test(text)) return { label: 'Практика', color: '#14b8a6', bg: 'rgba(20,184,166,0.1)' };
+      if (/сем/i.test(text)) return { label: 'Семинар', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' };
+      return null;
+    }
 
     function initTheme() {
       const saved = localStorage.getItem('bsu_theme') || 'dark';
@@ -445,11 +468,13 @@
       if (!kept.length) return [];
 
       if (kept.length === 2) {
-        const t1 = kept[0].split('\n')[0].replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?)\)/gi, '').trim();
-        const t2 = kept[1].split('\n')[0].replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?)\)/gi, '').trim();
+        const t1 = formatLessonTitle(kept[0].split('\n')[0]);
+        const t2 = formatLessonTitle(kept[1].split('\n')[0]);
         if (t1.toLowerCase() === t2.toLowerCase()) {
+          const lType = detectLessonType(kept[0]) || detectLessonType(kept[1]);
           return [{
             title: t1,
+            type: lType,
             subgroups: [
               cleanTeacherAndRoom(kept[0].split('\n').slice(1).join(' ')),
               cleanTeacherAndRoom(kept[1].split('\n').slice(1).join(' '))
@@ -460,7 +485,8 @@
 
       return kept.map(raw => {
         const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-        const title = (lines[0] || 'Пара').replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?)\)/gi, '').trim();
+        const title = formatLessonTitle(lines[0] || 'Пара');
+        const lType = detectLessonType(raw);
         const details = lines.slice(1);
         const l1 = details.find(l => /1\s*(?:п\/г|подгр)/i.test(l));
         const l2 = details.find(l => /2\s*(?:п\/г|подгр)/i.test(l));
@@ -468,6 +494,7 @@
         if (l1 && l2) {
           return {
             title,
+            type: lType,
             subgroups: [cleanTeacherAndRoom(l1), cleanTeacherAndRoom(l2)]
           };
         }
@@ -475,6 +502,7 @@
         const roomMatch = raw.match(/ауд\.?\s*([0-9/\-а-яА-Яa-zA-Z]+)/i);
         return {
           title,
+          type: lType,
           room: roomMatch ? `ауд. ${roomMatch[1]}` : null,
           details: details.join(' • ')
         };
@@ -535,7 +563,10 @@
             innerContent += `
               <div style="${idx > 0 ? 'margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-color);' : ''}">
                 <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
-                  <div style="font-size: 13.5px; font-weight: 700; line-height: 1.35;">${item.title}</div>
+                  <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                    <span style="font-size: 13.5px; font-weight: 700; line-height: 1.35;">${item.title}</span>
+                    ${item.type ? `<span class="badge-subtle" style="color: ${item.type.color}; background: ${item.type.bg}; font-size: 9.5px; padding: 1.5px 5.5px;">${item.type.label}</span>` : ''}
+                  </div>
                   ${item.room ? `<span class="badge-subtle" style="font-family: monospace;">${item.room}</span>` : ''}
                 </div>
                 ${item.subgroups ? `
@@ -593,7 +624,7 @@
     function renderView() {
       document.getElementById('headerTitle').textContent = `${currentProfile.course} курс • ${currentProfile.group_name.replace('ГРУППА ', 'Группа ')}`;
       if (facultyData?.updated_times?.[currentProfile.course]) {
-        document.getElementById('headerSync').textContent = `Деканат: ${facultyData.updated_times[currentProfile.course]}`;
+        document.getElementById('headerSync').textContent = `Обновлено: (${facultyData.updated_times[currentProfile.course]})`;
       }
 
       const { today, tomorrow, others } = getDays();
@@ -643,8 +674,6 @@
       renderView();
     }
 
-    /* ================= ЛОГИКА НАСТРОЕК (ЕДИНАЯ ПАНЕЛЬ VS МАСТЕР) ================= */
-
     function openSettingsModal() {
       draftProfile = {
         course: currentProfile.course,
@@ -674,7 +703,6 @@
       document.getElementById('settingsModal').classList.remove('open');
     }
 
-    /* РЕЖИМ 1: ЕДИНЫЕ НАСТРОЙКИ (ВСЕ ПАРАМЕТРЫ НА ОДНОМ ЭКРАНЕ) */
     function renderUnifiedSettings() {
       document.getElementById('modalCategoryLabel').textContent = 'Параметры';
       document.getElementById('modalHeading').textContent = 'Настройки расписания';
@@ -693,7 +721,6 @@
 
       const body = document.getElementById('modalBody');
       body.innerHTML = `
-        <!-- Тема оформления -->
         <div>
           <div class="section-title">Тема оформления</div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
@@ -702,7 +729,6 @@
           </div>
         </div>
 
-        <!-- Курс -->
         <div>
           <div class="section-title">Курс</div>
           <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
@@ -712,7 +738,6 @@
           </div>
         </div>
 
-        <!-- Группа -->
         <div>
           <div class="section-title">Группа (${draftProfile.course} курс)</div>
           <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
@@ -724,7 +749,6 @@
           </div>
         </div>
 
-        <!-- Иностранный язык -->
         <div>
           <div class="section-title">Иностранный язык</div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
@@ -734,7 +758,6 @@
           </div>
         </div>
 
-        <!-- Важные пары -->
         <div>
           <div class="section-title">Важные пары (подсветка в расписании)</div>
           <div style="display: flex; flex-direction: column; gap: 6px;">
@@ -780,7 +803,6 @@
       renderView();
     }
 
-    /* РЕЖИМ 2: ПОШАГОВЫЙ МАСТЕР (ТОЛЬКО ДЛЯ ПЕРВОГО ЗАПУСКА) */
     function renderWizardStep() {
       document.getElementById('modalCategoryLabel').textContent = `Шаг ${wizardStep} из 4`;
       const body = document.getElementById('modalBody');
@@ -885,8 +907,9 @@
       const subjects = new Set();
       const grp = facultyData?.courses?.[course]?.[group] || {};
       Object.values(grp).forEach(day => Object.values(day).forEach(list => list.forEach(l => {
-        const t = l.split('\n')[0].replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?)\)/gi, '').trim();
-        if (t.length > 3) subjects.add(t);
+        const rawT = l.split('\n')[0];
+        const formatted = formatLessonTitle(rawT);
+        if (formatted.length > 2) subjects.add(formatted);
       })));
       return Array.from(subjects).sort();
     }
@@ -905,7 +928,6 @@
         return;
       }
 
-      // Если первый вход студента (нет сохраненного флага настройки)
       const isSetupDone = localStorage.getItem('bsu_setup_completed');
       if (!isSetupDone || !currentProfile.group_name) {
         openFirstLaunchWizard();
@@ -918,5 +940,3 @@
   </script>
 </body>
 </html>
-```eof
-
