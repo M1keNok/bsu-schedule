@@ -4,287 +4,288 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Расписание Геофак БГУ</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'Roboto', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
   <style>
-    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; user-select: none; }
+    :root {
+      --bg-gradient: linear-gradient(180deg, #f4f6f9 0%, #e9eef5 100%);
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --glass-card: rgba(255, 255, 255, 0.72);
+      --glass-card-subtle: rgba(255, 255, 255, 0.45);
+      --glass-border: rgba(255, 255, 255, 0.9);
+      --glass-inner-bevel: inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+      --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+      --nav-active-bg: #0f172a;
+      --nav-active-text: #ffffff;
+      --border-color: rgba(0, 0, 0, 0.06);
+    }
+
+    .dark {
+      --bg-gradient: linear-gradient(180deg, #090c12 0%, #0f141f 100%);
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --glass-card: rgba(22, 28, 41, 0.7);
+      --glass-card-subtle: rgba(30, 38, 56, 0.5);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-inner-bevel: inset 0 1px 1px 0 rgba(255, 255, 255, 0.14);
+      --card-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.5);
+      --nav-active-bg: #f8fafc;
+      --nav-active-text: #090c12;
+      --border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      padding-bottom: env(safe-area-inset-bottom, 24px);
+    }
+
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    .liquid-glass {
-      background: rgba(255, 255, 255, 0.78);
-      backdrop-filter: blur(28px) saturate(180%);
-      -webkit-backdrop-filter: blur(28px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.85);
-      box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.04), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
-    }
-    .dark .liquid-glass {
-      background: rgba(18, 22, 33, 0.75);
-      backdrop-filter: blur(34px) saturate(190%);
-      -webkit-backdrop-filter: blur(34px) saturate(190%);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.6), inset 0 1px 1px 0 rgba(255, 255, 255, 0.14);
+    /* Оптимизированная шапка: аппаратный блюр только здесь */
+    .header-bar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      padding: max(10px, env(safe-area-inset-top, 10px)) 16px 8px;
     }
 
-    .liquid-glass-subtle {
-      background: rgba(255, 255, 255, 0.55);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(255, 255, 255, 0.6);
-    }
-    .dark .liquid-glass-subtle {
-      background: rgba(26, 31, 46, 0.52);
+    .header-glass {
+      background: var(--glass-card);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--glass-border);
+      border-radius: 22px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--card-shadow);
+      transform: translateZ(0);
     }
 
-    .active-lesson-beam {
+    /* Облегченная стеклянная карточка: без дорогого blur, чистый GPU-композитинг */
+    .card-glass {
+      background: var(--glass-card);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--card-shadow), var(--glass-inner-bevel);
+      border-radius: 20px;
+      padding: 14px 16px;
+      transform: translateZ(0);
+      contain: content;
+    }
+
+    .badge-subtle {
+      background: var(--glass-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 2px 7px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+
+    /* Аппаратно ускоренная рамка активной пары: трансформация псевдоэлемента вместо тяжелого конического градиента */
+    .active-lesson-card {
       position: relative;
-      border-radius: 26px;
+      border-radius: 20px;
       padding: 1.5px;
       overflow: hidden;
-      box-shadow: 0 12px 30px -6px rgba(16, 185, 129, 0.22);
+      contain: paint;
     }
-    .active-lesson-beam::before {
+
+    .active-lesson-card::before {
       content: '';
       position: absolute;
-      inset: -120%;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
       background: conic-gradient(
-        from 0deg,
-        transparent 0deg,
-        transparent 280deg,
-        rgba(255, 255, 255, 0.2) 310deg,
-        rgba(16, 185, 129, 0.95) 345deg,
-        rgba(255, 255, 255, 0.95) 360deg
+        transparent,
+        rgba(16, 185, 129, 0.1) 40%,
+        rgba(16, 185, 129, 0.9) 50%,
+        transparent 60%
       );
-      animation: rotateBorderBeam 3.8s linear infinite;
+      animation: rotateBorder 4s linear infinite;
+      will-change: transform;
       z-index: 0;
     }
-    .dark .active-lesson-beam::before {
-      background: conic-gradient(
-        from 0deg,
-        transparent 0deg,
-        transparent 280deg,
-        rgba(255, 255, 255, 0.15) 315deg,
-        rgba(52, 211, 153, 0.9) 345deg,
-        rgba(255, 255, 255, 0.95) 360deg
-      );
-    }
-    @keyframes rotateBorderBeam {
+
+    @keyframes rotateBorder {
+      0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
     .active-lesson-inner {
       position: relative;
       z-index: 1;
-      border-radius: 24.5px;
+      background: var(--glass-card);
+      border-radius: 18.5px;
+      padding: 14px 16px;
+      box-shadow: var(--glass-inner-bevel);
     }
 
-    @keyframes ambientImportantPulse {
-      0%, 100% {
-        border-color: rgba(245, 158, 11, 0.28);
-        box-shadow: 0 0 16px -2px rgba(245, 158, 11, 0.08);
-      }
-      50% {
-        border-color: rgba(245, 158, 11, 0.55);
-        box-shadow: 0 0 24px 2px rgba(245, 158, 11, 0.2);
-      }
+    /* Анимация важной пары: 60 FPS через opacity */
+    .important-pulse {
+      position: relative;
     }
-    .important-card-glow {
-      animation: ambientImportantPulse 3.4s ease-in-out infinite;
-    }
-
-    @keyframes shimmerImportantBadge {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-    .important-badge-shimmer {
-      background: linear-gradient(105deg, rgba(245, 158, 11, 0.12) 0%, rgba(254, 240, 138, 0.26) 50%, rgba(245, 158, 11, 0.12) 100%);
-      background-size: 220% 100%;
-      animation: shimmerImportantBadge 3.6s ease-in-out infinite;
+    .important-pulse::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 20px;
+      border: 1px solid rgba(245, 158, 11, 0.6);
+      animation: pulseGlow 2.8s ease-in-out infinite;
+      pointer-events: none;
+      will-change: opacity;
     }
 
-    @keyframes cardSpringIn {
-      from { opacity: 0; transform: translateY(6px) scale(0.99); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.25; }
+      50% { opacity: 0.85; }
     }
-    .fade-card {
-      animation: cardSpringIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+    /* Разметка подгрупп: 2 колонки */
+    .subgroups-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .subgroup-box {
+      background: var(--glass-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    /* Модальное окно */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal-sheet {
+      background: var(--glass-card);
+      border: 1px solid var(--glass-border);
+      border-radius: 28px 28px 0 0;
+      width: 100%;
+      max-width: 480px;
+      max-height: 85vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--card-shadow);
+      transform: translateZ(0);
     }
   </style>
 </head>
-<body class="bg-gradient-to-b from-[#f3f5f8] via-[#ebf0f7] to-[#e4e9f2] dark:from-[#0a0d14] dark:via-[#111522] dark:to-[#080a10] text-slate-900 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-300">
+<body>
 
-  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
-    <div class="absolute -top-32 -left-32 w-80 h-80 rounded-full bg-slate-400/15 dark:bg-emerald-500/10 blur-[100px]"></div>
-    <div class="absolute top-1/3 -right-32 w-80 h-80 rounded-full bg-amber-400/10 dark:bg-amber-500/10 blur-[110px]"></div>
-    <div class="absolute -bottom-32 left-1/4 w-88 h-88 rounded-full bg-slate-300/20 dark:bg-slate-700/15 blur-[120px]"></div>
-  </div>
-
-  <div class="relative z-10 max-w-md w-full mx-auto min-h-screen flex flex-col pb-16">
-
-    <header class="sticky top-0 z-30 pt-safe px-4 pt-3 pb-2">
-      <div class="liquid-glass rounded-[26px] px-4 py-3 flex items-center justify-between shadow-sm">
-        
-        <div class="flex items-center gap-2.5 min-w-0">
-          <div class="w-10 h-10 rounded-2xl liquid-glass-subtle flex items-center justify-center text-slate-800 dark:text-slate-200 border border-slate-300/40 dark:border-white/15 shrink-0">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor"></polygon>
-            </svg>
-          </div>
-
-          <div class="min-w-0">
-            <h1 id="headerCourseGroup" class="text-[15px] font-bold tracking-tight truncate leading-tight">
-              2 курс • Группа 4
-            </h1>
-            <div class="flex items-center gap-1.5 mt-0.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <p id="headerLastUpdate" class="text-[10.5px] text-slate-500 dark:text-slate-400 font-medium truncate">
-                Деканат: загрузка...
-              </p>
-            </div>
+  <header class="header-bar">
+    <div class="header-glass">
+      <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+        <div style="width: 36px; height: 36px; border-radius: 12px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; shrink-0;">
+          <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor"></polygon>
+          </svg>
+        </div>
+        <div style="min-width: 0;">
+          <div id="headerTitle" style="font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Загрузка...</div>
+          <div style="display: flex; align-items: center; gap: 5px; margin-top: 2px;">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span>
+            <span id="headerSync" style="font-size: 10px; color: var(--text-sub); font-weight: 500;">Деканат: проверка...</span>
           </div>
         </div>
-
-        <div class="flex items-center gap-1.5 shrink-0">
-          <button onclick="openWizard()" class="p-2.5 px-3 rounded-xl liquid-glass-subtle text-slate-700 dark:text-slate-200 active:scale-95 transition-transform flex items-center gap-1.5 text-xs font-semibold">
-            <svg class="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-              <line x1="4" y1="21" x2="4" y2="14"></line>
-              <line x1="4" y1="10" x2="4" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="12"></line>
-              <line x1="12" y1="8" x2="12" y2="3"></line>
-              <line x1="20" y1="21" x2="20" y2="16"></line>
-              <line x1="20" y1="12" x2="20" y2="3"></line>
-              <line x1="1" y1="14" x2="7" y2="14"></line>
-              <line x1="9" y1="8" x2="15" y2="8"></line>
-              <line x1="17" y1="16" x2="23" y2="16"></line>
-            </svg>
-            <span>Настройки</span>
-          </button>
-        </div>
-
-      </div>
-    </header>
-
-    <main class="px-4 pt-2.5 flex-1">
-      <div class="liquid-glass-subtle p-1 rounded-2xl flex items-center gap-1 mb-3.5 shadow-inner">
-        <button id="tabBtnToday" onclick="selectPrimaryTab('today')" class="flex-1 py-2 px-3 rounded-[14px] text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
-          <span id="tabTodayTitle">Сегодня</span>
-          <span id="tabTodayDate" class="text-[10px] font-normal opacity-70">Пт, 23.10</span>
-        </button>
-        <button id="tabBtnTomorrow" onclick="selectPrimaryTab('tomorrow')" class="flex-1 py-2 px-3 rounded-[14px] text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
-          <span id="tabTomorrowTitle">Завтра</span>
-          <span id="tabTomorrowDate" class="text-[10px] font-normal opacity-70">Сб, 24.10</span>
-        </button>
       </div>
 
-      <div id="primaryLessonsList" class="space-y-3"></div>
+      <button onclick="openWizard()" style="padding: 7px 12px; border-radius: 12px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-main); font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+        <svg style="width: 13px; height: 13px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span>Настройки</span>
+      </button>
+    </div>
+  </header>
 
-      <div class="mt-8 mb-2 flex items-center justify-between px-1">
-        <h2 class="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
-          Остальные дни недели
-        </h2>
-        <span id="connectionBadge" class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          БГУ Live
-        </span>
-      </div>
+  <main style="flex: 1; padding: 6px 16px 16px; max-width: 480px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 10px;">
+    
+    <!-- Переключатель Сегодня / Завтра -->
+    <div style="background: var(--glass-card-subtle); padding: 3px; border-radius: 14px; display: flex; gap: 4px; border: 1px solid var(--border-color);">
+      <button id="btnToday" onclick="switchPrimaryTab('today')" style="flex: 1; padding: 7px; border-radius: 11px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s, color 0.15s;">Сегодня</button>
+      <button id="btnTomorrow" onclick="switchPrimaryTab('tomorrow')" style="flex: 1; padding: 7px; border-radius: 11px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s, color 0.15s;">Завтра</button>
+    </div>
 
-      <div id="weekDaysBar" class="flex gap-2 overflow-x-auto no-scrollbar pb-2 mb-3"></div>
+    <!-- Список пар первичного дня -->
+    <div id="primaryList" style="display: flex; flex-direction: column; gap: 10px;"></div>
 
-      <div id="secondaryLessonsList" class="space-y-3"></div>
-    </main>
+    <!-- Горизонтальная лента дней -->
+    <div style="margin-top: 14px; display: flex; align-items: center; justify-content: space-between;">
+      <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-sub);">Остальные дни</span>
+      <span style="font-size: 10px; color: var(--text-sub); font-weight: 600;">БГУ Live</span>
+    </div>
+    
+    <div id="daysScroll" class="no-scrollbar" style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px;"></div>
+    
+    <!-- Список пар выбранного вторичного дня -->
+    <div id="secondaryList" style="display: flex; flex-direction: column; gap: 10px;"></div>
 
-  </div>
+  </main>
 
-  <div id="wizardModal" class="fixed inset-0 z-50 bg-black/40 dark:bg-black/75 backdrop-blur-md hidden items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="liquid-glass w-full max-w-sm rounded-t-[32px] sm:rounded-[32px] p-6 space-y-4 shadow-2xl border-white/60 dark:border-white/10 flex flex-col max-h-[88vh]">
-      
-      <div class="flex items-center justify-between pb-2 border-b border-slate-200/50 dark:border-slate-800">
+  <!-- Модальное окно настроек -->
+  <div id="wizardModal" class="modal-overlay">
+    <div class="modal-sheet">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
         <div>
-          <span id="wizardStepNumber" class="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Шаг 1 из 4</span>
-          <h3 id="wizardStepHeading" class="text-base font-extrabold tracking-tight">Курс и тема оформления</h3>
+          <span id="wizardStepLabel" style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-sub);">Шаг 1 из 4</span>
+          <h3 id="wizardStepTitle" style="font-size: 15px; font-weight: 800; margin-top: 2px;">Курс и тема</h3>
         </div>
-        <button onclick="closeWizard()" class="p-2 rounded-full liquid-glass-subtle text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        <button onclick="closeWizard()" style="background: none; border: none; color: var(--text-sub); padding: 4px; cursor: pointer;">
+          <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
 
-      <div class="overflow-y-auto no-scrollbar space-y-4 flex-1">
-        
-        <div id="step1View" class="space-y-3.5">
-          <div>
-            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Тема оформления</label>
-            <div class="grid grid-cols-2 gap-2">
-              <button onclick="setWizardTheme('light')" id="wizardThemeLight" class="p-3 rounded-2xl border text-xs font-bold transition-all flex items-center justify-center gap-2">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                <span>Светлая</span>
-              </button>
-              <button onclick="setWizardTheme('dark')" id="wizardThemeDark" class="p-3 rounded-2xl border text-xs font-bold transition-all flex items-center justify-center gap-2">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-                <span>Тёмная</span>
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Курс</label>
-            <div class="grid grid-cols-4 gap-2">
-              <button onclick="pickCourse('1')" class="h-14 rounded-2xl liquid-glass-subtle flex items-center justify-center font-bold text-xl hover:border-slate-400 transition-all active:scale-95">1</button>
-              <button onclick="pickCourse('2')" class="h-14 rounded-2xl liquid-glass-subtle flex items-center justify-center font-bold text-xl hover:border-slate-400 transition-all active:scale-95">2</button>
-              <button onclick="pickCourse('3')" class="h-14 rounded-2xl liquid-glass-subtle flex items-center justify-center font-bold text-xl hover:border-slate-400 transition-all active:scale-95">3</button>
-              <button onclick="pickCourse('4')" class="h-14 rounded-2xl liquid-glass-subtle flex items-center justify-center font-bold text-xl hover:border-slate-400 transition-all active:scale-95">4</button>
-            </div>
-          </div>
-        </div>
-
-        <div id="step2View" class="hidden">
-          <div id="wizardGroupsGrid" class="grid grid-cols-4 gap-2"></div>
-        </div>
-
-        <div id="step3View" class="hidden space-y-3.5">
-          <div>
-            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Изучаемый иностранный язык</label>
-            <div class="grid grid-cols-2 gap-2">
-              <button onclick="pickLang('EN')" class="wizard-lang-btn py-2.5 rounded-xl border text-xs font-bold transition-all" data-lang="EN">Английский</button>
-              <button onclick="pickLang('DE')" class="wizard-lang-btn py-2.5 rounded-xl border text-xs font-bold transition-all" data-lang="DE">Немецкий</button>
-              <button onclick="pickLang('FR')" class="wizard-lang-btn py-2.5 rounded-xl border text-xs font-bold transition-all" data-lang="FR">Французский</button>
-              <button onclick="pickLang('RKI')" class="wizard-lang-btn py-2.5 rounded-xl border text-xs font-bold transition-all" data-lang="RKI">РКИ</button>
-              <button onclick="pickLang('ALL')" class="wizard-lang-btn col-span-2 py-2.5 rounded-xl border text-xs font-bold transition-all" data-lang="ALL">Все языки</button>
-            </div>
-          </div>
-        </div>
-
-        <div id="step4View" class="hidden space-y-2.5">
-          <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
-            Отметьте пары, требующие приоритетного внимания. Они получат мягкую световую плашку в расписании.
-          </p>
-          <div id="wizardSubjectsList" class="space-y-1.5 max-h-56 overflow-y-auto no-scrollbar pr-1">
-            <div class="text-xs text-slate-400 py-3 text-center">Загрузка дисциплин...</div>
-          </div>
-        </div>
-
+      <div id="wizardBody" class="no-scrollbar" style="overflow-y: auto; max-height: 55vh; display: flex; flex-direction: column; gap: 14px;">
+        <!-- Динамический контент шагов -->
       </div>
 
-      <div class="flex gap-2 pt-2 border-t border-slate-200/50 dark:border-slate-800">
-        <button id="btnWizardBack" onclick="prevWizardStep()" class="hidden w-1/3 py-3 rounded-2xl liquid-glass-subtle text-slate-600 dark:text-slate-300 font-bold text-xs active:scale-95">Назад</button>
-        <button id="btnWizardNext" onclick="nextWizardStep()" class="hidden flex-1 py-3 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-950 font-bold text-xs shadow-md active:scale-95">Далее</button>
-        <button id="btnWizardFinish" onclick="saveWizardProfile()" class="hidden flex-1 py-3 rounded-2xl bg-emerald-600 text-white font-bold text-xs shadow-md shadow-emerald-600/25 active:scale-95">Сохранить настройки</button>
+      <div style="display: flex; gap: 8px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+        <button id="wizardBackBtn" onclick="prevWizardStep()" style="flex: 1; padding: 11px; border-radius: 14px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-main); font-size: 12px; font-weight: 700; display: none;">Назад</button>
+        <button id="wizardNextBtn" onclick="nextWizardStep()" style="flex: 2; padding: 11px; border-radius: 14px; background: var(--nav-active-bg); border: none; color: var(--nav-active-text); font-size: 12px; font-weight: 700;">Далее</button>
       </div>
-
     </div>
   </div>
 
@@ -293,657 +294,414 @@
     if (tg) {
       tg.ready();
       tg.expand();
-      if (tg.setHeaderColor) tg.setHeaderColor('#0a0d14');
+      if (tg.setHeaderColor) tg.setHeaderColor('#090c12');
     }
 
     let facultyData = null;
     let currentProfile = {
-      course: "2",
-      group_name: "ГРУППА 4",
-      foreign_lang: "DE",
+      course: "1",
+      group_name: "",
+      foreign_lang: "ALL",
       important_subjects: []
     };
 
-    let activePrimaryTab = 'today';
+    let activeTab = 'today';
     let selectedSecondaryDay = '';
-    let draftProfile = { ...currentProfile, important_subjects: [] };
-    let wizardCurrentStep = 1;
+    let wizardStep = 1;
+    let draftProfile = { ...currentProfile };
 
     function initTheme() {
-      const savedTheme = localStorage.getItem('bsu_theme') || 'dark';
-      if (savedTheme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-      updateWizardThemeButtons();
+      const saved = localStorage.getItem('bsu_theme') || 'dark';
+      document.documentElement.classList.toggle('dark', saved === 'dark');
     }
 
-    function setWizardTheme(mode) {
-      if (mode === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+    function setTheme(mode) {
+      document.documentElement.classList.toggle('dark', mode === 'dark');
       localStorage.setItem('bsu_theme', mode);
-      updateWizardThemeButtons();
+      renderWizardStep();
     }
 
-    function updateWizardThemeButtons() {
-      const isDark = document.documentElement.classList.contains('dark');
-      const lightBtn = document.getElementById('wizardThemeLight');
-      const darkBtn = document.getElementById('wizardThemeDark');
-      if (!lightBtn || !darkBtn) return;
-
-      if (isDark) {
-        darkBtn.className = 'p-3 rounded-2xl border border-white/30 bg-white/10 text-white text-xs font-bold transition-all shadow-sm';
-        lightBtn.className = 'p-3 rounded-2xl liquid-glass-subtle text-slate-400 text-xs font-bold transition-all';
-      } else {
-        lightBtn.className = 'p-3 rounded-2xl border-2 border-slate-900 bg-white text-slate-900 text-xs font-bold transition-all shadow-sm';
-        darkBtn.className = 'p-3 rounded-2xl liquid-glass-subtle text-slate-500 text-xs font-bold transition-all';
-      }
-    }
-
-    async function loadScheduleJSON() {
+    async function loadData() {
       try {
-        const res = await fetch('schedule_data.json?v=' + Date.now());
-        if (!res.ok) throw new Error('Файл schedule_data.json не найден');
+        const res = await fetch('schedule_data.json?t=' + Date.now());
+        if (!res.ok) throw new Error();
         facultyData = await res.json();
-        return facultyData;
-      } catch (err) {
-        console.error('Ошибка загрузки данных расписания:', err);
-        return null;
+        return true;
+      } catch (e) {
+        return false;
       }
     }
 
     function cleanTeacherAndRoom(str) {
       if (!str) return { teacher: '', room: null };
       let s = str.replace(/^[12]\s*(?:п\/г|подгр\.?|подгруппа)\s*/i, '').trim();
-      const roomMatch = s.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
+      const m = s.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
       let room = null;
-      if (roomMatch) {
-        room = roomMatch[0].trim();
-        s = s.replace(roomMatch[0], '').trim();
+      if (m) {
+        room = m[0].trim();
+        s = s.replace(m[0], '').trim();
       }
       s = s.replace(/^[-–—•,\s]+|[-–—•,\s]+$/g, '').trim();
       return { teacher: s, room };
     }
 
-    function shouldKeepLesson(lessonText, lang) {
+    function filterByLang(text, lang) {
       if (!lang || lang === 'ALL') return true;
-      const lower = lessonText.toLowerCase();
-      const langMarkers = {
+      const lower = text.toLowerCase();
+      const map = {
         'EN': ['нем', 'немец', 'франц', 'исп', 'рки'],
         'DE': ['англ', 'франц', 'исп', 'рки'],
         'FR': ['англ', 'нем', 'немец', 'исп', 'рки'],
         'RKI': ['англ', 'нем', 'немец', 'франц', 'исп'],
       };
-      const excluded = langMarkers[lang];
-      if (excluded && excluded.some(m => lower.includes(m))) return false;
-      return true;
+      return !(map[lang] && map[lang].some(marker => lower.includes(marker)));
     }
 
-    function parseTimeSlotLessons(rawLessonsList) {
-      if (!rawLessonsList || !rawLessonsList.length) return [];
+    function parseLessons(list) {
+      if (!list || !list.length) return [];
+      const kept = list.filter(l => filterByLang(l, currentProfile.foreign_lang));
+      if (!kept.length) return [];
 
-      const filtered = rawLessonsList.filter(l => shouldKeepLesson(l, currentProfile.foreign_lang));
-      if (!filtered.length) return [];
-
-      if (filtered.length === 2) {
-        const cleanTitle1 = filtered[0].split('\n')[0].replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?)\)/gi, '').trim();
-        const cleanTitle2 = filtered[1].split('\n')[0].replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?)\)/gi, '').trim();
-
-        if (cleanTitle1.toLowerCase() === cleanTitle2.toLowerCase()) {
-          const l1Lines = filtered[0].split('\n').map(l => l.trim()).filter(Boolean);
-          const l2Lines = filtered[1].split('\n').map(l => l.trim()).filter(Boolean);
-          const sub1 = cleanTeacherAndRoom(l1Lines.slice(1).join(' '));
-          const sub2 = cleanTeacherAndRoom(l2Lines.slice(1).join(' '));
-
-          let type = { label: 'Пара', color: 'bg-slate-500/10 text-slate-600 dark:text-slate-300 border-slate-500/20' };
-          if (/лекц/i.test(filtered[0])) type = { label: 'Лекция', color: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20' };
-          else if (/лаб/i.test(filtered[0])) type = { label: 'Лабораторная', color: 'bg-slate-500/15 text-slate-700 dark:text-slate-200 border-slate-400/20' };
-          else if (/практ/i.test(filtered[0])) type = { label: 'Практика', color: 'bg-teal-500/10 text-teal-700 dark:text-teal-400 border-teal-500/20' };
-          else if (/сем/i.test(filtered[0])) type = { label: 'Семинар', color: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20' };
-
+      if (kept.length === 2) {
+        const t1 = kept[0].split('\n')[0].replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?)\)/gi, '').trim();
+        const t2 = kept[1].split('\n')[0].replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?)\)/gi, '').trim();
+        if (t1.toLowerCase() === t2.toLowerCase()) {
           return [{
-            title: cleanTitle1,
-            type,
-            subgroups: [sub1, sub2]
+            title: t1,
+            subgroups: [
+              cleanTeacherAndRoom(kept[0].split('\n').slice(1).join(' ')),
+              cleanTeacherAndRoom(kept[1].split('\n').slice(1).join(' '))
+            ]
           }];
         }
       }
 
-      const parsedItems = [];
-      filtered.forEach(rawText => {
-        if (!rawText) return;
-        const text = rawText.trim();
-        const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-        let title = lines[0] || 'Занятие';
-        title = title.replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?)\)/gi, '').trim();
+      return kept.map(raw => {
+        const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+        const title = (lines[0] || 'Пара').replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?)\)/gi, '').trim();
+        const details = lines.slice(1);
+        const l1 = details.find(l => /1\s*(?:п\/г|подгр)/i.test(l));
+        const l2 = details.find(l => /2\s*(?:п\/г|подгр)/i.test(l));
 
-        let type = { label: 'Пара', color: 'bg-slate-500/10 text-slate-600 dark:text-slate-300 border-slate-500/20' };
-        if (/лекц/i.test(text)) type = { label: 'Лекция', color: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20' };
-        else if (/лаб/i.test(text)) type = { label: 'Лабораторная', color: 'bg-slate-500/15 text-slate-700 dark:text-slate-200 border-slate-400/20' };
-        else if (/практ/i.test(text)) type = { label: 'Практика', color: 'bg-teal-500/10 text-teal-700 dark:text-teal-400 border-teal-500/20' };
-        else if (/сем/i.test(text)) type = { label: 'Семинар', color: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20' };
-
-        const detailsLines = lines.slice(1);
-        let subgroups = null;
-
-        const line1Sub = detailsLines.find(l => /1\s*(?:п\/г|подгр)/i.test(l));
-        const line2Sub = detailsLines.find(l => /2\s*(?:п\/г|подгр)/i.test(l));
-
-        if (line1Sub && line2Sub) {
-          subgroups = [
-            cleanTeacherAndRoom(line1Sub),
-            cleanTeacherAndRoom(line2Sub)
-          ];
-        } else if (detailsLines.length >= 2 && detailsLines[0].includes('ауд') && detailsLines[1].includes('ауд')) {
-          subgroups = [
-            cleanTeacherAndRoom(detailsLines[0]),
-            cleanTeacherAndRoom(detailsLines[1])
-          ];
+        if (l1 && l2) {
+          return {
+            title,
+            subgroups: [cleanTeacherAndRoom(l1), cleanTeacherAndRoom(l2)]
+          };
         }
 
-        if (subgroups) {
-          parsedItems.push({ title, type, subgroups });
-        } else {
-          const roomMatch = text.match(/ауд\.?\s*([0-9/\-а-яА-Яa-zA-Z]+)/i);
-          const room = roomMatch ? `ауд. ${roomMatch[1]}` : null;
-          const details = detailsLines.join(' • ');
-          parsedItems.push({ title, details, type, room });
-        }
-      });
-
-      return parsedItems;
-    }
-
-    function getLessonRealtimeState(timeSlotStr, isTodayView) {
-      if (!isTodayView || !timeSlotStr) return null;
-      const match = timeSlotStr.match(/(\d{2})[:.](\d{2})[–-](\d{2})[:.](\d{2})/);
-      if (!match) return null;
-
-      const now = new Date();
-      const curMins = now.getHours() * 60 + now.getMinutes();
-      const startMins = parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
-      const endMins = parseInt(match[3], 10) * 60 + parseInt(match[4], 10);
-
-      if (curMins >= startMins && curMins <= endMins) {
-        const left = endMins - curMins;
-        return { isLive: true, badge: `Идёт сейчас • ещё ${left} мин` };
-      }
-      if (curMins < startMins && startMins - curMins <= 40) {
-        const until = startMins - curMins;
-        return { isUpcoming: true, badge: `Следующая через ${until} мин` };
-      }
-      return null;
-    }
-
-    function getCurrentGroupSchedule() {
-      if (!facultyData || !facultyData.courses) return {};
-      const courseObj = facultyData.courses[currentProfile.course] || {};
-      return courseObj[currentProfile.group_name] || {};
-    }
-
-    function getTodayTomorrowMapping() {
-      const schedule = getCurrentGroupSchedule();
-      const days = Object.keys(schedule);
-      if (!days.length) return { todayKey: null, tomorrowKey: null };
-
-      const weekMap = { 1: 'ПОНЕДЕЛЬНИК', 2: 'ВТОРНИК', 3: 'СРЕДА', 4: 'ЧЕТВЕРГ', 5: 'ПЯТНИЦА', 6: 'СУББОТА', 0: 'ВОСКРЕСЕНЬЕ' };
-      const now = new Date();
-      const todayIndex = now.getDay();
-
-      if (todayIndex === 0) {
-        const mon = days.find(d => d.includes('ПОНЕДЕЛЬНИК')) || days[0];
-        const tue = days.find(d => d.includes('ВТОРНИК')) || days[1] || days[0];
-        return { todayKey: mon, tomorrowKey: tue, todayTitle: 'Пн (завтра)', tomorrowTitle: 'Вторник' };
-      }
-
-      if (todayIndex === 6) {
-        const sat = days.find(d => d.includes('СУББОТА')) || days[days.length - 1];
-        const mon = days.find(d => d.includes('ПОНЕДЕЛЬНИК')) || days[0];
-        return { todayKey: sat, tomorrowKey: mon, todayTitle: 'Сегодня (Сб)', tomorrowTitle: 'Понедельник' };
-      }
-
-      const curName = weekMap[todayIndex];
-      const nextName = weekMap[(todayIndex + 1) % 7];
-
-      return {
-        todayKey: days.find(d => d.includes(curName)) || days[0],
-        tomorrowKey: days.find(d => d.includes(nextName)) || days[1] || days[0],
-        todayTitle: 'Сегодня',
-        tomorrowTitle: 'Завтра'
-      };
-    }
-
-    function formatDayLabel(dayKey) {
-      if (!dayKey) return '';
-      const parts = dayKey.split(' ');
-      const name = parts[0] || dayKey;
-      const date = parts[1] || '';
-      const map = {
-        'ПОНЕДЕЛЬНИК': 'Пн', 'ВТОРНИК': 'Вт', 'СРЕДА': 'Ср',
-        'ЧЕТВЕРГ': 'Чт', 'ПЯТНИЦА': 'Пт', 'СУББОТА': 'Сб'
-      };
-      return `${map[name] || name} ${date}`.trim();
-    }
-
-    function selectPrimaryTab(tab) {
-      activePrimaryTab = tab;
-      renderPrimarySection();
-    }
-
-    function renderPrimarySection() {
-      const { todayKey, tomorrowKey, todayTitle, tomorrowTitle } = getTodayTomorrowMapping();
-      const btnToday = document.getElementById('tabBtnToday');
-      const btnTomorrow = document.getElementById('tabBtnTomorrow');
-
-      document.getElementById('tabTodayTitle').textContent = todayTitle || 'Сегодня';
-      document.getElementById('tabTomorrowTitle').textContent = tomorrowTitle || 'Завтра';
-
-      document.getElementById('tabTodayDate').textContent = formatDayLabel(todayKey);
-      document.getElementById('tabTomorrowDate').textContent = formatDayLabel(tomorrowKey);
-
-      if (activePrimaryTab === 'today') {
-        btnToday.className = 'flex-1 py-2 px-3 rounded-[14px] text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 bg-white dark:bg-white/15 text-slate-900 dark:text-white shadow-sm border border-black/5 dark:border-white/10';
-        btnTomorrow.className = 'flex-1 py-2 px-3 rounded-[14px] text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200';
-      } else {
-        btnTomorrow.className = 'flex-1 py-2 px-3 rounded-[14px] text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 bg-white dark:bg-white/15 text-slate-900 dark:text-white shadow-sm border border-black/5 dark:border-white/10';
-        btnToday.className = 'flex-1 py-2 px-3 rounded-[14px] text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200';
-      }
-
-      const activeKey = activePrimaryTab === 'today' ? todayKey : tomorrowKey;
-      renderCardsInto(activeKey, document.getElementById('primaryLessonsList'), activePrimaryTab === 'today');
-    }
-
-    function renderSecondarySection() {
-      const schedule = getCurrentGroupSchedule();
-      const allDays = Object.keys(schedule);
-      const { todayKey, tomorrowKey } = getTodayTomorrowMapping();
-      const restDays = allDays.filter(d => d !== todayKey && d !== tomorrowKey);
-      const daysToDisplay = restDays.length > 0 ? restDays : allDays;
-
-      if (!selectedSecondaryDay || !daysToDisplay.includes(selectedSecondaryDay)) {
-        selectedSecondaryDay = daysToDisplay[0] || '';
-      }
-
-      const bar = document.getElementById('weekDaysBar');
-      bar.innerHTML = '';
-
-      daysToDisplay.forEach(dayKey => {
-        const isSelected = dayKey === selectedSecondaryDay;
-        const btn = document.createElement('button');
-        btn.className = `px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 active:scale-95 ${
-          isSelected
-            ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-950 shadow-sm'
-            : 'liquid-glass text-slate-600 dark:text-slate-300'
-        }`;
-        btn.textContent = formatDayLabel(dayKey);
-        btn.onclick = () => {
-          selectedSecondaryDay = dayKey;
-          renderSecondarySection();
+        const roomMatch = raw.match(/ауд\.?\s*([0-9/\-а-яА-Яa-zA-Z]+)/i);
+        return {
+          title,
+          room: roomMatch ? `ауд. ${roomMatch[1]}` : null,
+          details: details.join(' • ')
         };
-        bar.appendChild(btn);
       });
-
-      renderCardsInto(selectedSecondaryDay, document.getElementById('secondaryLessonsList'), false);
     }
 
-    function isSubjectImportant(subjectTitle) {
-      if (!currentProfile.important_subjects || !currentProfile.important_subjects.length) return false;
-      const lower = subjectTitle.toLowerCase();
-      return currentProfile.important_subjects.some(imp => lower.includes(imp.toLowerCase()));
+    function isLessonLive(timeSlot) {
+      const m = timeSlot.match(/(\d{2})[:.](\d{2})[–-](\d{2})[:.](\d{2})/);
+      if (!m) return false;
+      const now = new Date();
+      const cur = now.getHours() * 60 + now.getMinutes();
+      const start = parseInt(m[1]) * 60 + parseInt(m[2]);
+      const end = parseInt(m[3]) * 60 + parseInt(m[4]);
+      return cur >= start && cur <= end;
     }
 
-    function renderCardsInto(dayKey, container, isToday) {
+    function renderDayCards(dayName, container, isToday) {
       container.innerHTML = '';
-      const schedule = getCurrentGroupSchedule();
-
-      if (!dayKey || !schedule[dayKey]) {
-        container.innerHTML = `
-          <div class="liquid-glass rounded-[24px] p-8 text-center text-xs text-slate-400 dark:text-slate-400 font-medium">
-            На этот день занятий нет
-          </div>
-        `;
+      if (!facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name]) {
+        container.innerHTML = '<div class="card-glass" style="text-align: center; color: var(--text-sub); font-size: 12px; padding: 24px;">Расписание не найдено</div>';
         return;
       }
 
-      const daySlots = schedule[dayKey] || {};
-      const times = Object.keys(daySlots);
+      const schedule = facultyData.courses[currentProfile.course][currentProfile.group_name];
+      const slots = schedule[dayName] || {};
+      const times = Object.keys(slots);
 
-      times.forEach((timeStr, idx) => {
-        const rawList = daySlots[timeStr] || [];
-        const parsedLessons = parseTimeSlotLessons(rawList);
-        const liveState = getLessonRealtimeState(timeStr, isToday);
+      if (!times.length) {
+        container.innerHTML = '<div class="card-glass" style="text-align: center; color: var(--text-sub); font-size: 12px; padding: 24px;">В этот день пар нет</div>';
+        return;
+      }
 
-        if (parsedLessons.length === 0) {
-          const emptyCard = document.createElement('div');
-          emptyCard.className = 'fade-card liquid-glass-subtle rounded-[22px] px-4 py-3 flex items-center justify-between border-dashed border-slate-300/60 dark:border-slate-800/80 transition-all';
-          emptyCard.innerHTML = `
-            <div class="flex items-center gap-2">
-              <span class="text-[11px] font-bold px-2 py-0.5 rounded-lg liquid-glass text-slate-400">${timeStr}</span>
-              <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Свободное время</span>
+      const frag = document.createDocumentFragment();
+
+      times.forEach(timeStr => {
+        const items = parseLessons(slots[timeStr]);
+        const isLive = isToday && isLessonLive(timeStr);
+        const hasImportant = items.some(item => currentProfile.important_subjects.some(imp => item.title.toLowerCase().includes(imp.toLowerCase())));
+
+        const wrapper = document.createElement('div');
+        wrapper.className = isLive ? 'active-lesson-card' : 'card-glass' + (hasImportant ? ' important-pulse' : '');
+
+        let innerContent = `
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span class="badge-subtle" style="font-family: monospace; font-weight: 700; ${isLive ? 'background: #10b981; color: #fff;' : ''}">${timeStr}</span>
+              ${isLive ? '<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.3);">Идёт сейчас</span>' : ''}
+              ${hasImportant ? '<span class="badge-subtle" style="color: #f59e0b; border-color: rgba(245,158,11,0.3);">Важная пара</span>' : ''}
             </div>
-            <div class="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-700"></div>
-          `;
-          container.appendChild(emptyCard);
-          return;
-        }
-
-        const isLiveNow = liveState?.isLive;
-        const hasImportant = parsedLessons.some(l => isSubjectImportant(l.title));
-
-        const cardOuterWrapper = document.createElement('div');
-        cardOuterWrapper.className = `fade-card transition-all duration-300 ${
-          isLiveNow ? 'active-lesson-beam' : ''
-        }`;
-        cardOuterWrapper.style.animationDelay = `${idx * 25}ms`;
-
-        let lessonsInnerHtml = '';
-        parsedLessons.forEach((item, itemIdx) => {
-          const isImportant = isSubjectImportant(item.title);
-
-          lessonsInnerHtml += `
-            <div class="${itemIdx > 0 ? 'pt-3 border-t border-slate-200/50 dark:border-slate-800/80' : ''} space-y-2">
-              <div class="flex items-center justify-between gap-2 flex-wrap">
-                <div class="flex items-center gap-1.5 flex-wrap">
-                  <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-lg ${
-                    isLiveNow 
-                      ? 'bg-emerald-600 text-white' 
-                      : 'liquid-glass-subtle text-slate-700 dark:text-slate-300 font-mono'
-                  }">
-                    ${timeStr}
-                  </span>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg border ${item.type.color}">
-                    ${item.type.label}
-                  </span>
-                  ${isImportant ? `
-                    <span class="important-badge-shimmer inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-lg border border-amber-500/35 text-amber-700 dark:text-amber-300 shadow-xs">
-                      <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                      Важная пара
-                    </span>
-                  ` : ''}
-                  ${isLiveNow ? `
-                    <span class="inline-flex items-center gap-1.5 text-[10px] font-extrabold px-2 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                      ${liveState.badge}
-                    </span>
-                  ` : ''}
-                  ${liveState?.isUpcoming ? `
-                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-200/60 dark:bg-white/10 text-slate-600 dark:text-slate-300">
-                      ${liveState.badge}
-                    </span>
-                  ` : ''}
-                </div>
-                ${item.room ? `
-                  <span class="text-[11px] font-bold px-2 py-0.5 rounded-lg liquid-glass-subtle text-slate-600 dark:text-slate-400">
-                    ${item.room}
-                  </span>
-                ` : ''}
-              </div>
-
-              <div class="text-[13.5px] font-bold text-slate-900 dark:text-slate-100 leading-snug">
-                ${item.title}
-              </div>
-
-              ${item.subgroups ? `
-                <div class="mt-2 pt-2 border-t border-slate-200/50 dark:border-white/10">
-                  <div class="grid grid-cols-2 gap-2">
-                    <div class="p-2.5 rounded-2xl liquid-glass-subtle border border-slate-300/40 dark:border-white/10 flex flex-col justify-between space-y-1">
-                      <div class="flex items-center justify-between gap-1">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">1 подгруппа</span>
-                        ${item.subgroups[0].room ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-slate-200/70 dark:bg-white/10 text-slate-700 dark:text-slate-300 font-mono">${item.subgroups[0].room}</span>` : ''}
-                      </div>
-                      <div class="text-[11.5px] font-medium text-slate-700 dark:text-slate-300 leading-tight">
-                        ${item.subgroups[0].teacher || '—'}
-                      </div>
-                    </div>
-                    <div class="p-2.5 rounded-2xl liquid-glass-subtle border border-slate-300/40 dark:border-white/10 flex flex-col justify-between space-y-1">
-                      <div class="flex items-center justify-between gap-1">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">2 подгруппа</span>
-                        ${item.subgroups[1].room ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-slate-200/70 dark:bg-white/10 text-slate-700 dark:text-slate-300 font-mono">${item.subgroups[1].room}</span>` : ''}
-                      </div>
-                      <div class="text-[11.5px] font-medium text-slate-700 dark:text-slate-300 leading-tight">
-                        ${item.subgroups[1].teacher || '—'}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ` : (item.details ? `
-                <div class="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
-                  ${item.details}
-                </div>
-              ` : '')}
-            </div>
-          `;
-        });
-
-        cardOuterWrapper.innerHTML = `
-          <div class="liquid-glass ${isLiveNow ? 'active-lesson-inner' : 'rounded-[24px]'} ${hasImportant && !isLiveNow ? 'important-card-glow' : ''} p-4 space-y-2">
-            ${lessonsInnerHtml}
           </div>
         `;
-        container.appendChild(cardOuterWrapper);
+
+        if (!items.length) {
+          innerContent += `<div style="font-size: 12px; color: var(--text-sub);">Окно / Свободное время</div>`;
+        } else {
+          items.forEach((item, idx) => {
+            innerContent += `
+              <div style="${idx > 0 ? 'margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-color);' : ''}">
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
+                  <div style="font-size: 13.5px; font-weight: 700; line-height: 1.35;">${item.title}</div>
+                  ${item.room ? `<span class="badge-subtle">${item.room}</span>` : ''}
+                </div>
+                ${item.subgroups ? `
+                  <div class="subgroups-grid">
+                    <div class="subgroup-box">
+                      <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 800; color: var(--text-sub); text-transform: uppercase;">
+                        <span>1 подгруппа</span>
+                        ${item.subgroups[0].room ? `<span>${item.subgroups[0].room}</span>` : ''}
+                      </div>
+                      <div style="font-size: 11px; font-weight: 500;">${item.subgroups[0].teacher || '—'}</div>
+                    </div>
+                    <div class="subgroup-box">
+                      <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 800; color: var(--text-sub); text-transform: uppercase;">
+                        <span>2 подгруппа</span>
+                        ${item.subgroups[1].room ? `<span>${item.subgroups[1].room}</span>` : ''}
+                      </div>
+                      <div style="font-size: 11px; font-weight: 500;">${item.subgroups[1].teacher || '—'}</div>
+                    </div>
+                  </div>
+                ` : (item.details ? `<div style="font-size: 11px; color: var(--text-sub); margin-top: 4px;">${item.details}</div>` : '')}
+              </div>
+            `;
+          });
+        }
+
+        if (isLive) {
+          wrapper.innerHTML = `<div class="active-lesson-inner">${innerContent}</div>`;
+        } else {
+          wrapper.innerHTML = innerContent;
+        }
+
+        frag.appendChild(wrapper);
       });
+
+      container.appendChild(frag);
     }
 
+    function getDays() {
+      const schedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
+      const keys = Object.keys(schedule);
+      if (!keys.length) return { today: '', tomorrow: '', others: [] };
+
+      const daysOfWeek = ['ВОСКРЕСЕНЬЕ', 'ПОНЕДЕЛЬНИК', 'ВТОРНИК', 'СРЕДА', 'ЧЕТВЕРГ', 'ПЯТНИЦА', 'СУББОТА'];
+      const now = new Date().getDay();
+      const todayTarget = daysOfWeek[now];
+      const tomorrowTarget = daysOfWeek[(now + 1) % 7];
+
+      const todayKey = keys.find(k => k.includes(todayTarget)) || keys[0];
+      const tomorrowKey = keys.find(k => k.includes(tomorrowTarget)) || keys[1] || keys[0];
+      const others = keys.filter(k => k !== todayKey && k !== tomorrowKey);
+
+      return { today: todayKey, tomorrow: tomorrowKey, others: others.length ? others : keys };
+    }
+
+    function renderView() {
+      document.getElementById('headerTitle').textContent = `${currentProfile.course} курс • ${currentProfile.group_name.replace('ГРУППА ', 'Группа ')}`;
+      if (facultyData?.updated_times?.[currentProfile.course]) {
+        document.getElementById('headerSync').textContent = `Деканат: ${facultyData.updated_times[currentProfile.course]}`;
+      }
+
+      const { today, tomorrow, others } = getDays();
+
+      const btnToday = document.getElementById('btnToday');
+      const btnTomorrow = document.getElementById('btnTomorrow');
+      if (activeTab === 'today') {
+        btnToday.style.background = 'var(--nav-active-bg)';
+        btnToday.style.color = 'var(--nav-active-text)';
+        btnTomorrow.style.background = 'transparent';
+        btnTomorrow.style.color = 'var(--text-sub)';
+        renderDayCards(today, document.getElementById('primaryList'), true);
+      } else {
+        btnTomorrow.style.background = 'var(--nav-active-bg)';
+        btnTomorrow.style.color = 'var(--nav-active-text)';
+        btnToday.style.background = 'transparent';
+        btnToday.style.color = 'var(--text-sub)';
+        renderDayCards(tomorrow, document.getElementById('primaryList'), false);
+      }
+
+      if (!selectedSecondaryDay || !others.includes(selectedSecondaryDay)) {
+        selectedSecondaryDay = others[0] || '';
+      }
+
+      const scrollBox = document.getElementById('daysScroll');
+      scrollBox.innerHTML = '';
+      others.forEach(dKey => {
+        const b = document.createElement('button');
+        const isSel = dKey === selectedSecondaryDay;
+        b.style.cssText = `padding: 6px 12px; border-radius: 12px; border: 1px solid var(--border-color); font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; ${isSel ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}`;
+        b.textContent = dKey.split(' ')[0];
+        b.onclick = () => {
+          selectedSecondaryDay = dKey;
+          renderView();
+        };
+        scrollBox.appendChild(b);
+      });
+
+      renderDayCards(selectedSecondaryDay, document.getElementById('secondaryList'), false);
+    }
+
+    function switchPrimaryTab(tab) {
+      activeTab = tab;
+      renderView();
+    }
+
+    /* Настройки (Wizard) */
     function openWizard() {
-      wizardCurrentStep = 1;
-      draftProfile = {
-        course: currentProfile.course,
-        group: currentProfile.group_name,
-        lang: currentProfile.foreign_lang,
-        important_subjects: [...(currentProfile.important_subjects || [])]
-      };
-      setWizardStep(1);
-      const m = document.getElementById('wizardModal');
-      m.classList.remove('hidden');
-      m.classList.add('flex');
+      draftProfile = { ...currentProfile, important_subjects: [...currentProfile.important_subjects] };
+      wizardStep = 1;
+      document.getElementById('wizardModal').classList.add('open');
+      renderWizardStep();
     }
 
     function closeWizard() {
-      const m = document.getElementById('wizardModal');
-      m.classList.add('hidden');
-      m.classList.remove('flex');
+      document.getElementById('wizardModal').classList.remove('open');
     }
 
-    function setWizardStep(step) {
-      wizardCurrentStep = step;
-      document.getElementById('step1View').classList.add('hidden');
-      document.getElementById('step2View').classList.add('hidden');
-      document.getElementById('step3View').classList.add('hidden');
-      document.getElementById('step4View').classList.add('hidden');
+    function renderWizardStep() {
+      const body = document.getElementById('wizardBody');
+      const stepLabel = document.getElementById('wizardStepLabel');
+      const stepTitle = document.getElementById('wizardStepTitle');
+      const backBtn = document.getElementById('wizardBackBtn');
+      const nextBtn = document.getElementById('wizardNextBtn');
 
-      document.getElementById('btnWizardBack').classList.toggle('hidden', step === 1);
-      document.getElementById('btnWizardNext').classList.toggle('hidden', step === 1 || step === 4);
-      document.getElementById('btnWizardFinish').classList.toggle('hidden', step !== 4);
+      backBtn.style.display = wizardStep > 1 ? 'block' : 'none';
+      nextBtn.textContent = wizardStep === 4 ? 'Сохранить' : 'Далее';
 
-      if (step === 1) {
-        document.getElementById('wizardStepNumber').textContent = 'Шаг 1 из 4';
-        document.getElementById('wizardStepHeading').textContent = 'Курс и тема';
-        updateWizardThemeButtons();
-        document.getElementById('step1View').classList.remove('hidden');
-      } else if (step === 2) {
-        document.getElementById('wizardStepNumber').textContent = 'Шаг 2 из 4';
-        document.getElementById('wizardStepHeading').textContent = `${draftProfile.course} курс • Выберите группу`;
-        renderWizardGroups();
-        document.getElementById('step2View').classList.remove('hidden');
-      } else if (step === 3) {
-        document.getElementById('wizardStepNumber').textContent = 'Шаг 3 из 4';
-        document.getElementById('wizardStepHeading').textContent = 'Иностранный язык';
-        updateWizardStep3UI();
-        document.getElementById('step3View').classList.remove('hidden');
-      } else if (step === 4) {
-        document.getElementById('wizardStepNumber').textContent = 'Шаг 4 из 4';
-        document.getElementById('wizardStepHeading').textContent = 'Важные пары';
-        loadWizardSubjects();
-        document.getElementById('step4View').classList.remove('hidden');
-      }
-    }
-
-    function pickCourse(courseNum) {
-      draftProfile.course = courseNum;
-      setWizardStep(2);
-    }
-
-    function renderWizardGroups() {
-      const grid = document.getElementById('wizardGroupsGrid');
-      grid.innerHTML = '';
-      if (!facultyData || !facultyData.courses) return;
-
-      const courseGroups = facultyData.courses[draftProfile.course] || {};
-      const list = Object.keys(courseGroups);
-
-      list.forEach(gName => {
-        const isSel = draftProfile.group === gName;
-        const b = document.createElement('button');
-        b.className = `h-12 rounded-2xl text-sm font-bold transition-all active:scale-95 flex items-center justify-center ${
-          isSel
-            ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-950 shadow-md'
-            : 'liquid-glass text-slate-700 dark:text-slate-300'
-        }`;
-        const cleanNumber = gName.replace(/^ГРУППА\s*/i, '').trim();
-        b.textContent = cleanNumber;
-        b.onclick = () => {
-          draftProfile.group = gName;
-          setWizardStep(3);
-        };
-        grid.appendChild(b);
-      });
-    }
-
-    function pickLang(langCode) {
-      draftProfile.lang = langCode;
-      updateWizardStep3UI();
-    }
-
-    function updateWizardStep3UI() {
-      document.querySelectorAll('.wizard-lang-btn').forEach(btn => {
-        const active = btn.dataset.lang === draftProfile.lang;
-        btn.className = `wizard-lang-btn py-2.5 rounded-xl text-xs font-bold transition-all ${
-          active
-            ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-950 shadow-sm'
-            : 'liquid-glass text-slate-600 dark:text-slate-300'
-        } ${btn.dataset.lang === 'ALL' ? 'col-span-2' : ''}`;
-      });
-    }
-
-    function extractSubjectsFromGroup(courseNum, groupName) {
-      const subjects = new Set();
-      if (!facultyData || !facultyData.courses) return [];
-      const grpSchedule = facultyData.courses[courseNum]?.[groupName] || {};
-
-      Object.values(grpSchedule).forEach(day => {
-        Object.values(day).forEach(lessons => {
-          lessons.forEach(lText => {
-            const lines = lText.split('\n').map(l => l.trim()).filter(Boolean);
-            if (!lines.length) return;
-            let title = lines[0].replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?)\)/gi, '').trim();
-            if (title.length > 3) subjects.add(title);
-          });
-        });
-      });
-      return Array.from(subjects).sort();
-    }
-
-    function loadWizardSubjects() {
-      const container = document.getElementById('wizardSubjectsList');
-      container.innerHTML = '';
-      const subjects = extractSubjectsFromGroup(draftProfile.course, draftProfile.group);
-
-      if (!subjects.length) {
-        container.innerHTML = '<div class="text-xs text-slate-400 py-4 text-center">Дисциплины не найдены</div>';
-        return;
-      }
-
-      subjects.forEach(subj => {
-        const isChecked = draftProfile.important_subjects.includes(subj);
-        const item = document.createElement('div');
-        item.className = `p-3 rounded-2xl border transition-all flex items-center justify-between cursor-pointer active:scale-98 ${
-          isChecked 
-            ? 'border-amber-500/50 bg-amber-500/10 text-amber-800 dark:text-amber-200'
-            : 'liquid-glass-subtle text-slate-700 dark:text-slate-300'
-        }`;
-        item.innerHTML = `
-          <span class="text-xs font-semibold leading-tight pr-2">${subj}</span>
-          <div class="w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
-            isChecked ? 'border-amber-500 bg-amber-500 text-slate-950' : 'border-slate-400/40'
-          }">
-            ${isChecked ? '<svg class="w-3 h-3 stroke-current" fill="none" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+      if (wizardStep === 1) {
+        stepLabel.textContent = 'Шаг 1 из 4';
+        stepTitle.textContent = 'Курс и тема';
+        const isDark = document.documentElement.classList.contains('dark');
+        body.innerHTML = `
+          <div>
+            <span style="font-size: 10px; font-weight: 800; color: var(--text-sub); text-transform: uppercase;">Тема</span>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px;">
+              <button onclick="setTheme('light')" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid var(--border-color); ${!isDark ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}">Светлая</button>
+              <button onclick="setTheme('dark')" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid var(--border-color); ${isDark ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}">Тёмная</button>
+            </div>
+          </div>
+          <div>
+            <span style="font-size: 10px; font-weight: 800; color: var(--text-sub); text-transform: uppercase;">Курс</span>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 6px;">
+              ${['1','2','3','4'].map(c => `
+                <button onclick="draftProfile.course='${c}'; nextWizardStep();" style="padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 800; border: 1px solid var(--border-color); cursor: pointer; ${draftProfile.course === c ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${c}</button>
+              `).join('')}
+            </div>
           </div>
         `;
-        item.onclick = () => {
-          if (draftProfile.important_subjects.includes(subj)) {
-            draftProfile.important_subjects = draftProfile.important_subjects.filter(s => s !== subj);
-          } else {
-            draftProfile.important_subjects.push(subj);
-          }
-          loadWizardSubjects();
-        };
-        container.appendChild(item);
-      });
+      } else if (wizardStep === 2) {
+        stepLabel.textContent = 'Шаг 2 из 4';
+        stepTitle.textContent = `${draftProfile.course} курс • Группа`;
+        const groups = Object.keys(facultyData?.courses?.[draftProfile.course] || {});
+        body.innerHTML = `
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+            ${groups.map(g => {
+              const num = g.replace(/^ГРУППА\s*/i, '');
+              const sel = draftProfile.group_name === g;
+              return `<button onclick="draftProfile.group_name='${g}'; nextWizardStep();" style="padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 700; border: 1px solid var(--border-color); cursor: pointer; ${sel ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${num}</button>`;
+            }).join('')}
+          </div>
+        `;
+      } else if (wizardStep === 3) {
+        stepLabel.textContent = 'Шаг 3 из 4';
+        stepTitle.textContent = 'Иностранный язык';
+        const langs = [
+          { id: 'EN', label: 'Английский' },
+          { id: 'DE', label: 'Немецкий' },
+          { id: 'FR', label: 'Французский' },
+          { id: 'RKI', label: 'РКИ' },
+          { id: 'ALL', label: 'Все языки' }
+        ];
+        body.innerHTML = `
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            ${langs.map(l => `
+              <button onclick="draftProfile.foreign_lang='${l.id}'; renderWizardStep();" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-color); cursor: pointer; ${l.id === 'ALL' ? 'grid-column: span 2;' : ''} ${draftProfile.foreign_lang === l.id ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${l.label}</button>
+            `).join('')}
+          </div>
+        `;
+      } else if (wizardStep === 4) {
+        stepLabel.textContent = 'Шаг 4 из 4';
+        stepTitle.textContent = 'Важные пары';
+        const subjects = new Set();
+        const grp = facultyData?.courses?.[draftProfile.course]?.[draftProfile.group_name] || {};
+        Object.values(grp).forEach(day => Object.values(day).forEach(list => list.forEach(l => {
+          const t = l.split('\n')[0].replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?)\)/gi, '').trim();
+          if (t.length > 3) subjects.add(t);
+        })));
+
+        const arr = Array.from(subjects).sort();
+        body.innerHTML = arr.length ? arr.map(s => {
+          const checked = draftProfile.important_subjects.includes(s);
+          return `
+            <div onclick="toggleImportant('${s}')" style="padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; cursor: pointer; ${checked ? 'background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4);' : 'background: var(--glass-card-subtle);'}">
+              <span style="font-size: 12px; font-weight: 600;">${s}</span>
+              <span style="width: 16px; height: 16px; border-radius: 50%; border: 1px solid ${checked ? '#f59e0b' : 'var(--border-color)'}; background: ${checked ? '#f59e0b' : 'transparent'};"></span>
+            </div>
+          `;
+        }).join('') : '<div style="color: var(--text-sub); font-size: 12px;">Дисциплины не найдены</div>';
+      }
+    }
+
+    function toggleImportant(subj) {
+      const idx = draftProfile.important_subjects.indexOf(subj);
+      if (idx > -1) draftProfile.important_subjects.splice(idx, 1);
+      else draftProfile.important_subjects.push(subj);
+      renderWizardStep();
     }
 
     function nextWizardStep() {
-      if (wizardCurrentStep < 4) setWizardStep(wizardCurrentStep + 1);
+      if (wizardStep < 4) {
+        wizardStep++;
+        renderWizardStep();
+      } else {
+        currentProfile = { ...draftProfile };
+        localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
+        closeWizard();
+        renderView();
+      }
     }
 
     function prevWizardStep() {
-      if (wizardCurrentStep > 1) setWizardStep(wizardCurrentStep - 1);
-    }
-
-    function saveWizardProfile() {
-      currentProfile = {
-        course: draftProfile.course,
-        group_name: draftProfile.group,
-        foreign_lang: draftProfile.lang,
-        important_subjects: draftProfile.important_subjects
-      };
-
-      localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
-
-      if (tg?.CloudStorage) {
-        try {
-          tg.CloudStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
-        } catch (e) {}
+      if (wizardStep > 1) {
+        wizardStep--;
+        renderWizardStep();
       }
-
-      closeWizard();
-      renderAll();
-    }
-
-    function renderAll() {
-      document.getElementById('headerCourseGroup').textContent = `${currentProfile.course} курс • ${currentProfile.group_name.replace('ГРУППА ', 'Группа ')}`;
-
-      if (facultyData && facultyData.updated_times) {
-        const updateStr = facultyData.updated_times[currentProfile.course] || 'Свежее';
-        document.getElementById('headerLastUpdate').textContent = `Деканат: ${updateStr}`;
-      }
-
-      renderPrimarySection();
-      renderSecondarySection();
     }
 
     async function init() {
       initTheme();
-
-      const cached = localStorage.getItem('bsu_profile');
-      if (cached) {
-        try { currentProfile = JSON.parse(cached); } catch(e) {}
+      const saved = localStorage.getItem('bsu_profile');
+      if (saved) {
+        try { currentProfile = JSON.parse(saved); } catch(e) {}
       }
 
-      await loadScheduleJSON();
+      const ok = await loadData();
+      if (!ok) {
+        document.getElementById('headerTitle').textContent = 'Ошибка загрузки данных';
+        return;
+      }
 
-      if (!cached) {
+      if (!currentProfile.group_name) {
+        const firstGroup = Object.keys(facultyData?.courses?.[currentProfile.course] || {})[0] || '';
+        currentProfile.group_name = firstGroup;
         openWizard();
       }
 
-      renderAll();
+      renderView();
     }
 
     init();
-    setInterval(renderPrimarySection, 30000);
   </script>
 </body>
 </html>
