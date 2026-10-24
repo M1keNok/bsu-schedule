@@ -7,31 +7,35 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg-gradient: linear-gradient(180deg, #f4f6f9 0%, #e9eef5 100%);
+      --bg-gradient: linear-gradient(180deg, #f1f4f9 0%, #e5ebf4 100%);
       --text-main: #0f172a;
       --text-sub: #64748b;
-      --glass-card: rgba(255, 255, 255, 0.72);
-      --glass-card-subtle: rgba(255, 255, 255, 0.45);
-      --glass-border: rgba(255, 255, 255, 0.9);
+      --glass-card: rgba(255, 255, 255, 0.76);
+      --glass-card-subtle: rgba(255, 255, 255, 0.52);
+      --glass-border: rgba(255, 255, 255, 0.95);
       --glass-inner-bevel: inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
-      --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+      --card-shadow: 0 6px 22px -3px rgba(0, 0, 0, 0.05);
       --nav-active-bg: #0f172a;
       --nav-active-text: #ffffff;
       --border-color: rgba(0, 0, 0, 0.06);
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
     }
 
     .dark {
-      --bg-gradient: linear-gradient(180deg, #090c12 0%, #0f141f 100%);
+      --bg-gradient: linear-gradient(180deg, #090c13 0%, #0d121c 100%);
       --text-main: #f8fafc;
       --text-sub: #94a3b8;
-      --glass-card: rgba(22, 28, 41, 0.7);
-      --glass-card-subtle: rgba(30, 38, 56, 0.5);
+      --glass-card: rgba(20, 25, 38, 0.74);
+      --glass-card-subtle: rgba(27, 34, 51, 0.55);
       --glass-border: rgba(255, 255, 255, 0.1);
       --glass-inner-bevel: inset 0 1px 1px 0 rgba(255, 255, 255, 0.14);
-      --card-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.5);
+      --card-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.55);
       --nav-active-bg: #f8fafc;
-      --nav-active-text: #090c12;
+      --nav-active-text: #090c13;
       --border-color: rgba(255, 255, 255, 0.08);
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
     }
 
     * {
@@ -51,13 +55,24 @@
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
-      padding-bottom: env(safe-area-inset-bottom, 24px);
+      padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
+      transition: background 0.35s ease, color 0.35s ease;
     }
 
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* Оптимизированная шапка: аппаратный блюр только здесь */
+    /* Плавные отклики на тапы (Apple Haptic Touch feel) */
+    .tap-scale {
+      transition: transform 0.14s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.14s ease;
+      cursor: pointer;
+    }
+    .tap-scale:active {
+      transform: scale(0.96);
+      opacity: 0.88;
+    }
+
+    /* Верхняя панель со стеклом */
     .header-bar {
       position: sticky;
       top: 0;
@@ -67,19 +82,20 @@
 
     .header-glass {
       background: var(--glass-card);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(24px) saturate(190%);
+      -webkit-backdrop-filter: blur(24px) saturate(190%);
       border: 1px solid var(--glass-border);
       border-radius: 22px;
-      padding: 12px 16px;
+      padding: 11px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       box-shadow: var(--card-shadow);
       transform: translateZ(0);
+      transition: background 0.3s ease, border-color 0.3s ease;
     }
 
-    /* Облегченная стеклянная карточка: без дорогого blur, чистый GPU-композитинг */
+    /* Облегченные стеклянные карточки */
     .card-glass {
       background: var(--glass-card);
       border: 1px solid var(--glass-border);
@@ -88,25 +104,30 @@
       padding: 14px 16px;
       transform: translateZ(0);
       contain: content;
+      transition: background 0.25s ease, border-color 0.25s ease;
     }
 
     .badge-subtle {
       background: var(--glass-card-subtle);
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 2px 7px;
+      padding: 2.5px 7.5px;
       font-size: 11px;
       font-weight: 600;
       color: var(--text-sub);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    /* Аппаратно ускоренная рамка активной пары: трансформация псевдоэлемента вместо тяжелого конического градиента */
+    /* Круговая подсветка рамки активной пары (Border Beam) */
     .active-lesson-card {
       position: relative;
       border-radius: 20px;
       padding: 1.5px;
       overflow: hidden;
       contain: paint;
+      box-shadow: 0 10px 24px -4px rgba(16, 185, 129, 0.25);
     }
 
     .active-lesson-card::before {
@@ -119,15 +140,15 @@
       background: conic-gradient(
         transparent,
         rgba(16, 185, 129, 0.1) 40%,
-        rgba(16, 185, 129, 0.9) 50%,
+        rgba(16, 185, 129, 0.95) 50%,
         transparent 60%
       );
-      animation: rotateBorder 4s linear infinite;
+      animation: rotateBeam 3.6s linear infinite;
       will-change: transform;
       z-index: 0;
     }
 
-    @keyframes rotateBorder {
+    @keyframes rotateBeam {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
@@ -141,27 +162,43 @@
       box-shadow: var(--glass-inner-bevel);
     }
 
-    /* Анимация важной пары: 60 FPS через opacity */
-    .important-pulse {
+    /* Анимация пульсации плашки важной пары */
+    .important-card {
       position: relative;
     }
-    .important-pulse::after {
+    .important-card::after {
       content: '';
       position: absolute;
       inset: -1px;
       border-radius: 20px;
-      border: 1px solid rgba(245, 158, 11, 0.6);
-      animation: pulseGlow 2.8s ease-in-out infinite;
+      border: 1.5px solid rgba(245, 158, 11, 0.55);
+      animation: pulseAura 3s ease-in-out infinite;
       pointer-events: none;
       will-change: opacity;
     }
 
-    @keyframes pulseGlow {
-      0%, 100% { opacity: 0.25; }
+    @keyframes pulseAura {
+      0%, 100% { opacity: 0.2; }
       50% { opacity: 0.85; }
     }
 
-    /* Разметка подгрупп: 2 колонки */
+    /* Каскадная плавная анимация появления карточек при смене дня */
+    @keyframes springCascade {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .animate-card {
+      animation: springCascade 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* Сетка двух подгрупп */
     .subgroups-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -181,42 +218,76 @@
       gap: 3px;
     }
 
-    /* Модальное окно */
+    /* iOS 18 Sheet Modal Animation */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      z-index: 50;
-      background: rgba(0, 0, 0, 0.55);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      display: none;
+      z-index: 60;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      display: flex;
       align-items: flex-end;
       justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .modal-overlay.open { display: flex; }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
 
     .modal-sheet {
       background: var(--glass-card);
+      backdrop-filter: blur(28px) saturate(200%);
+      -webkit-backdrop-filter: blur(28px) saturate(200%);
       border: 1px solid var(--glass-border);
-      border-radius: 28px 28px 0 0;
+      border-radius: 30px 30px 0 0;
       width: 100%;
       max-width: 480px;
-      max-height: 85vh;
-      padding: 20px;
+      max-height: 88vh;
+      padding: 16px 20px 24px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      box-shadow: var(--card-shadow);
-      transform: translateZ(0);
+      gap: 14px;
+      box-shadow: 0 -10px 40px -10px rgba(0,0,0,0.3);
+      transform: translateY(100%);
+      transition: transform 0.36s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    .modal-overlay.open .modal-sheet {
+      transform: translateY(0);
+    }
+
+    /* iOS Drag Pill */
+    .modal-grabber {
+      width: 36px;
+      height: 5px;
+      border-radius: 10px;
+      background: var(--text-sub);
+      opacity: 0.35;
+      margin: 0 auto 4px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 6px;
     }
   </style>
 </head>
 <body>
 
+  <!-- Шапка -->
   <header class="header-bar">
     <div class="header-glass">
       <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
-        <div style="width: 36px; height: 36px; border-radius: 12px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; shrink-0;">
+        <div style="width: 36px; height: 36px; border-radius: 12px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
           <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10"></circle>
             <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor"></polygon>
@@ -225,28 +296,32 @@
         <div style="min-width: 0;">
           <div id="headerTitle" style="font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Загрузка...</div>
           <div style="display: flex; align-items: center; gap: 5px; margin-top: 2px;">
-            <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span>
-            <span id="headerSync" style="font-size: 10px; color: var(--text-sub); font-weight: 500;">Деканат: проверка...</span>
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; animation: pulseAura 2s infinite;"></span>
+            <span id="headerSync" style="font-size: 10.5px; color: var(--text-sub); font-weight: 500;">Деканат: проверка...</span>
           </div>
         </div>
       </div>
 
-      <button onclick="openWizard()" style="padding: 7px 12px; border-radius: 12px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-main); font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-        <svg style="width: 13px; height: 13px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <button onclick="openSettingsModal()" class="tap-scale" style="padding: 7px 13px; border-radius: 12px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-main); font-size: 11.5px; font-weight: 700; display: flex; align-items: center; gap: 5.5px;">
+        <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1 2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
         <span>Настройки</span>
       </button>
     </div>
   </header>
 
-  <main style="flex: 1; padding: 6px 16px 16px; max-width: 480px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 10px;">
+  <main style="flex: 1; padding: 6px 16px 16px; max-width: 480px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 11px;">
     
-    <!-- Переключатель Сегодня / Завтра -->
-    <div style="background: var(--glass-card-subtle); padding: 3px; border-radius: 14px; display: flex; gap: 4px; border: 1px solid var(--border-color);">
-      <button id="btnToday" onclick="switchPrimaryTab('today')" style="flex: 1; padding: 7px; border-radius: 11px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s, color 0.15s;">Сегодня</button>
-      <button id="btnTomorrow" onclick="switchPrimaryTab('tomorrow')" style="flex: 1; padding: 7px; border-radius: 11px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s, color 0.15s;">Завтра</button>
+    <!-- Переключатель Сегодня / Завтра с плавной анимацией -->
+    <div style="background: var(--glass-card-subtle); padding: 3px; border-radius: 15px; display: flex; gap: 4px; border: 1px solid var(--border-color);">
+      <button id="btnToday" onclick="switchPrimaryTab('today')" class="tap-scale" style="flex: 1; padding: 8px 6px; border-radius: 12px; border: none; font-size: 12px; font-weight: 700; transition: background 0.2s cubic-bezier(0.16,1,0.3,1), color 0.2s;">
+        <span id="tabTodayTitle">Сегодня</span>
+      </button>
+      <button id="btnTomorrow" onclick="switchPrimaryTab('tomorrow')" class="tap-scale" style="flex: 1; padding: 8px 6px; border-radius: 12px; border: none; font-size: 12px; font-weight: 700; transition: background 0.2s cubic-bezier(0.16,1,0.3,1), color 0.2s;">
+        <span id="tabTomorrowTitle">Завтра</span>
+      </button>
     </div>
 
     <!-- Список пар первичного дня -->
@@ -254,38 +329,41 @@
 
     <!-- Горизонтальная лента дней -->
     <div style="margin-top: 14px; display: flex; align-items: center; justify-content: space-between;">
-      <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-sub);">Остальные дни</span>
-      <span style="font-size: 10px; color: var(--text-sub); font-weight: 600;">БГУ Live</span>
+      <span class="section-title" style="margin-bottom: 0;">Остальные дни</span>
+      <span style="font-size: 10.5px; color: var(--text-sub); font-weight: 600; display: flex; align-items: center; gap: 4px;">
+        <span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981;"></span>
+        БГУ Live
+      </span>
     </div>
     
-    <div id="daysScroll" class="no-scrollbar" style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px;"></div>
+    <div id="daysScroll" class="no-scrollbar" style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;"></div>
     
-    <!-- Список пар выбранного вторичного дня -->
+    <!-- Список пар вторичного дня -->
     <div id="secondaryList" style="display: flex; flex-direction: column; gap: 10px;"></div>
 
   </main>
 
-  <!-- Модальное окно настроек -->
-  <div id="wizardModal" class="modal-overlay">
+  <!-- МОДАЛЬНОЕ ОКНО (ПОШАГОВЫЙ СЕТАП ИЛИ ЕДИНЫЕ НАСТРОЙКИ) -->
+  <div id="settingsModal" class="modal-overlay">
     <div class="modal-sheet">
+      <div class="modal-grabber"></div>
+
+      <!-- Шапка модалки -->
       <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
         <div>
-          <span id="wizardStepLabel" style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-sub);">Шаг 1 из 4</span>
-          <h3 id="wizardStepTitle" style="font-size: 15px; font-weight: 800; margin-top: 2px;">Курс и тема</h3>
+          <span id="modalCategoryLabel" style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-sub); letter-spacing: 0.5px;">Параметры</span>
+          <h3 id="modalHeading" style="font-size: 16px; font-weight: 800; margin-top: 1px;">Настройки расписания</h3>
         </div>
-        <button onclick="closeWizard()" style="background: none; border: none; color: var(--text-sub); padding: 4px; cursor: pointer;">
-          <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        <button onclick="closeSettingsModal()" class="tap-scale" style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-sub); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+          <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
 
-      <div id="wizardBody" class="no-scrollbar" style="overflow-y: auto; max-height: 55vh; display: flex; flex-direction: column; gap: 14px;">
-        <!-- Динамический контент шагов -->
-      </div>
+      <!-- Контейнер контента -->
+      <div id="modalBody" class="no-scrollbar" style="overflow-y: auto; max-height: 60vh; display: flex; flex-direction: column; gap: 16px; padding-right: 2px;"></div>
 
-      <div style="display: flex; gap: 8px; border-top: 1px solid var(--border-color); padding-top: 10px;">
-        <button id="wizardBackBtn" onclick="prevWizardStep()" style="flex: 1; padding: 11px; border-radius: 14px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-main); font-size: 12px; font-weight: 700; display: none;">Назад</button>
-        <button id="wizardNextBtn" onclick="nextWizardStep()" style="flex: 2; padding: 11px; border-radius: 14px; background: var(--nav-active-bg); border: none; color: var(--nav-active-text); font-size: 12px; font-weight: 700;">Далее</button>
-      </div>
+      <!-- Нижняя панель действий -->
+      <div id="modalFooter" style="display: flex; gap: 8px; border-top: 1px solid var(--border-color); padding-top: 10px;"></div>
     </div>
   </div>
 
@@ -294,7 +372,7 @@
     if (tg) {
       tg.ready();
       tg.expand();
-      if (tg.setHeaderColor) tg.setHeaderColor('#090c12');
+      if (tg.setHeaderColor) tg.setHeaderColor('#090c13');
     }
 
     let facultyData = null;
@@ -307,6 +385,9 @@
 
     let activeTab = 'today';
     let selectedSecondaryDay = '';
+    
+    // Режимы модального окна: 'wizard' (первый запуск) или 'unified' (обычные настройки)
+    let modalMode = 'unified';
     let wizardStep = 1;
     let draftProfile = { ...currentProfile };
 
@@ -318,7 +399,8 @@
     function setTheme(mode) {
       document.documentElement.classList.toggle('dark', mode === 'dark');
       localStorage.setItem('bsu_theme', mode);
-      renderWizardStep();
+      if (modalMode === 'wizard') renderWizardStep();
+      else renderUnifiedSettings();
     }
 
     async function loadData() {
@@ -412,7 +494,7 @@
     function renderDayCards(dayName, container, isToday) {
       container.innerHTML = '';
       if (!facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name]) {
-        container.innerHTML = '<div class="card-glass" style="text-align: center; color: var(--text-sub); font-size: 12px; padding: 24px;">Расписание не найдено</div>';
+        container.innerHTML = '<div class="card-glass animate-card" style="text-align: center; color: var(--text-sub); font-size: 12px; padding: 26px;">Расписание не найдено</div>';
         return;
       }
 
@@ -421,39 +503,40 @@
       const times = Object.keys(slots);
 
       if (!times.length) {
-        container.innerHTML = '<div class="card-glass" style="text-align: center; color: var(--text-sub); font-size: 12px; padding: 24px;">В этот день пар нет</div>';
+        container.innerHTML = '<div class="card-glass animate-card" style="text-align: center; color: var(--text-sub); font-size: 12px; padding: 26px;">В этот день пар нет</div>';
         return;
       }
 
       const frag = document.createDocumentFragment();
 
-      times.forEach(timeStr => {
+      times.forEach((timeStr, index) => {
         const items = parseLessons(slots[timeStr]);
         const isLive = isToday && isLessonLive(timeStr);
         const hasImportant = items.some(item => currentProfile.important_subjects.some(imp => item.title.toLowerCase().includes(imp.toLowerCase())));
 
         const wrapper = document.createElement('div');
-        wrapper.className = isLive ? 'active-lesson-card' : 'card-glass' + (hasImportant ? ' important-pulse' : '');
+        wrapper.className = (isLive ? 'active-lesson-card' : 'card-glass' + (hasImportant ? ' important-card' : '')) + ' animate-card';
+        wrapper.style.animationDelay = `${index * 25}ms`;
 
         let innerContent = `
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-            <div style="display: flex; align-items: center; gap: 6px;">
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
               <span class="badge-subtle" style="font-family: monospace; font-weight: 700; ${isLive ? 'background: #10b981; color: #fff;' : ''}">${timeStr}</span>
-              ${isLive ? '<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.3);">Идёт сейчас</span>' : ''}
-              ${hasImportant ? '<span class="badge-subtle" style="color: #f59e0b; border-color: rgba(245,158,11,0.3);">Важная пара</span>' : ''}
+              ${isLive ? '<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.3); font-weight: 700;">Идёт сейчас</span>' : ''}
+              ${hasImportant ? '<span class="badge-subtle" style="color: #f59e0b; border-color: rgba(245,158,11,0.3); font-weight: 700;">Важная пара</span>' : ''}
             </div>
           </div>
         `;
 
         if (!items.length) {
-          innerContent += `<div style="font-size: 12px; color: var(--text-sub);">Окно / Свободное время</div>`;
+          innerContent += `<div style="font-size: 12px; color: var(--text-sub); font-weight: 500;">Свободное время</div>`;
         } else {
           items.forEach((item, idx) => {
             innerContent += `
               <div style="${idx > 0 ? 'margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-color);' : ''}">
                 <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
                   <div style="font-size: 13.5px; font-weight: 700; line-height: 1.35;">${item.title}</div>
-                  ${item.room ? `<span class="badge-subtle">${item.room}</span>` : ''}
+                  ${item.room ? `<span class="badge-subtle" style="font-family: monospace;">${item.room}</span>` : ''}
                 </div>
                 ${item.subgroups ? `
                   <div class="subgroups-grid">
@@ -462,17 +545,17 @@
                         <span>1 подгруппа</span>
                         ${item.subgroups[0].room ? `<span>${item.subgroups[0].room}</span>` : ''}
                       </div>
-                      <div style="font-size: 11px; font-weight: 500;">${item.subgroups[0].teacher || '—'}</div>
+                      <div style="font-size: 11px; font-weight: 600;">${item.subgroups[0].teacher || '—'}</div>
                     </div>
                     <div class="subgroup-box">
                       <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 800; color: var(--text-sub); text-transform: uppercase;">
                         <span>2 подгруппа</span>
                         ${item.subgroups[1].room ? `<span>${item.subgroups[1].room}</span>` : ''}
                       </div>
-                      <div style="font-size: 11px; font-weight: 500;">${item.subgroups[1].teacher || '—'}</div>
+                      <div style="font-size: 11px; font-weight: 600;">${item.subgroups[1].teacher || '—'}</div>
                     </div>
                   </div>
-                ` : (item.details ? `<div style="font-size: 11px; color: var(--text-sub); margin-top: 4px;">${item.details}</div>` : '')}
+                ` : (item.details ? `<div style="font-size: 11px; color: var(--text-sub); margin-top: 4px; font-weight: 500;">${item.details}</div>` : '')}
               </div>
             `;
           });
@@ -517,6 +600,7 @@
 
       const btnToday = document.getElementById('btnToday');
       const btnTomorrow = document.getElementById('btnTomorrow');
+
       if (activeTab === 'today') {
         btnToday.style.background = 'var(--nav-active-bg)';
         btnToday.style.color = 'var(--nav-active-text)';
@@ -540,7 +624,8 @@
       others.forEach(dKey => {
         const b = document.createElement('button');
         const isSel = dKey === selectedSecondaryDay;
-        b.style.cssText = `padding: 6px 12px; border-radius: 12px; border: 1px solid var(--border-color); font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; ${isSel ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}`;
+        b.className = 'tap-scale';
+        b.style.cssText = `padding: 6.5px 13px; border-radius: 12px; border: 1px solid var(--border-color); font-size: 11.5px; font-weight: 700; white-space: nowrap; ${isSel ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}`;
         b.textContent = dKey.split(' ')[0];
         b.onclick = () => {
           selectedSecondaryDay = dKey;
@@ -553,107 +638,223 @@
     }
 
     function switchPrimaryTab(tab) {
+      if (activeTab === tab) return;
       activeTab = tab;
       renderView();
     }
 
-    /* Настройки (Wizard) */
-    function openWizard() {
-      draftProfile = { ...currentProfile, important_subjects: [...currentProfile.important_subjects] };
+    /* ================= ЛОГИКА НАСТРОЕК (ЕДИНАЯ ПАНЕЛЬ VS МАСТЕР) ================= */
+
+    function openSettingsModal() {
+      draftProfile = {
+        course: currentProfile.course,
+        group_name: currentProfile.group_name,
+        foreign_lang: currentProfile.foreign_lang,
+        important_subjects: [...currentProfile.important_subjects]
+      };
+      modalMode = 'unified';
+      document.getElementById('settingsModal').classList.add('open');
+      renderUnifiedSettings();
+    }
+
+    function openFirstLaunchWizard() {
+      draftProfile = {
+        course: currentProfile.course || '1',
+        group_name: currentProfile.group_name || Object.keys(facultyData?.courses?.[1] || {})[0] || 'ГРУППА 1',
+        foreign_lang: 'ALL',
+        important_subjects: []
+      };
+      modalMode = 'wizard';
       wizardStep = 1;
-      document.getElementById('wizardModal').classList.add('open');
+      document.getElementById('settingsModal').classList.add('open');
       renderWizardStep();
     }
 
-    function closeWizard() {
-      document.getElementById('wizardModal').classList.remove('open');
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.remove('open');
     }
 
-    function renderWizardStep() {
-      const body = document.getElementById('wizardBody');
-      const stepLabel = document.getElementById('wizardStepLabel');
-      const stepTitle = document.getElementById('wizardStepTitle');
-      const backBtn = document.getElementById('wizardBackBtn');
-      const nextBtn = document.getElementById('wizardNextBtn');
+    /* РЕЖИМ 1: ЕДИНЫЕ НАСТРОЙКИ (ВСЕ ПАРАМЕТРЫ НА ОДНОМ ЭКРАНЕ) */
+    function renderUnifiedSettings() {
+      document.getElementById('modalCategoryLabel').textContent = 'Параметры';
+      document.getElementById('modalHeading').textContent = 'Настройки расписания';
 
-      backBtn.style.display = wizardStep > 1 ? 'block' : 'none';
-      nextBtn.textContent = wizardStep === 4 ? 'Сохранить' : 'Далее';
+      const isDark = document.documentElement.classList.contains('dark');
+      const groups = Object.keys(facultyData?.courses?.[draftProfile.course] || {});
+      const subjects = extractAllSubjectsForGroup(draftProfile.course, draftProfile.group_name);
+
+      const langs = [
+        { id: 'ALL', label: 'Все языки' },
+        { id: 'EN', label: 'Английский' },
+        { id: 'DE', label: 'Немецкий' },
+        { id: 'FR', label: 'Французский' },
+        { id: 'RKI', label: 'РКИ' }
+      ];
+
+      const body = document.getElementById('modalBody');
+      body.innerHTML = `
+        <!-- Тема оформления -->
+        <div>
+          <div class="section-title">Тема оформления</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <button onclick="setTheme('light')" class="tap-scale" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-color); ${!isDark ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}">Светлая</button>
+            <button onclick="setTheme('dark')" class="tap-scale" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-color); ${isDark ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}">Тёмная</button>
+          </div>
+        </div>
+
+        <!-- Курс -->
+        <div>
+          <div class="section-title">Курс</div>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+            ${['1','2','3','4'].map(c => `
+              <button onclick="draftProfile.course='${c}'; onCourseChangedUnified('${c}');" class="tap-scale" style="padding: 12px 6px; border-radius: 12px; font-size: 15px; font-weight: 800; border: 1px solid var(--border-color); ${draftProfile.course === c ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${c}</button>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Группа -->
+        <div>
+          <div class="section-title">Группа (${draftProfile.course} курс)</div>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+            ${groups.map(g => {
+              const num = g.replace(/^ГРУППА\s*/i, '');
+              const sel = draftProfile.group_name === g;
+              return `<button onclick="draftProfile.group_name='${g}'; renderUnifiedSettings();" class="tap-scale" style="padding: 10px 4px; border-radius: 12px; font-size: 13px; font-weight: 700; border: 1px solid var(--border-color); ${sel ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${num}</button>`;
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- Иностранный язык -->
+        <div>
+          <div class="section-title">Иностранный язык</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            ${langs.map(l => `
+              <button onclick="draftProfile.foreign_lang='${l.id}'; renderUnifiedSettings();" class="tap-scale" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-color); ${l.id === 'ALL' ? 'grid-column: span 2;' : ''} ${draftProfile.foreign_lang === l.id ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${l.label}</button>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Важные пары -->
+        <div>
+          <div class="section-title">Важные пары (подсветка в расписании)</div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            ${subjects.length ? subjects.map(s => {
+              const checked = draftProfile.important_subjects.includes(s);
+              return `
+                <div onclick="toggleImportantUnified('${s}')" class="tap-scale" style="padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; ${checked ? 'background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4);' : 'background: var(--glass-card-subtle);'}">
+                  <span style="font-size: 12px; font-weight: 600; padding-right: 8px;">${s}</span>
+                  <span style="width: 17px; height: 17px; border-radius: 50%; border: 1.5px solid ${checked ? '#f59e0b' : 'var(--border-color)'}; background: ${checked ? '#f59e0b' : 'transparent'}; flex-shrink: 0;"></span>
+                </div>
+              `;
+            }).join('') : '<div style="color: var(--text-sub); font-size: 12px; padding: 6px;">Дисциплины не найдены</div>'}
+          </div>
+        </div>
+      `;
+
+      const footer = document.getElementById('modalFooter');
+      footer.innerHTML = `
+        <button onclick="closeSettingsModal()" class="tap-scale" style="flex: 1; padding: 12px; border-radius: 14px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-main); font-size: 13px; font-weight: 700;">Отмена</button>
+        <button onclick="saveUnifiedProfile()" class="tap-scale" style="flex: 2; padding: 12px; border-radius: 14px; background: var(--nav-active-bg); border: none; color: var(--nav-active-text); font-size: 13px; font-weight: 700;">Сохранить</button>
+      `;
+    }
+
+    function onCourseChangedUnified(newCourse) {
+      const availGroups = Object.keys(facultyData?.courses?.[newCourse] || {});
+      if (!availGroups.includes(draftProfile.group_name)) {
+        draftProfile.group_name = availGroups[0] || '';
+      }
+      renderUnifiedSettings();
+    }
+
+    function toggleImportantUnified(subj) {
+      const idx = draftProfile.important_subjects.indexOf(subj);
+      if (idx > -1) draftProfile.important_subjects.splice(idx, 1);
+      else draftProfile.important_subjects.push(subj);
+      renderUnifiedSettings();
+    }
+
+    function saveUnifiedProfile() {
+      currentProfile = { ...draftProfile };
+      localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
+      closeSettingsModal();
+      renderView();
+    }
+
+    /* РЕЖИМ 2: ПОШАГОВЫЙ МАСТЕР (ТОЛЬКО ДЛЯ ПЕРВОГО ЗАПУСКА) */
+    function renderWizardStep() {
+      document.getElementById('modalCategoryLabel').textContent = `Шаг ${wizardStep} из 4`;
+      const body = document.getElementById('modalBody');
+      const footer = document.getElementById('modalFooter');
 
       if (wizardStep === 1) {
-        stepLabel.textContent = 'Шаг 1 из 4';
-        stepTitle.textContent = 'Курс и тема';
+        document.getElementById('modalHeading').textContent = 'Курс и тема';
         const isDark = document.documentElement.classList.contains('dark');
         body.innerHTML = `
           <div>
-            <span style="font-size: 10px; font-weight: 800; color: var(--text-sub); text-transform: uppercase;">Тема</span>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px;">
-              <button onclick="setTheme('light')" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid var(--border-color); ${!isDark ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}">Светлая</button>
-              <button onclick="setTheme('dark')" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid var(--border-color); ${isDark ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}">Тёмная</button>
+            <div class="section-title">Тема оформления</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <button onclick="setTheme('light')" class="tap-scale" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-color); ${!isDark ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}">Светлая</button>
+              <button onclick="setTheme('dark')" class="tap-scale" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-color); ${isDark ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}">Тёмная</button>
             </div>
           </div>
           <div>
-            <span style="font-size: 10px; font-weight: 800; color: var(--text-sub); text-transform: uppercase;">Курс</span>
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 6px;">
+            <div class="section-title">Курс</div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
               ${['1','2','3','4'].map(c => `
-                <button onclick="draftProfile.course='${c}'; nextWizardStep();" style="padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 800; border: 1px solid var(--border-color); cursor: pointer; ${draftProfile.course === c ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${c}</button>
+                <button onclick="draftProfile.course='${c}'; nextWizardStep();" class="tap-scale" style="padding: 15px; border-radius: 14px; font-size: 17px; font-weight: 800; border: 1px solid var(--border-color); ${draftProfile.course === c ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${c}</button>
               `).join('')}
             </div>
           </div>
         `;
       } else if (wizardStep === 2) {
-        stepLabel.textContent = 'Шаг 2 из 4';
-        stepTitle.textContent = `${draftProfile.course} курс • Группа`;
+        document.getElementById('modalHeading').textContent = `${draftProfile.course} курс • Группа`;
         const groups = Object.keys(facultyData?.courses?.[draftProfile.course] || {});
         body.innerHTML = `
           <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
             ${groups.map(g => {
               const num = g.replace(/^ГРУППА\s*/i, '');
               const sel = draftProfile.group_name === g;
-              return `<button onclick="draftProfile.group_name='${g}'; nextWizardStep();" style="padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 700; border: 1px solid var(--border-color); cursor: pointer; ${sel ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${num}</button>`;
+              return `<button onclick="draftProfile.group_name='${g}'; nextWizardStep();" class="tap-scale" style="padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 700; border: 1px solid var(--border-color); ${sel ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${num}</button>`;
             }).join('')}
           </div>
         `;
       } else if (wizardStep === 3) {
-        stepLabel.textContent = 'Шаг 3 из 4';
-        stepTitle.textContent = 'Иностранный язык';
+        document.getElementById('modalHeading').textContent = 'Иностранный язык';
         const langs = [
+          { id: 'ALL', label: 'Все языки' },
           { id: 'EN', label: 'Английский' },
           { id: 'DE', label: 'Немецкий' },
           { id: 'FR', label: 'Французский' },
-          { id: 'RKI', label: 'РКИ' },
-          { id: 'ALL', label: 'Все языки' }
+          { id: 'RKI', label: 'РКИ' }
         ];
         body.innerHTML = `
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
             ${langs.map(l => `
-              <button onclick="draftProfile.foreign_lang='${l.id}'; renderWizardStep();" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-color); cursor: pointer; ${l.id === 'ALL' ? 'grid-column: span 2;' : ''} ${draftProfile.foreign_lang === l.id ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${l.label}</button>
+              <button onclick="draftProfile.foreign_lang='${l.id}'; renderWizardStep();" class="tap-scale" style="padding: 11px; border-radius: 12px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-color); ${l.id === 'ALL' ? 'grid-column: span 2;' : ''} ${draftProfile.foreign_lang === l.id ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${l.label}</button>
             `).join('')}
           </div>
         `;
       } else if (wizardStep === 4) {
-        stepLabel.textContent = 'Шаг 4 из 4';
-        stepTitle.textContent = 'Важные пары';
-        const subjects = new Set();
-        const grp = facultyData?.courses?.[draftProfile.course]?.[draftProfile.group_name] || {};
-        Object.values(grp).forEach(day => Object.values(day).forEach(list => list.forEach(l => {
-          const t = l.split('\n')[0].replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?)\)/gi, '').trim();
-          if (t.length > 3) subjects.add(t);
-        })));
-
-        const arr = Array.from(subjects).sort();
-        body.innerHTML = arr.length ? arr.map(s => {
+        document.getElementById('modalHeading').textContent = 'Важные пары';
+        const subjects = extractAllSubjectsForGroup(draftProfile.course, draftProfile.group_name);
+        body.innerHTML = subjects.length ? subjects.map(s => {
           const checked = draftProfile.important_subjects.includes(s);
           return `
-            <div onclick="toggleImportant('${s}')" style="padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; cursor: pointer; ${checked ? 'background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4);' : 'background: var(--glass-card-subtle);'}">
-              <span style="font-size: 12px; font-weight: 600;">${s}</span>
-              <span style="width: 16px; height: 16px; border-radius: 50%; border: 1px solid ${checked ? '#f59e0b' : 'var(--border-color)'}; background: ${checked ? '#f59e0b' : 'transparent'};"></span>
+            <div onclick="toggleImportantWizard('${s}')" class="tap-scale" style="padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; ${checked ? 'background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4);' : 'background: var(--glass-card-subtle);'}">
+              <span style="font-size: 12px; font-weight: 600; padding-right: 8px;">${s}</span>
+              <span style="width: 17px; height: 17px; border-radius: 50%; border: 1.5px solid ${checked ? '#f59e0b' : 'var(--border-color)'}; background: ${checked ? '#f59e0b' : 'transparent'}; flex-shrink: 0;"></span>
             </div>
           `;
-        }).join('') : '<div style="color: var(--text-sub); font-size: 12px;">Дисциплины не найдены</div>';
+        }).join('') : '<div style="color: var(--text-sub); font-size: 12px; padding: 6px;">Дисциплины не найдены</div>';
       }
+
+      footer.innerHTML = `
+        <button onclick="prevWizardStep()" class="tap-scale" style="flex: 1; padding: 12px; border-radius: 14px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-main); font-size: 13px; font-weight: 700; ${wizardStep === 1 ? 'display: none;' : ''}">Назад</button>
+        <button onclick="nextWizardStep()" class="tap-scale" style="flex: 2; padding: 12px; border-radius: 14px; background: var(--nav-active-bg); border: none; color: var(--nav-active-text); font-size: 13px; font-weight: 700;">${wizardStep === 4 ? 'Завершить' : 'Далее'}</button>
+      `;
     }
 
-    function toggleImportant(subj) {
+    function toggleImportantWizard(subj) {
       const idx = draftProfile.important_subjects.indexOf(subj);
       if (idx > -1) draftProfile.important_subjects.splice(idx, 1);
       else draftProfile.important_subjects.push(subj);
@@ -667,7 +868,8 @@
       } else {
         currentProfile = { ...draftProfile };
         localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
-        closeWizard();
+        localStorage.setItem('bsu_setup_completed', 'true');
+        closeSettingsModal();
         renderView();
       }
     }
@@ -679,29 +881,42 @@
       }
     }
 
+    function extractAllSubjectsForGroup(course, group) {
+      const subjects = new Set();
+      const grp = facultyData?.courses?.[course]?.[group] || {};
+      Object.values(grp).forEach(day => Object.values(day).forEach(list => list.forEach(l => {
+        const t = l.split('\n')[0].replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?)\)/gi, '').trim();
+        if (t.length > 3) subjects.add(t);
+      })));
+      return Array.from(subjects).sort();
+    }
+
     async function init() {
       initTheme();
-      const saved = localStorage.getItem('bsu_profile');
-      if (saved) {
-        try { currentProfile = JSON.parse(saved); } catch(e) {}
+
+      const savedProfile = localStorage.getItem('bsu_profile');
+      if (savedProfile) {
+        try { currentProfile = JSON.parse(savedProfile); } catch(e) {}
       }
 
       const ok = await loadData();
       if (!ok) {
-        document.getElementById('headerTitle').textContent = 'Ошибка загрузки данных';
+        document.getElementById('headerTitle').textContent = 'Ошибка загрузки расписания';
         return;
       }
 
-      if (!currentProfile.group_name) {
-        const firstGroup = Object.keys(facultyData?.courses?.[currentProfile.course] || {})[0] || '';
-        currentProfile.group_name = firstGroup;
-        openWizard();
+      // Если первый вход студента (нет сохраненного флага настройки)
+      const isSetupDone = localStorage.getItem('bsu_setup_completed');
+      if (!isSetupDone || !currentProfile.group_name) {
+        openFirstLaunchWizard();
+      } else {
+        renderView();
       }
-
-      renderView();
     }
 
     init();
   </script>
 </body>
 </html>
+```eof
+
