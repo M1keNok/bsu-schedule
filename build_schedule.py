@@ -166,6 +166,84 @@ def parse_docx(path):
                     res[g_name][cur_day][cur_time].append(lesson)
     return res
 
+def parse_day_date(day_key, ref_date=None):
+    if not day_key:
+        return None
+    if not ref_date:
+        ref_date = datetime.date.today()
+    m = re.search(r"(\d{1,2})[.](\d{1,2})(?:[.](\d{2,4}))?", day_key)
+    if not m:
+        return None
+    d = int(m.group(1))
+    mo = int(m.group(2))
+    if m.group(3):
+        y = int(m.group(3))
+        if y < 100:
+            y += 2000
+    else:
+        y = ref_date.year
+        if ref_date.month == 12 and mo == 1:
+            y += 1
+        elif ref_date.month == 1 and mo == 12:
+            y -= 1
+    try:
+        return datetime.date(y, mo, d)
+    except ValueError:
+        return None
+
+def merge_schedule_history(new_data, existing_path="schedule_data.json", max_history_days=14):
+    today = datetime.date.today()
+    old_data = {}
+    if os.path.exists(existing_path):
+        try:
+            with open(existing_path, "r", encoding="utf-8") as f:
+                old_data = json.load(f)
+        except Exception as e:
+            print(f"Предупреждение: не удалось прочитать {existing_path}: {e}")
+
+    merged_courses = {}
+    all_courses = set(old_data.get("courses", {}).keys()) | set(new_data.get("courses", {}).keys())
+
+    for cid in sorted(all_courses):
+        merged_courses[cid] = {}
+        old_groups = old_data.get("courses", {}).get(cid, {})
+        new_groups = new_data.get("courses", {}).get(cid, {})
+        all_groups = set(old_groups.keys()) | set(new_groups.keys())
+
+        for g_name in sorted(all_groups):
+            merged_days = {}
+
+            # 1. Take historical days that are not older than max_history_days
+            for day_key, slots in old_groups.get(g_name, {}).items():
+                dt = parse_day_date(day_key, today)
+                if dt and (today - dt).days > max_history_days:
+                    continue  # Prune days older than 14 days
+                merged_days[day_key] = slots
+
+            # 2. Overwrite / append newly parsed days
+            for day_key, slots in new_groups.get(g_name, {}).items():
+                dt = parse_day_date(day_key, today)
+                if dt and (today - dt).days > max_history_days:
+                    continue
+                merged_days[day_key] = slots
+
+            # Chronological sort of days
+            def sort_key(k):
+                d = parse_day_date(k, today)
+                return d if d else datetime.date.max
+
+            sorted_days = {k: merged_days[k] for k in sorted(merged_days.keys(), key=sort_key)}
+            merged_courses[cid][g_name] = sorted_days
+
+    # Merge updated_times (new takes precedence)
+    merged_updated_times = dict(old_data.get("updated_times", {}))
+    merged_updated_times.update(new_data.get("updated_times", {}))
+
+    return {
+        "courses": merged_courses,
+        "updated_times": merged_updated_times
+    }
+
 def build_all():
     print("Загрузка файлов деканата...")
     updated_times = {}
@@ -182,8 +260,10 @@ def build_all():
     for cid, cfg in COURSES_CONFIG.items():
         full_data["courses"][cid] = parse_docx(cfg["docx_file"])
 
+    final_data = merge_schedule_history(full_data, "schedule_data.json", max_history_days=14)
+
     with open("schedule_data.json", "w", encoding="utf-8") as f:
-        json.dump(full_data, f, ensure_ascii=False, indent=2)
+        json.dump(final_data, f, ensure_ascii=False, indent=2)
 
     # Clean up temporary doc and docx files
     for cid, cfg in COURSES_CONFIG.items():

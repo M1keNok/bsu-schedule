@@ -404,8 +404,7 @@
     }
 
     .calendar-selector {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      display: flex;
       gap: 5px;
       background: var(--glass-card-subtle);
       border: 1px solid var(--border-color);
@@ -424,6 +423,8 @@
     }
 
     .calendar-day-btn {
+      flex: 1 1 0;
+      min-width: 44px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -491,6 +492,66 @@
       animation: pulseAura 2.5s ease-in-out infinite;
     }
 
+    .archive-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 12px;
+      height: 48px;
+      border-radius: 17px;
+      background: var(--glass-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-sub);
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      flex-shrink: 0;
+      white-space: nowrap;
+      box-shadow: var(--glass-inner-bevel);
+      transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    .archive-btn:hover, .archive-btn:active {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.22);
+    }
+
+    .archive-count-badge {
+      font-size: 10px;
+      padding: 1.5px 6px;
+      border-radius: 10px;
+      background: rgba(99, 102, 241, 0.22);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #a5b4fc;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .archive-card {
+      opacity: 0.85 !important;
+      filter: saturate(0.85);
+    }
+
+    .badge-archive {
+      background: rgba(148, 163, 184, 0.12);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      color: #cbd5e1;
+      font-weight: 700;
+      font-size: 10px;
+    }
+
+    @media (max-width: 380px) {
+      .archive-btn-text {
+        display: none;
+      }
+      .archive-btn {
+        padding: 0 10px;
+      }
+    }
+
     .past-day-card {
       opacity: 0.88;
     }
@@ -538,7 +599,17 @@
       </button>
     </div>
 
-    <div id="calendarSelector" class="calendar-selector"></div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div id="calendarSelector" class="calendar-selector" style="flex: 1; min-width: 0;"></div>
+      <button id="archiveBtn" onclick="openArchiveModal()" class="archive-btn tap-scale" title="Архив расписания">
+        <svg style="width: 15px; height: 15px; flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span class="archive-btn-text">Архив</span>
+        <span id="archiveCountBadge" class="archive-count-badge" style="display: none;">0</span>
+      </button>
+    </div>
 
     <div id="dayHeaderRow" style="display: flex; align-items: center; justify-content: space-between; margin-top: 1px; padding: 0 2px;">
       <div style="display: flex; align-items: center; gap: 7px; flex-wrap: wrap;">
@@ -574,6 +645,42 @@
     </div>
   </div>
 
+  <div id="archiveModal" class="modal-overlay">
+    <div class="modal-sheet" style="max-height: 85vh; display: flex; flex-direction: column;">
+      <div class="modal-grabber"></div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="width: 32px; height: 32px; border-radius: 10px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 16px; height: 16px; color: #a5b4fc;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <div>
+            <div style="font-size: 15px; font-weight: 800;">Архив расписания</div>
+            <div style="font-size: 10.5px; color: var(--text-sub); font-weight: 500;">Прошедшие дни за 14 дней</div>
+          </div>
+        </div>
+        <button onclick="closeArchiveModal()" class="tap-scale" style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-sub); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+          <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div id="archiveCalendarSelector" class="calendar-selector" style="margin-bottom: 12px;"></div>
+
+      <div id="archiveDayHeaderRow" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; padding: 0 2px;">
+        <div style="display: flex; align-items: center; gap: 7px; flex-wrap: wrap;">
+          <h3 id="archiveDayFullTitle" style="font-size: 14.5px; font-weight: 800; letter-spacing: -0.2px; margin: 0;">...</h3>
+          <span class="badge-status badge-archive">Архив • Прошедший день</span>
+        </div>
+        <div id="archiveDayLessonsCount" style="font-size: 11.5px; font-weight: 700; color: var(--text-sub);"></div>
+      </div>
+
+      <div id="archiveScheduleList" class="no-scrollbar" style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; padding-bottom: 10px;"></div>
+    </div>
+  </div>
+
   <script>
     const tg = window.Telegram?.WebApp;
     if (tg) {
@@ -590,7 +697,7 @@
       important_subjects: []
     };
 
-    const DAYS_OF_WEEK = [
+    const DAY_DEFS = [
       { index: 1, short: 'Пн', name: 'ПОНЕДЕЛЬНИК', full: 'Понедельник' },
       { index: 2, short: 'Вт', name: 'ВТОРНИК', full: 'Вторник' },
       { index: 3, short: 'Ср', name: 'СРЕДА', full: 'Среда' },
@@ -604,7 +711,10 @@
       'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
     ];
 
+    let currentActiveDays = [];
+    let currentArchiveDays = [];
     let selectedDayIndex = 0;
+    let selectedArchiveDayIndex = 0;
     
     let modalMode = 'unified';
     let wizardStep = 1;
@@ -865,65 +975,126 @@
       return cur >= start && cur <= end;
     }
 
-    function getDayInfo(dayDef, groupSchedule) {
-      const keys = Object.keys(groupSchedule || {});
-      const rawKey = keys.find(k => k.toUpperCase().includes(dayDef.name));
-
-      const now = new Date();
-      let dateText = '—';
-      let dayNum = null;
-      let monthNum = null;
-      let yearNum = now.getFullYear();
-
-      if (rawKey) {
-        const m = rawKey.match(/(\d{1,2})[.](\d{1,2})(?:[.](\d{2,4}))?/);
-        if (m) {
-          dayNum = parseInt(m[1], 10);
-          monthNum = parseInt(m[2], 10);
-          if (m[3]) {
-            yearNum = parseInt(m[3], 10);
-            if (yearNum < 100) yearNum += 2000;
-          } else {
-            if (now.getMonth() === 11 && monthNum === 1) yearNum++;
-            else if (now.getMonth() === 0 && monthNum === 12) yearNum--;
-          }
-          dateText = (dayNum < 10 ? '0' + dayNum : dayNum) + '.' + (monthNum < 10 ? '0' + monthNum : monthNum);
-        }
-      }
-
-      let isToday = false;
-      let isTomorrow = false;
-      let isYesterday = false;
-      let isPast = false;
-      let formattedDate = '';
-
-      if (dayNum && monthNum) {
-        const schedDate = new Date(yearNum, monthNum - 1, dayNum);
-        const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const diffDays = Math.round((schedDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24));
-        isToday = diffDays === 0;
-        isTomorrow = diffDays === 1;
-        isYesterday = diffDays === -1;
-        isPast = diffDays < 0;
-        formattedDate = dayNum + ' ' + monthsGenitive[monthNum - 1];
+    function parseDayKeyDate(rawKey, refDate = new Date()) {
+      if (!rawKey) return null;
+      const m = rawKey.match(/(\d{1,2})[.](\d{1,2})(?:[.](\d{2,4}))?/);
+      if (!m) return null;
+      const day = parseInt(m[1], 10);
+      const month = parseInt(m[2], 10);
+      let year = refDate.getFullYear();
+      if (m[3]) {
+        year = parseInt(m[3], 10);
+        if (year < 100) year += 2000;
       } else {
-        const todayDayOfWeek = now.getDay();
-        isToday = (todayDayOfWeek === dayDef.index);
-        isTomorrow = ((todayDayOfWeek + 1) % 7 === dayDef.index);
-        isYesterday = ((todayDayOfWeek + 6) % 7 === dayDef.index);
-        isPast = todayDayOfWeek > dayDef.index && todayDayOfWeek !== 0;
+        if (refDate.getMonth() === 11 && month === 1) year++;
+        else if (refDate.getMonth() === 0 && month === 12) year--;
+      }
+      return new Date(year, month - 1, day, 0, 0, 0, 0);
+    }
+
+    function formatDDMM(d) {
+      const day = d.getDate();
+      const mo = d.getMonth() + 1;
+      return (day < 10 ? '0' + day : day) + '.' + (mo < 10 ? '0' + mo : mo);
+    }
+
+    function formatDateRu(d) {
+      return d.getDate() + ' ' + monthsGenitive[d.getMonth()];
+    }
+
+    function findDayDef(rawKey, dateObj) {
+      const upper = (rawKey || '').toUpperCase();
+      const byName = DAY_DEFS.find(d => upper.includes(d.name));
+      if (byName) return byName;
+      if (dateObj) {
+        const dow = dateObj.getDay();
+        return DAY_DEFS.find(d => d.index === dow) || DAY_DEFS[0];
+      }
+      return DAY_DEFS[0];
+    }
+
+    function getSchedulePartitions(groupSchedule) {
+      const now = new Date();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+      const todayDayOfWeek = now.getDay(); // 0 is Sun, 1..6 is Mon..Sat
+
+      const keys = Object.keys(groupSchedule || {});
+
+      // 1. Gather Archived days from groupSchedule (within 14 days)
+      const archiveDays = [];
+      keys.forEach(k => {
+        const keyDate = parseDayKeyDate(k, now);
+        if (keyDate && keyDate.getTime() < todayStart.getTime()) {
+          const ageDays = Math.round((todayStart.getTime() - keyDate.getTime()) / 86400000);
+          if (ageDays <= 14) {
+            const dayDef = findDayDef(k, keyDate);
+            archiveDays.push({
+              rawKey: k,
+              date: keyDate,
+              ageDays,
+              dayDef,
+              dateText: formatDDMM(keyDate),
+              formattedDate: formatDateRu(keyDate)
+            });
+          }
+        }
+      });
+
+      // Sort archiveDays reverse chronologically (most recent past day first)
+      archiveDays.sort((a, b) => b.date.getTime() - a.date.getTime());
+
+      // 2. Build activeDays for the current / upcoming cycle
+      const activeDays = [];
+      let startOffset = 0;
+      let totalActiveDays = 0;
+
+      if (todayDayOfWeek === 0) {
+        // Sunday: active cycle is upcoming Mon..Sat
+        startOffset = 1;
+        totalActiveDays = 6;
+      } else {
+        // Weekday: active cycle is Today through Saturday
+        startOffset = 0;
+        totalActiveDays = 7 - todayDayOfWeek;
       }
 
-      return {
-        dayDef,
-        rawKey,
-        dateText,
-        isToday,
-        isTomorrow,
-        isYesterday,
-        isPast,
-        formattedDate
-      };
+      for (let i = 0; i < totalActiveDays; i++) {
+        const targetDate = new Date(todayStart.getTime() + (startOffset + i) * 86400000);
+        const targetDayOfWeek = targetDate.getDay();
+        const dayDef = DAY_DEFS.find(d => d.index === targetDayOfWeek) || DAY_DEFS[0];
+        const dateText = formatDDMM(targetDate);
+
+        // Look for matching key in groupSchedule
+        let rawKey = keys.find(k => k.includes(dateText));
+        if (!rawKey) {
+          rawKey = keys.find(k => {
+            if (!k.toUpperCase().includes(dayDef.name)) return false;
+            const d = parseDayKeyDate(k, now);
+            return !d || d.getTime() >= todayStart.getTime();
+          });
+        }
+
+        const diffDays = Math.round((targetDate.getTime() - todayStart.getTime()) / 86400000);
+        const isToday = diffDays === 0;
+        const isTomorrow = diffDays === 1;
+
+        activeDays.push({
+          index: i,
+          rawKey: rawKey || null,
+          date: targetDate,
+          dayDef,
+          short: dayDef.short,
+          full: dayDef.full,
+          name: dayDef.name,
+          dateText,
+          formattedDate: formatDateRu(targetDate),
+          isToday,
+          isTomorrow,
+          isPast: false
+        });
+      }
+
+      return { activeDays, archiveDays };
     }
 
     function formatLessonsCount(count) {
@@ -941,7 +1112,7 @@
     function selectDayIndex(index, hapticType = 'medium') {
       const isSundayToday = new Date().getDay() === 0;
       if (index === -1 && !isSundayToday) return;
-      if (index < -1 || index >= DAYS_OF_WEEK.length) return;
+      if (index < -1 || index >= currentActiveDays.length) return;
       if (selectedDayIndex === index) return;
 
       if (selectedDayIndex === -1) {
@@ -991,22 +1162,15 @@
 
     function findInitialDayIndex(groupSchedule) {
       const now = new Date();
-      const dayOfWeek = now.getDay(); // 0 is Sunday, 1..6 is Mon..Sat
-
+      const dayOfWeek = now.getDay(); // 0 is Sunday
       if (dayOfWeek === 0) {
         return -1; // Sunday!
       }
-
-      for (let i = 0; i < DAYS_OF_WEEK.length; i++) {
-        const info = getDayInfo(DAYS_OF_WEEK[i], groupSchedule);
-        if (info.isToday) {
+      const { activeDays } = getSchedulePartitions(groupSchedule);
+      for (let i = 0; i < activeDays.length; i++) {
+        if (activeDays[i].isToday) {
           return i;
         }
-      }
-
-      const fallback = dayOfWeek - 1;
-      if (fallback >= 0 && fallback < DAYS_OF_WEEK.length) {
-        return fallback;
       }
       return 0;
     }
@@ -1032,91 +1196,51 @@
         return;
       }
 
-      const currentDayDef = DAYS_OF_WEEK[dayIndex];
-      const currentInfo = getDayInfo(currentDayDef, groupSchedule);
+      const currentDay = currentActiveDays[dayIndex];
+      if (!currentDay) return;
 
       let titlePrefix = '';
-      if (currentInfo.isToday) {
+      if (currentDay.isToday) {
         titlePrefix = 'Сегодня • ';
-      } else if (currentInfo.isTomorrow) {
+      } else if (currentDay.isTomorrow) {
         titlePrefix = 'Завтра • ';
-      } else if (currentInfo.isYesterday) {
-        titlePrefix = 'Вчера • ';
       }
 
-      if (currentInfo.formattedDate) {
-        dayFullTitle.textContent = `${titlePrefix}${currentDayDef.full}, ${currentInfo.formattedDate}`;
-      } else {
-        dayFullTitle.textContent = `${titlePrefix}${currentDayDef.full}`;
-      }
+      dayFullTitle.textContent = `${titlePrefix}${currentDay.full}, ${currentDay.formattedDate}`;
 
-      if (currentInfo.isPast) {
-        badgeBox.innerHTML = '<span class="badge-subtle" style="color: var(--text-sub); border-color: var(--border-color); font-size: 10.5px; font-weight: 600;">Прошедший день</span>';
-      } else if (currentInfo.isToday) {
+      if (currentDay.isToday) {
         badgeBox.innerHTML = '<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.3); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981;"></span>Сегодня</span>';
-      } else if (currentInfo.isTomorrow) {
+      } else if (currentDay.isTomorrow) {
         badgeBox.innerHTML = '<span class="badge-subtle" style="color: var(--text-main); border-color: var(--border-color); font-weight: 700;">Завтра</span>';
       } else {
         badgeBox.innerHTML = '';
       }
 
-      if (!currentInfo.rawKey) {
+      if (!currentDay.rawKey) {
         lessonsCountBox.textContent = 'Нет данных';
       } else {
-        const slots = groupSchedule[currentInfo.rawKey] || {};
+        const slots = groupSchedule[currentDay.rawKey] || {};
         const times = Object.keys(slots);
         lessonsCountBox.textContent = formatLessonsCount(times.length);
       }
     }
 
-    function buildDayPage(dayIndex, groupSchedule) {
-      const page = document.createElement('div');
-      page.className = 'schedule-page active-page';
-
-      if (dayIndex === -1) {
-        page.innerHTML = getWeekendCardHTML();
-        return page;
-      }
-
-      const currentDayDef = DAYS_OF_WEEK[dayIndex];
-      const currentInfo = getDayInfo(currentDayDef, groupSchedule);
-
-      if (!currentInfo.rawKey) {
-        page.innerHTML = `
-          <div class="card-glass animate-card" style="text-align: center; padding: 42px 20px;">
-            <div style="width: 60px; height: 60px; border-radius: 20px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-              <svg style="width: 30px; height: 30px; color: var(--text-sub);" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-                <circle cx="12" cy="15" r="1.5" fill="currentColor"></circle>
-              </svg>
-            </div>
-            <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 7px;">Расписание не загружено</h3>
-            <p style="font-size: 13.5px; color: var(--text-sub); line-height: 1.5; max-width: 290px; margin: 0 auto;">Деканат пока не загрузил расписание на этот день</p>
-          </div>
-        `;
-        return page;
-      }
-
-      const slots = groupSchedule[currentInfo.rawKey] || {};
-      const times = Object.keys(slots);
-
-      if (!times.length) {
-        page.innerHTML = getWeekendCardHTML();
-        return page;
-      }
-
+    function renderLessonCards(slots, isToday, isArchive = false) {
       const frag = document.createDocumentFragment();
+      const times = Object.keys(slots);
 
       times.forEach((timeStr, index) => {
         const items = parseLessons(slots[timeStr]);
-        const isLive = currentInfo.isToday && isLessonLive(timeStr);
+        const isLive = isToday && !isArchive && isLessonLive(timeStr);
         const hasImportant = items.some(item => currentProfile.important_subjects.some(imp => item.title.toLowerCase().includes(imp.toLowerCase())));
 
         const wrapper = document.createElement('div');
-        wrapper.className = (isLive ? 'active-lesson-card' : 'card-glass' + (hasImportant ? ' important-card' : '')) + (currentInfo.isPast ? ' past-day-card' : '') + ' tap-scale animate-card';
+        let cardClasses = 'card-glass tap-scale animate-card';
+        if (isLive) cardClasses = 'active-lesson-card tap-scale animate-card';
+        else if (hasImportant) cardClasses += ' important-card';
+        if (isArchive) cardClasses += ' archive-card';
+
+        wrapper.className = cardClasses;
         wrapper.style.animationDelay = `${index * 20}ms`;
 
         let innerContent = `
@@ -1125,6 +1249,7 @@
               <span class="badge-subtle" style="font-family: monospace; font-weight: 700; ${isLive ? 'background: #10b981; color: #fff;' : ''}">${timeStr}</span>
               ${isLive ? '<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.3); font-weight: 700;">Идёт сейчас</span>' : ''}
               ${hasImportant ? '<span class="badge-subtle" style="color: #f59e0b; border-color: rgba(245,158,11,0.3); font-weight: 700;">Важная пара</span>' : ''}
+              ${isArchive ? '<span class="badge-subtle" style="color: #cbd5e1; font-weight: 600; font-size: 10px;">В архиве</span>' : ''}
             </div>
           </div>
         `;
@@ -1174,8 +1299,141 @@
         frag.appendChild(wrapper);
       });
 
+      return frag;
+    }
+
+    function buildDayPage(dayIndex, groupSchedule) {
+      const page = document.createElement('div');
+      page.className = 'schedule-page active-page';
+
+      if (dayIndex === -1) {
+        page.innerHTML = getWeekendCardHTML();
+        return page;
+      }
+
+      const currentDay = currentActiveDays[dayIndex];
+      if (!currentDay || !currentDay.rawKey) {
+        page.innerHTML = `
+          <div class="card-glass animate-card" style="text-align: center; padding: 42px 20px;">
+            <div style="width: 60px; height: 60px; border-radius: 20px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+              <svg style="width: 30px; height: 30px; color: var(--text-sub);" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+                <circle cx="12" cy="15" r="1.5" fill="currentColor"></circle>
+              </svg>
+            </div>
+            <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 7px;">Расписание не загружено</h3>
+            <p style="font-size: 13.5px; color: var(--text-sub); line-height: 1.5; max-width: 290px; margin: 0 auto;">Деканат пока не загрузил расписание на этот день</p>
+          </div>
+        `;
+        return page;
+      }
+
+      const slots = groupSchedule[currentDay.rawKey] || {};
+      const times = Object.keys(slots);
+
+      if (!times.length) {
+        page.innerHTML = getWeekendCardHTML();
+        return page;
+      }
+
+      const frag = renderLessonCards(slots, currentDay.isToday, false);
       page.appendChild(frag);
       return page;
+    }
+
+    function openArchiveModal() {
+      triggerHaptic('medium');
+      selectedArchiveDayIndex = 0;
+      renderArchiveView();
+      document.getElementById('archiveModal').classList.add('open');
+    }
+
+    function closeArchiveModal() {
+      document.getElementById('archiveModal').classList.remove('open');
+    }
+
+    function selectArchiveDayIndex(idx) {
+      if (selectedArchiveDayIndex === idx) return;
+      selectedArchiveDayIndex = idx;
+      triggerHaptic('medium');
+      renderArchiveView();
+    }
+
+    function renderArchiveView() {
+      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
+      const { archiveDays } = getSchedulePartitions(groupSchedule);
+      currentArchiveDays = archiveDays;
+
+      const selectorBox = document.getElementById('archiveCalendarSelector');
+      const titleEl = document.getElementById('archiveDayFullTitle');
+      const lessonsCountBox = document.getElementById('archiveDayLessonsCount');
+      const listEl = document.getElementById('archiveScheduleList');
+
+      selectorBox.innerHTML = '';
+      listEl.innerHTML = '';
+
+      if (!archiveDays.length) {
+        selectorBox.style.display = 'none';
+        titleEl.textContent = 'Нет архивных записей';
+        lessonsCountBox.textContent = '';
+        listEl.innerHTML = `
+          <div class="card-glass" style="text-align: center; padding: 42px 20px;">
+            <div style="width: 54px; height: 54px; border-radius: 18px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px;">
+              <svg style="width: 26px; height: 26px; color: var(--text-sub);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <h4 style="font-size: 16px; font-weight: 800; margin-bottom: 6px;">Архив пуст</h4>
+            <p style="font-size: 13px; color: var(--text-sub); line-height: 1.45; max-width: 260px; margin: 0 auto;">В базе нет сохранённых прошедших дней за последние 14 дней</p>
+          </div>
+        `;
+        return;
+      }
+
+      selectorBox.style.display = 'flex';
+
+      if (selectedArchiveDayIndex >= archiveDays.length) {
+        selectedArchiveDayIndex = 0;
+      }
+
+      archiveDays.forEach((day, idx) => {
+        const isActive = idx === selectedArchiveDayIndex;
+        const btn = document.createElement('button');
+        btn.className = `calendar-day-btn tap-scale ${isActive ? 'active' : ''}`;
+        btn.onclick = () => selectArchiveDayIndex(idx);
+        btn.innerHTML = `
+          <span class="calendar-day-name">${day.dayDef.short}</span>
+          <span class="calendar-day-date">${day.dateText}</span>
+        `;
+        selectorBox.appendChild(btn);
+
+        if (isActive) {
+          requestAnimationFrame(() => {
+            btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          });
+        }
+      });
+
+      const curDay = archiveDays[selectedArchiveDayIndex];
+      const relativeText = curDay.ageDays === 1 ? 'Вчера' : `${curDay.ageDays} дн. назад`;
+      titleEl.textContent = `${curDay.dayDef.full}, ${curDay.formattedDate}`;
+
+      const slots = groupSchedule[curDay.rawKey] || {};
+      const times = Object.keys(slots);
+
+      if (!times.length) {
+        lessonsCountBox.textContent = 'Выходной';
+        listEl.innerHTML = getWeekendCardHTML();
+        return;
+      }
+
+      lessonsCountBox.textContent = `${formatLessonsCount(times.length)} • ${relativeText}`;
+      const frag = renderLessonCards(slots, false, true);
+      listEl.appendChild(frag);
     }
 
     function renderView() {
@@ -1185,6 +1443,20 @@
       }
 
       const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
+      const { activeDays, archiveDays } = getSchedulePartitions(groupSchedule);
+      currentActiveDays = activeDays;
+      currentArchiveDays = archiveDays;
+
+      // Update Archive Button badge
+      const archiveBadge = document.getElementById('archiveCountBadge');
+      if (archiveBadge) {
+        if (archiveDays.length > 0) {
+          archiveBadge.textContent = archiveDays.length;
+          archiveBadge.style.display = 'inline-block';
+        } else {
+          archiveBadge.style.display = 'none';
+        }
+      }
 
       const now = new Date();
       const isSundayToday = now.getDay() === 0;
@@ -1193,12 +1465,15 @@
         sundayBanner.style.display = (isSundayToday && selectedDayIndex >= 0) ? 'flex' : 'none';
       }
 
-      // Render Calendar Selector (Пн, Вт, Ср, Чт, Пт, Сб)
+      if (selectedDayIndex >= activeDays.length) {
+        selectedDayIndex = 0;
+      }
+
+      // Render Active Calendar Selector (Пн..Сб or relevant upcoming days starting from Today)
       const selectorBox = document.getElementById('calendarSelector');
       selectorBox.innerHTML = '';
 
-      DAYS_OF_WEEK.forEach((d, idx) => {
-        const info = getDayInfo(d, groupSchedule);
+      activeDays.forEach((d, idx) => {
         const isActive = idx === selectedDayIndex;
 
         const btn = document.createElement('button');
@@ -1206,9 +1481,9 @@
         btn.onclick = () => selectDayIndex(idx, 'medium');
 
         btn.innerHTML = `
-          ${info.isToday ? '<span class="calendar-today-dot"></span>' : ''}
+          ${d.isToday ? '<span class="calendar-today-dot"></span>' : ''}
           <span class="calendar-day-name">${d.short}</span>
-          <span class="calendar-day-date">${info.dateText}</span>
+          <span class="calendar-day-date">${d.dateText}</span>
         `;
         selectorBox.appendChild(btn);
 
@@ -1529,7 +1804,8 @@
       main.addEventListener('touchend', e => {
         if (!e.changedTouches || e.changedTouches.length !== 1) return;
         const modal = document.getElementById('settingsModal');
-        if (modal && modal.classList.contains('open')) return;
+        const archiveModal = document.getElementById('archiveModal');
+        if ((modal && modal.classList.contains('open')) || (archiveModal && archiveModal.classList.contains('open'))) return;
 
         const deltaX = e.changedTouches[0].clientX - touchStartX;
         const deltaY = e.changedTouches[0].clientY - touchStartY;
@@ -1542,7 +1818,7 @@
             // Swipe Left -> Next day
             if (selectedDayIndex === -1) {
               selectDayIndex(0, 'heavy');
-            } else if (selectedDayIndex < DAYS_OF_WEEK.length - 1) {
+            } else if (selectedDayIndex < currentActiveDays.length - 1) {
               selectDayIndex(selectedDayIndex + 1, 'heavy');
             }
           } else if (deltaX > 0) {
@@ -1556,15 +1832,31 @@
         }
       }, { passive: true });
 
+      const archiveModalEl = document.getElementById('archiveModal');
+      if (archiveModalEl) {
+        archiveModalEl.addEventListener('click', e => {
+          if (e.target === archiveModalEl) {
+            closeArchiveModal();
+          }
+        });
+      }
+
       window.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+          closeArchiveModal();
+          closeSettingsModal();
+          return;
+        }
+
         const modal = document.getElementById('settingsModal');
-        if (modal && modal.classList.contains('open')) return;
+        const archiveModal = document.getElementById('archiveModal');
+        if ((modal && modal.classList.contains('open')) || (archiveModal && archiveModal.classList.contains('open'))) return;
         const isSundayToday = new Date().getDay() === 0;
 
         if (e.key === 'ArrowRight') {
           if (selectedDayIndex === -1) {
             selectDayIndex(0, 'medium');
-          } else if (selectedDayIndex < DAYS_OF_WEEK.length - 1) {
+          } else if (selectedDayIndex < currentActiveDays.length - 1) {
             selectDayIndex(selectedDayIndex + 1, 'medium');
           }
         } else if (e.key === 'ArrowLeft') {
