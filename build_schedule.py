@@ -72,7 +72,51 @@ def format_time(t):
 def clean_cell_text(text):
     if not text:
         return ""
+    text = text.replace('\xad', '').replace('\u200b', '')
     text = re.sub(r"([а-яА-ЯёЁa-zA-Z]+)[-–—]\s*\n\s*([а-яА-ЯёЁa-zA-Z]+)", r"\1\2", text)
+    text = re.sub(r"(ОБЩЕЕ\s+ЗЕМЛЕВЕДЕ)\s*\n\s*(НИЕ)", r"\1\2", text, flags=re.I)
+    text = re.sub(r"(ОБЩЕЕ)\s*\n\s*(ЗЕМЛЕВЕДЕНИЕ)", r"\1 \2", text, flags=re.I)
+    text = re.sub(r"(ИСТОРИЧЕ)\s*\n\s*(СКАЯ)", r"\1\2", text, flags=re.I)
+    text = re.sub(r"(ЯЗЫК\s+ПРОФЕССИО)\s*\n\s*(НАЛЬНОГО)", r"\1\2", text, flags=re.I)
+    text = re.sub(r"(ГРУНТОВЕ)\s*\n\s*(ДЕНИЯ)", r"\1\2", text, flags=re.I)
+
+    legit = [
+        'социально-эконом',
+        'физико-географ',
+        'экономико-географ',
+        'научно-технич',
+        'аппаратно-программ',
+        'гис-картограф',
+        'гис-технолог',
+        'соц-эконом',
+        'препод-стаж',
+        'препод.-стаж',
+        'творонович-севрук',
+    ]
+
+    def protect(m):
+        full = m.group(0)
+        lower = full.lower()
+        for l in legit:
+            if l in lower:
+                return full.replace('-', '__HYPH__').replace('–', '__HYPH__').replace('—', '__HYPH__')
+        return full
+
+    text = re.sub(r'[а-яА-ЯёЁa-zA-Z]+[-–—][а-яА-ЯёЁa-zA-Z]+', protect, text)
+    while re.search(r'([а-яА-ЯёЁa-zA-Z])[-–—]+([а-яА-ЯёЁa-zA-Z])', text):
+        text = re.sub(r'([а-яА-ЯёЁa-zA-Z])[-–—]+([а-яА-ЯёЁa-zA-Z])', r'\1\2', text)
+    text = text.replace('__HYPH__', '-')
+
+    typos = [
+        (re.compile(r'гибробиолог', re.I), 'гидробиолог'),
+        (re.compile(r'автоматизи-?рованые', re.I), 'автоматизированные'),
+        (re.compile(r'геоинформа-?цинное', re.I), 'геоинформационное'),
+        (re.compile(r'иностраный\s+язык', re.I), 'иностранный язык'),
+        (re.compile(r'генезис\s+месторожде-?ние\s+полезных', re.I), 'генезис месторождений полезных'),
+    ]
+    for p, r in typos:
+        text = p.sub(r, text)
+
     lines = [re.sub(r"\s+", " ", l).strip() for l in text.split("\n") if l.strip()]
     return "\n".join([l for l in lines if not (len(re.sub(r'[:. –—-]', '', l)) in (7, 8) and re.sub(r'[:. –—-]', '', l).isdigit())])
 
@@ -122,22 +166,35 @@ def parse_docx(path):
                     res[g_name][cur_day][cur_time].append(lesson)
     return res
 
-print("Загрузка файлов деканата...")
-updated_times = {}
-to_convert = []
+def build_all():
+    print("Загрузка файлов деканата...")
+    updated_times = {}
+    to_convert = []
 
-for cid, cfg in COURSES_CONFIG.items():
-    updated_times[cid] = download_file(cid, cfg)
-    if cfg["needs_conversion"]:
-        to_convert.append(cfg["raw_file"])
+    for cid, cfg in COURSES_CONFIG.items():
+        updated_times[cid] = download_file(cid, cfg)
+        if cfg["needs_conversion"]:
+            to_convert.append(cfg["raw_file"])
 
-convert_docs(to_convert)
+    convert_docs(to_convert)
 
-full_data = {"courses": {}, "updated_times": updated_times}
-for cid, cfg in COURSES_CONFIG.items():
-    full_data["courses"][cid] = parse_docx(cfg["docx_file"])
+    full_data = {"courses": {}, "updated_times": updated_times}
+    for cid, cfg in COURSES_CONFIG.items():
+        full_data["courses"][cid] = parse_docx(cfg["docx_file"])
 
-with open("schedule_data.json", "w", encoding="utf-8") as f:
-    json.dump(full_data, f, ensure_ascii=False, indent=2)
+    with open("schedule_data.json", "w", encoding="utf-8") as f:
+        json.dump(full_data, f, ensure_ascii=False, indent=2)
 
-print("schedule_data.json успешно собран!")
+    # Clean up temporary doc and docx files
+    for cid, cfg in COURSES_CONFIG.items():
+        for fpath in [cfg.get("raw_file"), cfg.get("docx_file")]:
+            if fpath and os.path.exists(fpath):
+                try:
+                    os.remove(fpath)
+                except Exception:
+                    pass
+
+    print("schedule_data.json успешно собран и очищен от временных файлов!")
+
+if __name__ == "__main__":
+    build_all()

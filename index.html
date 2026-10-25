@@ -372,38 +372,151 @@
     let wizardStep = 1;
     let draftProfile = { ...currentProfile };
 
+    function cleanHyphens(text) {
+      if (!text) return '';
+      const legit = [
+        'социально-эконом',
+        'физико-географ',
+        'экономико-географ',
+        'научно-технич',
+        'аппаратно-программ',
+        'гис-картограф',
+        'гис-технолог',
+        'соц-эконом',
+        'препод-стаж',
+        'препод.-стаж',
+        'творонович-севрук'
+      ];
+      let res = text.replace(/[а-яА-ЯёЁa-zA-Z]+[-–—][а-яА-ЯёЁa-zA-Z]+/g, m => {
+        const lower = m.toLowerCase();
+        if (legit.some(l => lower.includes(l))) {
+          return m.replace(/[-–—]/g, '__HYPH__');
+        }
+        return m;
+      });
+      while (/([а-яА-ЯёЁa-zA-Z])[-–—]+([а-яА-ЯёЁa-zA-Z])/.test(res)) {
+        res = res.replace(/([а-яА-ЯёЁa-zA-Z])[-–—]+([а-яА-ЯёЁa-zA-Z])/g, '$1$2');
+      }
+      return res.replace(/__HYPH__/g, '-');
+    }
+
     function formatLessonTitle(rawTitle) {
       if (!rawTitle) return 'Пара';
-      let title = rawTitle.replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?)\)/gi, '').trim();
+      let title = rawTitle.replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?|уср|фак\.?\s*зан\.?)\)/gi, '').trim();
+      title = title.replace(/\s+(препод\.?-стаж[её]р|ст\.?\s*препод|доцент|профессор).*$/gi, '');
       title = title.replace(/\s+/g, ' ');
+
+      title = cleanHyphens(title);
+
+      const typoFixes = [
+        [/гибробиолог[а-яё]*/gi, 'гидробиология'],
+        [/гидро-биолог[а-яё]*/gi, 'гидробиология'],
+        [/гидро-эколог[а-яё]*/gi, 'гидроэкология'],
+        [/автоматизи-?рова[н]+ые/gi, 'автоматизированные'],
+        [/геоинформа-?ци[о]?нное/gi, 'геоинформационное'],
+        [/иностраный\s+язык/gi, 'иностранный язык'],
+        [/генезис\s+месторожде-?ни[еяй]/gi, 'генезис месторождений'],
+        [/картография\s+препод.*/gi, 'картография'],
+        [/профессио\s+нальн/gi, 'профессиональн'],
+        [/землеведе\s+ние/gi, 'землеведение'],
+        [/историче\s+ская/gi, 'историческая'],
+        [/иностран\s+ный/gi, 'иностранный'],
+        [/социально-экономическая\s*$/gi, 'социально-экономическая география'],
+      ];
+      typoFixes.forEach(([re, rep]) => { title = title.replace(re, rep); });
+      title = title.replace(/^[-–—•,\s]+|[-–—•,\s]+$/g, '').trim();
 
       const aliases = [
         { match: /безопасн(ость|\.)?\s*жизнедеят|бжд|бжч/i, to: 'БЖЧ' },
         { match: /дистанционн.*зонд|дзз/i, to: 'ДЗЗ' },
+        { match: /введение\s+в\s+социально-эконом|социально-эконом.*геогр|соц.*эконом/i, to: 'Соц-эконом география' },
         { match: /информатик/i, to: 'Информатика' },
-        { match: /социально-эконом|соц.*эконом/i, to: 'Соц-эконом география' },
         { match: /основы\s*эколог|охрана\s*природ|эколог/i, to: 'Экология' },
         { match: /высш(ая|\.)?\s*матем/i, to: 'Вышмат' },
         { match: /матем(атическ(ий|\.))?\s*анализ/i, to: 'Матанализ' },
         { match: /истор(ия|\.)?\s*беларус/i, to: 'История Беларуси' },
         { match: /физическ(ая|\.)?\s*культ/i, to: 'Физкультура' },
-        { match: /топограф(ия|\.)?.*геодез/i, to: 'Топография и геодезия' },
+        { match: /топограф(ия|\.)?.*геодез|топография\s+с\s+основами/i, to: 'Топография и геодезия' },
         { match: /геоинформационн|гис/i, to: 'ГИС-технологии' },
         { match: /метеоролог/i, to: 'Метеорология и климат' },
-        { match: /почвоведен/i, to: 'Почвоведение' },
+        { match: /почвоведен|почвовед/i, to: 'Почвоведение' },
         { match: /геолог/i, to: 'Геология' },
-        { match: /геоморфолог/i, to: 'Геоморфология' },
+        { match: /геоморфолог|геоморфол/i, to: 'Геоморфология' },
+        { match: /иностранн(ый|\.)?\s*язык\s*\(?проф/i, to: 'Иностранный язык (проф.)' },
+        { match: /^иностранн(ый|\.)?\s*язык$/i, to: 'Иностранный язык' },
+        { match: /русск(ий|\.)?\s*язык\s*как\s*иностр/i, to: 'Русский как иностранный' },
+        { match: /информационн(ый|\.)?\s*час/i, to: 'Информационный час' },
+        { match: /общее\s*землеведен/i, to: 'Общее землеведение' },
       ];
 
       for (const item of aliases) {
         if (item.match.test(title)) return item.to;
       }
 
-      if (title.length > 3 && title === title.toUpperCase()) {
-        return title.charAt(0) + title.slice(1).toLowerCase();
+      if (title.length > 2) {
+        const words = title.split(' ');
+        const acronyms = new Set(['ГИС', 'ДЗЗ', 'БЖЧ', 'БЖД', 'СУБД', 'УСР', 'РКИ']);
+        title = words.map((w, i) => {
+          if (acronyms.has(w.toUpperCase())) return w.toUpperCase();
+          if (i === 0) return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+          return w.toLowerCase();
+        }).join(' ');
       }
 
       return title;
+    }
+
+    function parseLessonRaw(raw) {
+      if (!raw) return { title: 'Пара', type: null, lines: [], raw: '' };
+      let lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+      if (!lines.length) return { title: 'Пара', type: null, lines: [], raw };
+
+      let startIdx = 0;
+      let weekTag = null;
+      while (startIdx < lines.length) {
+        const l = lines[startIdx];
+        if (/^\d{1,2}[.:]\d{2}\s*[-–—]\s*\d{1,2}[.:]\d{2}$/.test(l)) {
+          startIdx++;
+          continue;
+        }
+        if (/^(не)?четная\s+неделя$/i.test(l)) {
+          weekTag = l.toLowerCase();
+          startIdx++;
+          continue;
+        }
+        break;
+      }
+      if (startIdx >= lines.length) startIdx = 0;
+
+      let titleLine = lines[startIdx];
+      titleLine = titleLine.replace(/^\d{1,2}[.:]\d{2}\s*[-–—]\s*\d{1,2}[.:]\d{2}\s*/, '');
+
+      let nextIdx = startIdx + 1;
+      while (nextIdx < lines.length) {
+        const nxt = lines[nextIdx];
+        if (/^(доцент|ст\.?\s*препод|преподават|профессор|ауд\.?|каб\.?|http|зачет|\([а-яёА-ЯЁ\s.,]+\))/i.test(nxt)) {
+          break;
+        }
+        const u = titleLine.toUpperCase().trim();
+        if (/^(ОБЩЕЕ|ОБЩЕЕ\s+ЗЕМЛЕВЕДЕ|ИСТОРИЧЕ|ЯЗЫК\s+ПРОФЕССИО|СОЦИАЛЬНО-ЭКОНОМИЧЕСКАЯ|ГРУНТОВЕ|ИНФОРМАЦИОННЫЙ|ГЕОИНФОРМАЦИОННОЕ)$/.test(u) || /иностранн.*\(проф/i.test(u)) {
+          titleLine += ' ' + nxt;
+          nextIdx++;
+          continue;
+        }
+        break;
+      }
+
+      const title = formatLessonTitle(titleLine);
+      const lType = detectLessonType(raw);
+      const remainingLines = lines.slice(nextIdx);
+      if (weekTag) remainingLines.unshift(weekTag);
+
+      return {
+        title,
+        type: lType,
+        lines: remainingLines,
+        raw
+      };
     }
 
     function detectLessonType(text) {
@@ -467,44 +580,39 @@
       const kept = list.filter(l => filterByLang(l, currentProfile.foreign_lang));
       if (!kept.length) return [];
 
-      if (kept.length === 2) {
-        const t1 = formatLessonTitle(kept[0].split('\n')[0]);
-        const t2 = formatLessonTitle(kept[1].split('\n')[0]);
-        if (t1.toLowerCase() === t2.toLowerCase()) {
-          const lType = detectLessonType(kept[0]) || detectLessonType(kept[1]);
-          return [{
-            title: t1,
-            type: lType,
-            subgroups: [
-              cleanTeacherAndRoom(kept[0].split('\n').slice(1).join(' ')),
-              cleanTeacherAndRoom(kept[1].split('\n').slice(1).join(' '))
-            ]
-          }];
-        }
+      const parsedItems = kept.map(parseLessonRaw);
+
+      if (parsedItems.length === 2 && parsedItems[0].title.toLowerCase() === parsedItems[1].title.toLowerCase()) {
+        const lType = parsedItems[0].type || parsedItems[1].type;
+        return [{
+          title: parsedItems[0].title,
+          type: lType,
+          subgroups: [
+            cleanTeacherAndRoom(parsedItems[0].lines.join(' ')),
+            cleanTeacherAndRoom(parsedItems[1].lines.join(' '))
+          ]
+        }];
       }
 
-      return kept.map(raw => {
-        const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-        const title = formatLessonTitle(lines[0] || 'Пара');
-        const lType = detectLessonType(raw);
-        const details = lines.slice(1);
-        const l1 = details.find(l => /1\s*(?:п\/г|подгр)/i.test(l));
-        const l2 = details.find(l => /2\s*(?:п\/г|подгр)/i.test(l));
+      return parsedItems.map(p => {
+        const lines = p.lines;
+        const l1 = lines.find(l => /1\s*(?:п\/г|подгр)/i.test(l));
+        const l2 = lines.find(l => /2\s*(?:п\/г|подгр)/i.test(l));
 
         if (l1 && l2) {
           return {
-            title,
-            type: lType,
+            title: p.title,
+            type: p.type,
             subgroups: [cleanTeacherAndRoom(l1), cleanTeacherAndRoom(l2)]
           };
         }
 
-        const roomMatch = raw.match(/ауд\.?\s*([0-9/\-а-яА-Яa-zA-Z]+)/i);
+        const roomMatch = p.raw.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
         return {
-          title,
-          type: lType,
-          room: roomMatch ? `ауд. ${roomMatch[1]}` : null,
-          details: details.join(' • ')
+          title: p.title,
+          type: p.type,
+          room: roomMatch ? roomMatch[0] : null,
+          details: lines.join(' • ')
         };
       });
     }
@@ -907,9 +1015,10 @@
       const subjects = new Set();
       const grp = facultyData?.courses?.[course]?.[group] || {};
       Object.values(grp).forEach(day => Object.values(day).forEach(list => list.forEach(l => {
-        const rawT = l.split('\n')[0];
-        const formatted = formatLessonTitle(rawT);
-        if (formatted.length > 2) subjects.add(formatted);
+        const parsed = parseLessonRaw(l);
+        if (parsed.title && parsed.title.length > 2 && parsed.title !== 'Пара') {
+          subjects.add(parsed.title);
+        }
       })));
       return Array.from(subjects).sort();
     }
