@@ -270,6 +270,75 @@
       letter-spacing: 0.6px;
       margin-bottom: 6px;
     }
+
+    .calendar-selector {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 5px;
+      background: var(--glass-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: 17px;
+      padding: 4px;
+      box-shadow: var(--glass-inner-bevel);
+      transform: translateZ(0);
+    }
+
+    .calendar-day-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5px;
+      padding: 7px 2px 6px;
+      border-radius: 13px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-main);
+      position: relative;
+      transition: background 0.18s cubic-bezier(0.16, 1, 0.3, 1), color 0.18s, box-shadow 0.18s;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .calendar-day-btn.active {
+      background: var(--nav-active-bg);
+      color: var(--nav-active-text);
+      border-color: var(--border-color);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    }
+
+    .calendar-day-name {
+      font-size: 12.5px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .calendar-day-date {
+      font-size: 9.5px;
+      font-family: monospace;
+      font-weight: 600;
+      opacity: 0.65;
+      line-height: 1;
+    }
+
+    .calendar-day-btn.active .calendar-day-date {
+      opacity: 0.9;
+    }
+
+    .calendar-today-dot {
+      position: absolute;
+      top: 4px;
+      right: 4.5px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.7);
+    }
+
+    .past-day-card {
+      opacity: 0.88;
+    }
   </style>
 </head>
 <body>
@@ -302,30 +371,29 @@
     </div>
   </header>
 
-  <main style="flex: 1; padding: 6px 16px 16px; max-width: 480px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 11px;">
+  <main id="mainContent" style="flex: 1; padding: 6px 16px 20px; max-width: 480px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; touch-action: pan-y;">
     
-    <div style="background: var(--glass-card-subtle); padding: 3px; border-radius: 15px; display: flex; gap: 4px; border: 1px solid var(--border-color);">
-      <button id="btnToday" onclick="switchPrimaryTab('today')" class="tap-scale" style="flex: 1; padding: 8px 6px; border-radius: 12px; border: none; font-size: 12px; font-weight: 700; transition: background 0.2s cubic-bezier(0.16,1,0.3,1), color 0.2s;">
-        <span id="tabTodayTitle">Сегодня</span>
-      </button>
-      <button id="btnTomorrow" onclick="switchPrimaryTab('tomorrow')" class="tap-scale" style="flex: 1; padding: 8px 6px; border-radius: 12px; border: none; font-size: 12px; font-weight: 700; transition: background 0.2s cubic-bezier(0.16,1,0.3,1), color 0.2s;">
-        <span id="tabTomorrowTitle">Завтра</span>
+    <div id="sundayBanner" style="display: none; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 16px; background: rgba(245, 158, 11, 0.09); border: 1px solid rgba(245, 158, 11, 0.25); color: var(--text-main); font-size: 11.5px; font-weight: 600; line-height: 1.35;" class="animate-card">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 16px; line-height: 1;">☕</span>
+        <span>Сегодня воскресенье — выходной</span>
+      </div>
+      <button onclick="selectDayIndex(-1)" class="tap-scale" style="padding: 4px 10px; border-radius: 10px; background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.35); color: var(--text-main); font-size: 11px; font-weight: 700; cursor: pointer;">
+        Сегодня
       </button>
     </div>
 
-    <div id="primaryList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+    <div id="calendarSelector" class="calendar-selector"></div>
 
-    <div style="margin-top: 14px; display: flex; align-items: center; justify-content: space-between;">
-      <span class="section-title" style="margin-bottom: 0;">Остальные дни</span>
-      <span style="font-size: 10.5px; color: var(--text-sub); font-weight: 600; display: flex; align-items: center; gap: 4px;">
-        <span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981;"></span>
-        БГУ Live
-      </span>
+    <div id="dayHeaderRow" style="display: flex; align-items: center; justify-content: space-between; margin-top: 1px; padding: 0 2px;">
+      <div style="display: flex; align-items: center; gap: 7px; flex-wrap: wrap;">
+        <h2 id="dayFullTitle" style="font-size: 15px; font-weight: 800; letter-spacing: -0.2px;">...</h2>
+        <div id="dayStatusBadge"></div>
+      </div>
+      <div id="dayLessonsCount" style="font-size: 11.5px; font-weight: 700; color: var(--text-sub);"></div>
     </div>
-    
-    <div id="daysScroll" class="no-scrollbar" style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;"></div>
-    
-    <div id="secondaryList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+
+    <div id="scheduleList" style="display: flex; flex-direction: column; gap: 10px; min-height: 200px;"></div>
 
   </main>
 
@@ -365,8 +433,21 @@
       important_subjects: []
     };
 
-    let activeTab = 'today';
-    let selectedSecondaryDay = '';
+    const DAYS_OF_WEEK = [
+      { index: 1, short: 'Пн', name: 'ПОНЕДЕЛЬНИК', full: 'Понедельник' },
+      { index: 2, short: 'Вт', name: 'ВТОРНИК', full: 'Вторник' },
+      { index: 3, short: 'Ср', name: 'СРЕДА', full: 'Среда' },
+      { index: 4, short: 'Чт', name: 'ЧЕТВЕРГ', full: 'Четверг' },
+      { index: 5, short: 'Пт', name: 'ПЯТНИЦА', full: 'Пятница' },
+      { index: 6, short: 'Сб', name: 'СУББОТА', full: 'Суббота' }
+    ];
+
+    const monthsGenitive = [
+      'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+      'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+    ];
+
+    let selectedDayIndex = 0;
     
     let modalMode = 'unified';
     let wizardStep = 1;
@@ -627,31 +708,272 @@
       return cur >= start && cur <= end;
     }
 
-    function renderDayCards(dayName, container, isToday) {
+    function getDayInfo(dayDef, groupSchedule) {
+      const keys = Object.keys(groupSchedule || {});
+      const rawKey = keys.find(k => k.toUpperCase().includes(dayDef.name));
+
+      const now = new Date();
+      let dateText = '—';
+      let dayNum = null;
+      let monthNum = null;
+      let yearNum = now.getFullYear();
+
+      if (rawKey) {
+        const m = rawKey.match(/(\d{1,2})[.](\d{1,2})(?:[.](\d{2,4}))?/);
+        if (m) {
+          dayNum = parseInt(m[1], 10);
+          monthNum = parseInt(m[2], 10);
+          if (m[3]) {
+            yearNum = parseInt(m[3], 10);
+            if (yearNum < 100) yearNum += 2000;
+          } else {
+            if (now.getMonth() === 11 && monthNum === 1) yearNum++;
+            else if (now.getMonth() === 0 && monthNum === 12) yearNum--;
+          }
+          dateText = (dayNum < 10 ? '0' + dayNum : dayNum) + '.' + (monthNum < 10 ? '0' + monthNum : monthNum);
+        }
+      }
+
+      let isToday = false;
+      let isTomorrow = false;
+      let isYesterday = false;
+      let isPast = false;
+      let formattedDate = '';
+
+      if (dayNum && monthNum) {
+        const schedDate = new Date(yearNum, monthNum - 1, dayNum);
+        const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const diffDays = Math.round((schedDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24));
+        isToday = diffDays === 0;
+        isTomorrow = diffDays === 1;
+        isYesterday = diffDays === -1;
+        isPast = diffDays < 0;
+        formattedDate = dayNum + ' ' + monthsGenitive[monthNum - 1];
+      } else {
+        const todayDayOfWeek = now.getDay();
+        isToday = (todayDayOfWeek === dayDef.index);
+        isTomorrow = ((todayDayOfWeek + 1) % 7 === dayDef.index);
+        isYesterday = ((todayDayOfWeek + 6) % 7 === dayDef.index);
+        isPast = todayDayOfWeek > dayDef.index && todayDayOfWeek !== 0;
+      }
+
+      return {
+        dayDef,
+        rawKey,
+        dateText,
+        isToday,
+        isTomorrow,
+        isYesterday,
+        isPast,
+        formattedDate
+      };
+    }
+
+    function formatLessonsCount(count) {
+      if (!count) return 'Выходной';
+      const lastTwo = count % 100;
+      const lastOne = count % 10;
+      if (lastTwo >= 11 && lastTwo <= 19) return `${count} пар`;
+      if (lastOne === 1) return `${count} пара`;
+      if (lastOne >= 2 && lastOne <= 4) return `${count} пары`;
+      return `${count} пар`;
+    }
+
+    function selectDayIndex(index) {
+      const isSundayToday = new Date().getDay() === 0;
+      if (index === -1 && !isSundayToday) return;
+      if (index < -1 || index >= DAYS_OF_WEEK.length) return;
+      if (selectedDayIndex === index) return;
+      selectedDayIndex = index;
+      triggerHaptic('selection');
+      renderView();
+    }
+
+    function triggerHaptic(type = 'light') {
+      try {
+        const haptic = window.Telegram?.WebApp?.HapticFeedback;
+        if (haptic) {
+          if (type === 'selection') {
+            haptic.selectionChanged();
+          } else {
+            haptic.impactOccurred(type);
+          }
+        }
+      } catch (e) {}
+    }
+
+    function findInitialDayIndex(groupSchedule) {
+      const now = new Date();
+      const dayOfWeek = now.getDay(); // 0 is Sunday, 1..6 is Mon..Sat
+
+      if (dayOfWeek === 0) {
+        return -1; // Sunday!
+      }
+
+      for (let i = 0; i < DAYS_OF_WEEK.length; i++) {
+        const info = getDayInfo(DAYS_OF_WEEK[i], groupSchedule);
+        if (info.isToday) {
+          return i;
+        }
+      }
+
+      const fallback = dayOfWeek - 1;
+      if (fallback >= 0 && fallback < DAYS_OF_WEEK.length) {
+        return fallback;
+      }
+      return 0;
+    }
+
+    function renderView() {
+      document.getElementById('headerTitle').textContent = `${currentProfile.course} курс • ${currentProfile.group_name.replace('ГРУППА ', 'Группа ')}`;
+      if (facultyData?.updated_times?.[currentProfile.course]) {
+        document.getElementById('headerSync').textContent = `Обновлено: (${facultyData.updated_times[currentProfile.course]})`;
+      }
+
+      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
+
+      const now = new Date();
+      const isSundayToday = now.getDay() === 0;
+      const sundayBanner = document.getElementById('sundayBanner');
+      if (sundayBanner) {
+        sundayBanner.style.display = (isSundayToday && selectedDayIndex >= 0) ? 'flex' : 'none';
+      }
+
+      // Render Calendar Selector (Пн, Вт, Ср, Чт, Пт, Сб)
+      const selectorBox = document.getElementById('calendarSelector');
+      selectorBox.innerHTML = '';
+
+      DAYS_OF_WEEK.forEach((d, idx) => {
+        const info = getDayInfo(d, groupSchedule);
+        const isActive = idx === selectedDayIndex;
+
+        const btn = document.createElement('button');
+        btn.className = `calendar-day-btn tap-scale ${isActive ? 'active' : ''}`;
+        btn.onclick = () => selectDayIndex(idx);
+
+        btn.innerHTML = `
+          ${info.isToday ? '<span class="calendar-today-dot"></span>' : ''}
+          <span class="calendar-day-name">${d.short}</span>
+          <span class="calendar-day-date">${info.dateText}</span>
+        `;
+        selectorBox.appendChild(btn);
+      });
+
+      const dayFullTitle = document.getElementById('dayFullTitle');
+      const badgeBox = document.getElementById('dayStatusBadge');
+      const container = document.getElementById('scheduleList');
       container.innerHTML = '';
-      if (!facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name]) {
-        container.innerHTML = '<div class="card-glass animate-card" style="text-align: center; color: var(--text-sub); font-size: 12px; padding: 26px;">Расписание не найдено</div>';
+
+      // Sunday special view
+      if (selectedDayIndex === -1) {
+        const sundayDate = now.getDate() + ' ' + monthsGenitive[now.getMonth()];
+        dayFullTitle.textContent = `Сегодня • Воскресенье, ${sundayDate}`;
+        badgeBox.innerHTML = '<span class="badge-subtle" style="color: #f59e0b; border-color: rgba(245,158,11,0.3); font-weight: 700;">Выходной</span>';
+        document.getElementById('dayLessonsCount').textContent = 'Выходной';
+        container.innerHTML = `
+          <div class="card-glass animate-card" style="text-align: center; padding: 42px 20px;">
+            <div style="width: 60px; height: 60px; border-radius: 20px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.28); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+              <svg style="width: 30px; height: 30px; color: #f59e0b;" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                <line x1="6" y1="1" x2="6" y2="4"></line>
+                <line x1="10" y1="1" x2="10" y2="4"></line>
+                <line x1="14" y1="1" x2="14" y2="4"></line>
+              </svg>
+            </div>
+            <h3 style="font-size: 19px; font-weight: 800; margin-bottom: 7px;">Выходной день</h3>
+            <p style="font-size: 13.5px; color: var(--text-sub); line-height: 1.5; max-width: 280px; margin: 0 auto;">На сегодня занятий нет. Можно отдохнуть перед парами.</p>
+          </div>
+        `;
         return;
       }
 
-      const schedule = facultyData.courses[currentProfile.course][currentProfile.group_name];
-      const slots = schedule[dayName] || {};
+      // Selected workday info
+      const currentDayDef = DAYS_OF_WEEK[selectedDayIndex];
+      const currentInfo = getDayInfo(currentDayDef, groupSchedule);
+
+      // Header row with contextual day labels
+      let titlePrefix = '';
+      if (currentInfo.isToday) {
+        titlePrefix = 'Сегодня • ';
+      } else if (currentInfo.isTomorrow) {
+        titlePrefix = 'Завтра • ';
+      } else if (currentInfo.isYesterday) {
+        titlePrefix = 'Вчера • ';
+      }
+
+      if (currentInfo.formattedDate) {
+        dayFullTitle.textContent = `${titlePrefix}${currentDayDef.full}, ${currentInfo.formattedDate}`;
+      } else {
+        dayFullTitle.textContent = `${titlePrefix}${currentDayDef.full}`;
+      }
+
+      if (currentInfo.isPast) {
+        badgeBox.innerHTML = '<span class="badge-subtle" style="color: var(--text-sub); border-color: var(--border-color); font-size: 10.5px; font-weight: 600;">Прошедший день</span>';
+      } else if (currentInfo.isToday) {
+        badgeBox.innerHTML = '<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.3); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981;"></span>Сегодня</span>';
+      } else if (currentInfo.isTomorrow) {
+        badgeBox.innerHTML = '<span class="badge-subtle" style="color: var(--text-main); border-color: var(--border-color); font-weight: 700;">Завтра</span>';
+      } else {
+        badgeBox.innerHTML = '';
+      }
+
+      if (!currentInfo.rawKey) {
+        // Case: Decanat hasn't uploaded this day
+        document.getElementById('dayLessonsCount').textContent = 'Нет данных';
+        container.innerHTML = `
+          <div class="card-glass animate-card" style="text-align: center; padding: 42px 20px;">
+            <div style="width: 60px; height: 60px; border-radius: 20px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+              <svg style="width: 30px; height: 30px; color: var(--text-sub);" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+                <circle cx="12" cy="15" r="1.5" fill="currentColor"></circle>
+              </svg>
+            </div>
+            <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 7px;">Расписание не загружено</h3>
+            <p style="font-size: 13.5px; color: var(--text-sub); line-height: 1.5; max-width: 290px; margin: 0 auto;">Деканат пока не загрузил расписание на этот день</p>
+          </div>
+        `;
+        return;
+      }
+
+      const slots = groupSchedule[currentInfo.rawKey] || {};
       const times = Object.keys(slots);
 
       if (!times.length) {
-        container.innerHTML = '<div class="card-glass animate-card" style="text-align: center; color: var(--text-sub); font-size: 12px; padding: 26px;">В этот день пар нет</div>';
+        // Case: Weekend / Day off (0 lessons)
+        document.getElementById('dayLessonsCount').textContent = 'Выходной';
+        container.innerHTML = `
+          <div class="card-glass animate-card" style="text-align: center; padding: 42px 20px;">
+            <div style="width: 60px; height: 60px; border-radius: 20px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.28); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+              <svg style="width: 30px; height: 30px; color: #f59e0b;" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                <line x1="6" y1="1" x2="6" y2="4"></line>
+                <line x1="10" y1="1" x2="10" y2="4"></line>
+                <line x1="14" y1="1" x2="14" y2="4"></line>
+              </svg>
+            </div>
+            <h3 style="font-size: 19px; font-weight: 800; margin-bottom: 7px;">Выходной день</h3>
+            <p style="font-size: 13.5px; color: var(--text-sub); line-height: 1.5; max-width: 280px; margin: 0 auto;">На сегодня занятий нет. Можно отдохнуть перед парами.</p>
+          </div>
+        `;
         return;
       }
+
+      document.getElementById('dayLessonsCount').textContent = formatLessonsCount(times.length);
 
       const frag = document.createDocumentFragment();
 
       times.forEach((timeStr, index) => {
         const items = parseLessons(slots[timeStr]);
-        const isLive = isToday && isLessonLive(timeStr);
+        const isLive = currentInfo.isToday && isLessonLive(timeStr);
         const hasImportant = items.some(item => currentProfile.important_subjects.some(imp => item.title.toLowerCase().includes(imp.toLowerCase())));
 
         const wrapper = document.createElement('div');
-        wrapper.className = (isLive ? 'active-lesson-card' : 'card-glass' + (hasImportant ? ' important-card' : '')) + ' animate-card';
+        wrapper.className = (isLive ? 'active-lesson-card' : 'card-glass' + (hasImportant ? ' important-card' : '')) + (currentInfo.isPast ? ' past-day-card' : '') + ' animate-card';
         wrapper.style.animationDelay = `${index * 25}ms`;
 
         let innerContent = `
@@ -710,76 +1032,6 @@
       });
 
       container.appendChild(frag);
-    }
-
-    function getDays() {
-      const schedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
-      const keys = Object.keys(schedule);
-      if (!keys.length) return { today: '', tomorrow: '', others: [] };
-
-      const daysOfWeek = ['ВОСКРЕСЕНЬЕ', 'ПОНЕДЕЛЬНИК', 'ВТОРНИК', 'СРЕДА', 'ЧЕТВЕРГ', 'ПЯТНИЦА', 'СУББОТА'];
-      const now = new Date().getDay();
-      const todayTarget = daysOfWeek[now];
-      const tomorrowTarget = daysOfWeek[(now + 1) % 7];
-
-      const todayKey = keys.find(k => k.includes(todayTarget)) || keys[0];
-      const tomorrowKey = keys.find(k => k.includes(tomorrowTarget)) || keys[1] || keys[0];
-      const others = keys.filter(k => k !== todayKey && k !== tomorrowKey);
-
-      return { today: todayKey, tomorrow: tomorrowKey, others: others.length ? others : keys };
-    }
-
-    function renderView() {
-      document.getElementById('headerTitle').textContent = `${currentProfile.course} курс • ${currentProfile.group_name.replace('ГРУППА ', 'Группа ')}`;
-      if (facultyData?.updated_times?.[currentProfile.course]) {
-        document.getElementById('headerSync').textContent = `Обновлено: (${facultyData.updated_times[currentProfile.course]})`;
-      }
-
-      const { today, tomorrow, others } = getDays();
-
-      const btnToday = document.getElementById('btnToday');
-      const btnTomorrow = document.getElementById('btnTomorrow');
-
-      if (activeTab === 'today') {
-        btnToday.style.background = 'var(--nav-active-bg)';
-        btnToday.style.color = 'var(--nav-active-text)';
-        btnTomorrow.style.background = 'transparent';
-        btnTomorrow.style.color = 'var(--text-sub)';
-        renderDayCards(today, document.getElementById('primaryList'), true);
-      } else {
-        btnTomorrow.style.background = 'var(--nav-active-bg)';
-        btnTomorrow.style.color = 'var(--nav-active-text)';
-        btnToday.style.background = 'transparent';
-        btnToday.style.color = 'var(--text-sub)';
-        renderDayCards(tomorrow, document.getElementById('primaryList'), false);
-      }
-
-      if (!selectedSecondaryDay || !others.includes(selectedSecondaryDay)) {
-        selectedSecondaryDay = others[0] || '';
-      }
-
-      const scrollBox = document.getElementById('daysScroll');
-      scrollBox.innerHTML = '';
-      others.forEach(dKey => {
-        const b = document.createElement('button');
-        const isSel = dKey === selectedSecondaryDay;
-        b.className = 'tap-scale';
-        b.style.cssText = `padding: 6.5px 13px; border-radius: 12px; border: 1px solid var(--border-color); font-size: 11.5px; font-weight: 700; white-space: nowrap; ${isSel ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}`;
-        b.textContent = dKey.split(' ')[0];
-        b.onclick = () => {
-          selectedSecondaryDay = dKey;
-          renderView();
-        };
-        scrollBox.appendChild(b);
-      });
-
-      renderDayCards(selectedSecondaryDay, document.getElementById('secondaryList'), false);
-    }
-
-    function switchPrimaryTab(tab) {
-      if (activeTab === tab) return;
-      activeTab = tab;
-      renderView();
     }
 
     function openSettingsModal() {
@@ -908,6 +1160,8 @@
       currentProfile = { ...draftProfile };
       localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
       closeSettingsModal();
+      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
+      selectedDayIndex = findInitialDayIndex(groupSchedule);
       renderView();
     }
 
@@ -1000,6 +1254,8 @@
         localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
         localStorage.setItem('bsu_setup_completed', 'true');
         closeSettingsModal();
+        const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
+        selectedDayIndex = findInitialDayIndex(groupSchedule);
         renderView();
       }
     }
@@ -1023,8 +1279,76 @@
       return Array.from(subjects).sort();
     }
 
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+
+    function setupSwipeGestures() {
+      const main = document.getElementById('mainContent');
+      if (!main) return;
+
+      main.addEventListener('touchstart', e => {
+        if (e.touches && e.touches.length === 1) {
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+          touchStartTime = Date.now();
+        }
+      }, { passive: true });
+
+      main.addEventListener('touchend', e => {
+        if (!e.changedTouches || e.changedTouches.length !== 1) return;
+        const modal = document.getElementById('settingsModal');
+        if (modal && modal.classList.contains('open')) return;
+
+        const deltaX = e.changedTouches[0].clientX - touchStartX;
+        const deltaY = e.changedTouches[0].clientY - touchStartY;
+        const deltaTime = Date.now() - touchStartTime;
+
+        if (Math.abs(deltaX) > 42 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3 && deltaTime < 700) {
+          const isSundayToday = new Date().getDay() === 0;
+
+          if (deltaX < 0) {
+            // Swipe Left -> Next day
+            if (selectedDayIndex === -1) {
+              selectDayIndex(0);
+            } else if (selectedDayIndex < DAYS_OF_WEEK.length - 1) {
+              selectDayIndex(selectedDayIndex + 1);
+            }
+          } else if (deltaX > 0) {
+            // Swipe Right -> Previous day
+            if (selectedDayIndex > 0) {
+              selectDayIndex(selectedDayIndex - 1);
+            } else if (selectedDayIndex === 0 && isSundayToday) {
+              selectDayIndex(-1);
+            }
+          }
+        }
+      }, { passive: true });
+
+      window.addEventListener('keydown', e => {
+        const modal = document.getElementById('settingsModal');
+        if (modal && modal.classList.contains('open')) return;
+        const isSundayToday = new Date().getDay() === 0;
+
+        if (e.key === 'ArrowRight') {
+          if (selectedDayIndex === -1) {
+            selectDayIndex(0);
+          } else if (selectedDayIndex < DAYS_OF_WEEK.length - 1) {
+            selectDayIndex(selectedDayIndex + 1);
+          }
+        } else if (e.key === 'ArrowLeft') {
+          if (selectedDayIndex > 0) {
+            selectDayIndex(selectedDayIndex - 1);
+          } else if (selectedDayIndex === 0 && isSundayToday) {
+            selectDayIndex(-1);
+          }
+        }
+      });
+    }
+
     async function init() {
       initTheme();
+      setupSwipeGestures();
 
       const savedProfile = localStorage.getItem('bsu_profile');
       if (savedProfile) {
@@ -1036,6 +1360,9 @@
         document.getElementById('headerTitle').textContent = 'Ошибка загрузки расписания';
         return;
       }
+
+      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
+      selectedDayIndex = findInitialDayIndex(groupSchedule);
 
       const isSetupDone = localStorage.getItem('bsu_setup_completed');
       if (!isSetupDone || !currentProfile.group_name) {
