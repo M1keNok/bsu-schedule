@@ -1,0 +1,19 @@
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+
+# Temporary downloaded schedule files
+*.doc
+*.docx
+
+# macOS and OS metadata
+.DS_Store
+Thumbs.db
+
+# Local environment & secrets
+.env
