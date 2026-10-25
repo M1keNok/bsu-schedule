@@ -193,71 +193,56 @@
       50% { opacity: 0.85; }
     }
 
-    @keyframes springCascade {
+    @keyframes cardFadeSlide {
       from {
         opacity: 0;
-        transform: translateY(16px) scale(0.975);
+        transform: translateY(8px);
       }
       to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateY(0);
       }
     }
 
     .animate-card {
-      animation: springCascade 0.45s cubic-bezier(0.2, 0.95, 0.3, 1) both;
+      animation: cardFadeSlide 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
-    /* 3D Book Page Turn Animations */
-    @keyframes bookTurnNext {
-      0% {
+    @keyframes fadeSettle {
+      from { opacity: 0.35; }
+      to { opacity: 1; }
+    }
+
+    /* Smooth Duo Fold / Unfold Animation */
+    @keyframes duoUnfoldNext {
+      from {
         opacity: 0;
-        transform: perspective(1200px) rotateY(52deg) translate3d(50px, 0, -70px) scale(0.92);
+        transform: perspective(1200px) rotateY(24deg) translate3d(20px, 0, -25px);
         transform-origin: 0% 50%;
-        filter: brightness(0.84) contrast(1.06);
       }
-      40% {
-        opacity: 0.9;
-        filter: brightness(1.05);
-      }
-      72% {
-        transform: perspective(1200px) rotateY(-4deg) translate3d(-4px, 0, 10px) scale(1.012);
-        filter: brightness(1.02);
-      }
-      100% {
+      to {
         opacity: 1;
-        transform: perspective(1200px) rotateY(0deg) translate3d(0, 0, 0) scale(1);
+        transform: perspective(1200px) rotateY(0deg) translate3d(0, 0, 0);
         transform-origin: 0% 50%;
-        filter: brightness(1) contrast(1);
       }
     }
 
-    @keyframes bookTurnPrev {
-      0% {
+    @keyframes duoUnfoldPrev {
+      from {
         opacity: 0;
-        transform: perspective(1200px) rotateY(-52deg) translate3d(-50px, 0, -70px) scale(0.92);
+        transform: perspective(1200px) rotateY(-24deg) translate3d(-20px, 0, -25px);
         transform-origin: 100% 50%;
-        filter: brightness(0.84) contrast(1.06);
       }
-      40% {
-        opacity: 0.9;
-        filter: brightness(1.05);
-      }
-      72% {
-        transform: perspective(1200px) rotateY(4deg) translate3d(4px, 0, 10px) scale(1.012);
-        filter: brightness(1.02);
-      }
-      100% {
+      to {
         opacity: 1;
-        transform: perspective(1200px) rotateY(0deg) translate3d(0, 0, 0) scale(1);
+        transform: perspective(1200px) rotateY(0deg) translate3d(0, 0, 0);
         transform-origin: 100% 50%;
-        filter: brightness(1) contrast(1);
       }
     }
 
     .slide-in-right {
-      animation: bookTurnNext 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
-      will-change: transform, opacity, filter;
+      animation: duoUnfoldNext 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
+      will-change: transform, opacity;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       transform-style: preserve-3d;
@@ -265,8 +250,8 @@
     }
 
     .slide-in-left {
-      animation: bookTurnPrev 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
-      will-change: transform, opacity, filter;
+      animation: duoUnfoldPrev 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
+      will-change: transform, opacity;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       transform-style: preserve-3d;
@@ -384,19 +369,18 @@
       background: transparent;
       color: var(--text-main);
       position: relative;
-      transition: background 0.3s cubic-bezier(0.2, 0.95, 0.3, 1),
-                  color 0.3s cubic-bezier(0.2, 0.95, 0.3, 1),
-                  transform 0.26s cubic-bezier(0.2, 0.95, 0.3, 1),
-                  border-color 0.3s cubic-bezier(0.2, 0.95, 0.3, 1),
-                  box-shadow 0.3s cubic-bezier(0.2, 0.95, 0.3, 1);
+      transition: background 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
 
     .calendar-day-btn:active {
-      transform: scale(0.9);
-      transition-duration: 0.12s;
+      transform: scale(0.94);
     }
 
     .calendar-day-btn.active {
@@ -404,7 +388,7 @@
       color: var(--nav-active-text);
       border-color: var(--border-color);
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
-      transform: scale(1.04);
+      transform: scale(1.02);
     }
 
     .calendar-day-btn.active:active {
@@ -1018,7 +1002,7 @@
       if (dayHeaderRow && currentSlideDirection !== 'none') {
         dayHeaderRow.style.animation = 'none';
         void dayHeaderRow.offsetWidth;
-        dayHeaderRow.style.animation = 'springCascade 0.38s cubic-bezier(0.16, 1, 0.3, 1) both';
+        dayHeaderRow.style.animation = 'fadeSettle 0.22s cubic-bezier(0.16, 1, 0.3, 1) both';
       }
 
       // Sunday special view
@@ -1103,7 +1087,7 @@
 
         const wrapper = document.createElement('div');
         wrapper.className = (isLive ? 'active-lesson-card' : 'card-glass' + (hasImportant ? ' important-card' : '')) + (currentInfo.isPast ? ' past-day-card' : '') + ' tap-scale animate-card';
-        wrapper.style.animationDelay = `${index * 35}ms`;
+        wrapper.style.animationDelay = `${index * 20}ms`;
 
         let innerContent = `
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
