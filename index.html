@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Расписание Геофак БГУ</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
@@ -213,49 +216,112 @@
       to { opacity: 1; }
     }
 
-    /* Smooth Duo Fold / Unfold Animation */
-    @keyframes duoUnfoldNext {
-      from {
-        opacity: 0;
-        transform: perspective(1200px) rotateY(24deg) translate3d(20px, 0, -25px);
-        transform-origin: 0% 50%;
-      }
-      to {
-        opacity: 1;
-        transform: perspective(1200px) rotateY(0deg) translate3d(0, 0, 0);
-        transform-origin: 0% 50%;
-      }
+    .schedule-viewport {
+      position: relative;
+      width: 100%;
+      min-height: 240px;
+      perspective: 1400px;
+      -webkit-perspective: 1400px;
+      overflow: hidden;
+      contain: layout style;
     }
 
-    @keyframes duoUnfoldPrev {
-      from {
-        opacity: 0;
-        transform: perspective(1200px) rotateY(-24deg) translate3d(-20px, 0, -25px);
-        transform-origin: 100% 50%;
-      }
-      to {
-        opacity: 1;
-        transform: perspective(1200px) rotateY(0deg) translate3d(0, 0, 0);
-        transform-origin: 100% 50%;
-      }
-    }
-
-    .slide-in-right {
-      animation: duoUnfoldNext 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
+    .schedule-page {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
       will-change: transform, opacity;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
-      transform-style: preserve-3d;
-      -webkit-transform-style: preserve-3d;
     }
 
-    .slide-in-left {
-      animation: duoUnfoldPrev 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
-      will-change: transform, opacity;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-      transform-style: preserve-3d;
-      -webkit-transform-style: preserve-3d;
+    .schedule-page.leaving-page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .schedule-page.active-page {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Duo Fold Out to Left */
+    @keyframes duoFoldOutLeft {
+      0% {
+        opacity: 1;
+        transform: perspective(1200px) translate3d(0, 0, 0) rotateY(0deg);
+        transform-origin: 0% 50%;
+      }
+      100% {
+        opacity: 0;
+        transform: perspective(1200px) translate3d(-100%, 0, -35px) rotateY(-18deg);
+        transform-origin: 0% 50%;
+      }
+    }
+
+    /* Duo Fold In from Right */
+    @keyframes duoFoldInRight {
+      0% {
+        opacity: 0;
+        transform: perspective(1200px) translate3d(100%, 0, -35px) rotateY(18deg);
+        transform-origin: 100% 50%;
+      }
+      100% {
+        opacity: 1;
+        transform: perspective(1200px) translate3d(0, 0, 0) rotateY(0deg);
+        transform-origin: 100% 50%;
+      }
+    }
+
+    /* Duo Fold Out to Right */
+    @keyframes duoFoldOutRight {
+      0% {
+        opacity: 1;
+        transform: perspective(1200px) translate3d(0, 0, 0) rotateY(0deg);
+        transform-origin: 100% 50%;
+      }
+      100% {
+        opacity: 0;
+        transform: perspective(1200px) translate3d(100%, 0, -35px) rotateY(18deg);
+        transform-origin: 100% 50%;
+      }
+    }
+
+    /* Duo Fold In from Left */
+    @keyframes duoFoldInLeft {
+      0% {
+        opacity: 0;
+        transform: perspective(1200px) translate3d(-100%, 0, -35px) rotateY(-18deg);
+        transform-origin: 0% 50%;
+      }
+      100% {
+        opacity: 1;
+        transform: perspective(1200px) translate3d(0, 0, 0) rotateY(0deg);
+        transform-origin: 0% 50%;
+      }
+    }
+
+    .page-fold-out-left {
+      animation: duoFoldOutLeft 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .page-fold-in-right {
+      animation: duoFoldInRight 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .page-fold-out-right {
+      animation: duoFoldOutRight 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .page-fold-in-left {
+      animation: duoFoldInLeft 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
     .subgroups-grid {
@@ -482,7 +548,9 @@
       <div id="dayLessonsCount" style="font-size: 11.5px; font-weight: 700; color: var(--text-sub);"></div>
     </div>
 
-    <div id="scheduleList" style="display: flex; flex-direction: column; gap: 10px; min-height: 200px; transform-style: preserve-3d; -webkit-transform-style: preserve-3d; will-change: transform, opacity, filter;"></div>
+    <div id="scheduleViewport" class="schedule-viewport">
+      <div id="scheduleList" class="schedule-page active-page"></div>
+    </div>
 
   </main>
 
@@ -943,83 +1011,30 @@
       return 0;
     }
 
-    function renderView() {
-      document.getElementById('headerTitle').textContent = `${currentProfile.course} курс • ${currentProfile.group_name.replace('ГРУППА ', 'Группа ')}`;
-      if (facultyData?.updated_times?.[currentProfile.course]) {
-        document.getElementById('headerSync').textContent = `Обновлено: (${facultyData.updated_times[currentProfile.course]})`;
-      }
-
-      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
-
+    function updateDayHeader(dayIndex, groupSchedule) {
       const now = new Date();
-      const isSundayToday = now.getDay() === 0;
-      const sundayBanner = document.getElementById('sundayBanner');
-      if (sundayBanner) {
-        sundayBanner.style.display = (isSundayToday && selectedDayIndex >= 0) ? 'flex' : 'none';
-      }
-
-      // Render Calendar Selector (Пн, Вт, Ср, Чт, Пт, Сб)
-      const selectorBox = document.getElementById('calendarSelector');
-      selectorBox.innerHTML = '';
-
-      DAYS_OF_WEEK.forEach((d, idx) => {
-        const info = getDayInfo(d, groupSchedule);
-        const isActive = idx === selectedDayIndex;
-
-        const btn = document.createElement('button');
-        btn.className = `calendar-day-btn tap-scale ${isActive ? 'active' : ''}`;
-        btn.onclick = () => selectDayIndex(idx, 'medium');
-
-        btn.innerHTML = `
-          ${info.isToday ? '<span class="calendar-today-dot"></span>' : ''}
-          <span class="calendar-day-name">${d.short}</span>
-          <span class="calendar-day-date">${info.dateText}</span>
-        `;
-        selectorBox.appendChild(btn);
-
-        if (isActive) {
-          requestAnimationFrame(() => {
-            btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-          });
-        }
-      });
-
       const dayFullTitle = document.getElementById('dayFullTitle');
       const badgeBox = document.getElementById('dayStatusBadge');
-      const container = document.getElementById('scheduleList');
-      container.innerHTML = '';
-
-      // Directional slide transition
-      container.className = '';
-      void container.offsetWidth; // Force reflow to re-trigger transition
-      if (currentSlideDirection === 'next') {
-        container.classList.add('slide-in-right');
-      } else if (currentSlideDirection === 'prev') {
-        container.classList.add('slide-in-left');
-      }
-
+      const lessonsCountBox = document.getElementById('dayLessonsCount');
       const dayHeaderRow = document.getElementById('dayHeaderRow');
+
       if (dayHeaderRow && currentSlideDirection !== 'none') {
         dayHeaderRow.style.animation = 'none';
         void dayHeaderRow.offsetWidth;
         dayHeaderRow.style.animation = 'fadeSettle 0.22s cubic-bezier(0.16, 1, 0.3, 1) both';
       }
 
-      // Sunday special view
-      if (selectedDayIndex === -1) {
+      if (dayIndex === -1) {
         const sundayDate = now.getDate() + ' ' + monthsGenitive[now.getMonth()];
         dayFullTitle.textContent = `Сегодня • Воскресенье, ${sundayDate}`;
         badgeBox.innerHTML = '<span class="badge-subtle" style="color: #f59e0b; border-color: rgba(245,158,11,0.3); font-weight: 700;">Выходной</span>';
-        document.getElementById('dayLessonsCount').textContent = 'Выходной';
-        container.innerHTML = getWeekendCardHTML();
+        lessonsCountBox.textContent = 'Выходной';
         return;
       }
 
-      // Selected workday info
-      const currentDayDef = DAYS_OF_WEEK[selectedDayIndex];
+      const currentDayDef = DAYS_OF_WEEK[dayIndex];
       const currentInfo = getDayInfo(currentDayDef, groupSchedule);
 
-      // Header row with contextual day labels
       let titlePrefix = '';
       if (currentInfo.isToday) {
         titlePrefix = 'Сегодня • ';
@@ -1046,9 +1061,28 @@
       }
 
       if (!currentInfo.rawKey) {
-        // Case: Decanat hasn't uploaded this day
-        document.getElementById('dayLessonsCount').textContent = 'Нет данных';
-        container.innerHTML = `
+        lessonsCountBox.textContent = 'Нет данных';
+      } else {
+        const slots = groupSchedule[currentInfo.rawKey] || {};
+        const times = Object.keys(slots);
+        lessonsCountBox.textContent = formatLessonsCount(times.length);
+      }
+    }
+
+    function buildDayPage(dayIndex, groupSchedule) {
+      const page = document.createElement('div');
+      page.className = 'schedule-page active-page';
+
+      if (dayIndex === -1) {
+        page.innerHTML = getWeekendCardHTML();
+        return page;
+      }
+
+      const currentDayDef = DAYS_OF_WEEK[dayIndex];
+      const currentInfo = getDayInfo(currentDayDef, groupSchedule);
+
+      if (!currentInfo.rawKey) {
+        page.innerHTML = `
           <div class="card-glass animate-card" style="text-align: center; padding: 42px 20px;">
             <div style="width: 60px; height: 60px; border-radius: 20px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
               <svg style="width: 30px; height: 30px; color: var(--text-sub);" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -1063,20 +1097,16 @@
             <p style="font-size: 13.5px; color: var(--text-sub); line-height: 1.5; max-width: 290px; margin: 0 auto;">Деканат пока не загрузил расписание на этот день</p>
           </div>
         `;
-        return;
+        return page;
       }
 
       const slots = groupSchedule[currentInfo.rawKey] || {};
       const times = Object.keys(slots);
 
       if (!times.length) {
-        // Case: Weekend / Day off (0 lessons)
-        document.getElementById('dayLessonsCount').textContent = 'Выходной';
-        container.innerHTML = getWeekendCardHTML();
-        return;
+        page.innerHTML = getWeekendCardHTML();
+        return page;
       }
-
-      document.getElementById('dayLessonsCount').textContent = formatLessonsCount(times.length);
 
       const frag = document.createDocumentFragment();
 
@@ -1144,7 +1174,95 @@
         frag.appendChild(wrapper);
       });
 
-      container.appendChild(frag);
+      page.appendChild(frag);
+      return page;
+    }
+
+    function renderView() {
+      document.getElementById('headerTitle').textContent = `${currentProfile.course} курс • ${currentProfile.group_name.replace('ГРУППА ', 'Группа ')}`;
+      if (facultyData?.updated_times?.[currentProfile.course]) {
+        document.getElementById('headerSync').textContent = `Обновлено: (${facultyData.updated_times[currentProfile.course]})`;
+      }
+
+      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
+
+      const now = new Date();
+      const isSundayToday = now.getDay() === 0;
+      const sundayBanner = document.getElementById('sundayBanner');
+      if (sundayBanner) {
+        sundayBanner.style.display = (isSundayToday && selectedDayIndex >= 0) ? 'flex' : 'none';
+      }
+
+      // Render Calendar Selector (Пн, Вт, Ср, Чт, Пт, Сб)
+      const selectorBox = document.getElementById('calendarSelector');
+      selectorBox.innerHTML = '';
+
+      DAYS_OF_WEEK.forEach((d, idx) => {
+        const info = getDayInfo(d, groupSchedule);
+        const isActive = idx === selectedDayIndex;
+
+        const btn = document.createElement('button');
+        btn.className = `calendar-day-btn tap-scale ${isActive ? 'active' : ''}`;
+        btn.onclick = () => selectDayIndex(idx, 'medium');
+
+        btn.innerHTML = `
+          ${info.isToday ? '<span class="calendar-today-dot"></span>' : ''}
+          <span class="calendar-day-name">${d.short}</span>
+          <span class="calendar-day-date">${info.dateText}</span>
+        `;
+        selectorBox.appendChild(btn);
+
+        if (isActive) {
+          requestAnimationFrame(() => {
+            btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          });
+        }
+      });
+
+      updateDayHeader(selectedDayIndex, groupSchedule);
+
+      const viewport = document.getElementById('scheduleViewport');
+      const oldPage = viewport.querySelector('.schedule-page.active-page');
+
+      if (!oldPage || currentSlideDirection === 'none') {
+        viewport.innerHTML = '';
+        const newPage = buildDayPage(selectedDayIndex, groupSchedule);
+        viewport.appendChild(newPage);
+        return;
+      }
+
+      // Transition between days with Duo dual-page folding
+      viewport.querySelectorAll('.schedule-page.leaving-page').forEach(p => p.remove());
+
+      const oldHeight = oldPage.offsetHeight;
+      const newPage = buildDayPage(selectedDayIndex, groupSchedule);
+      oldPage.classList.remove('active-page');
+      oldPage.classList.add('leaving-page');
+      viewport.appendChild(newPage);
+      const newHeight = newPage.offsetHeight;
+
+      if (oldHeight && newHeight && Math.abs(oldHeight - newHeight) > 4) {
+        viewport.style.height = `${oldHeight}px`;
+        viewport.style.transition = 'height 0.42s cubic-bezier(0.16, 1, 0.3, 1)';
+        requestAnimationFrame(() => {
+          viewport.style.height = `${newHeight}px`;
+        });
+      }
+
+      if (currentSlideDirection === 'next') {
+        oldPage.classList.add('page-fold-out-left');
+        newPage.classList.add('page-fold-in-right');
+      } else {
+        oldPage.classList.add('page-fold-out-right');
+        newPage.classList.add('page-fold-in-left');
+      }
+
+      setTimeout(() => {
+        if (oldPage.parentNode) oldPage.remove();
+        newPage.classList.remove('page-fold-in-right', 'page-fold-in-left');
+        viewport.style.height = '';
+        viewport.style.transition = '';
+      }, 440);
     }
 
     function openSettingsModal() {
