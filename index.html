@@ -63,8 +63,10 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
     .tap-scale {
-      transition: transform 0.14s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.14s ease;
+      transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.16s ease;
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
     .tap-scale:active {
       transform: scale(0.96);
@@ -101,7 +103,14 @@
       padding: 14px 16px;
       transform: translateZ(0);
       contain: content;
-      transition: background 0.25s ease, border-color 0.25s ease;
+      transition: background 0.25s ease, border-color 0.25s ease, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.16s ease;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    .card-glass:active {
+      transform: scale(0.985);
+      border-color: rgba(99, 102, 241, 0.28);
     }
 
     .badge-subtle {
@@ -124,6 +133,13 @@
       overflow: hidden;
       contain: paint;
       box-shadow: 0 10px 24px -4px rgba(16, 185, 129, 0.25);
+      transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.16s ease;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    .active-lesson-card:active {
+      transform: scale(0.985);
     }
 
     .active-lesson-card::before {
@@ -190,6 +206,38 @@
 
     .animate-card {
       animation: springCascade 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translate3d(32px, 0, 0);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translate3d(-32px, 0, 0);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
+    .slide-in-right {
+      animation: slideInRight 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
+      will-change: transform, opacity;
+    }
+
+    .slide-in-left {
+      animation: slideInLeft 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
+      will-change: transform, opacity;
     }
 
     .subgroups-grid {
@@ -281,6 +329,14 @@
       padding: 4px;
       box-shadow: var(--glass-inner-bevel);
       transform: translateZ(0);
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-behavior: smooth;
+    }
+
+    .calendar-selector::-webkit-scrollbar {
+      display: none;
     }
 
     .calendar-day-btn {
@@ -295,16 +351,30 @@
       background: transparent;
       color: var(--text-main);
       position: relative;
-      transition: background 0.18s cubic-bezier(0.16, 1, 0.3, 1), color 0.18s, box-shadow 0.18s;
+      transition: background 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    .calendar-day-btn:active {
+      transform: scale(0.92);
     }
 
     .calendar-day-btn.active {
       background: var(--nav-active-bg);
       color: var(--nav-active-text);
       border-color: var(--border-color);
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+      transform: scale(1.02);
+    }
+
+    .calendar-day-btn.active:active {
+      transform: scale(0.96);
     }
 
     .calendar-day-name {
@@ -378,7 +448,7 @@
         <span style="font-size: 16px; line-height: 1;">☕</span>
         <span>Сегодня воскресенье — выходной</span>
       </div>
-      <button onclick="selectDayIndex(-1)" class="tap-scale" style="padding: 4px 10px; border-radius: 10px; background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.35); color: var(--text-main); font-size: 11px; font-weight: 700; cursor: pointer;">
+      <button onclick="selectDayIndex(-1, 'medium')" class="tap-scale" style="padding: 4px 10px; border-radius: 10px; background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.35); color: var(--text-main); font-size: 11px; font-weight: 700; cursor: pointer;">
         Сегодня
       </button>
     </div>
@@ -393,7 +463,7 @@
       <div id="dayLessonsCount" style="font-size: 11.5px; font-weight: 700; color: var(--text-sub);"></div>
     </div>
 
-    <div id="scheduleList" style="display: flex; flex-direction: column; gap: 10px; min-height: 200px;"></div>
+    <div id="scheduleList" style="display: flex; flex-direction: column; gap: 10px; min-height: 200px; will-change: transform, opacity;"></div>
 
   </main>
 
@@ -779,27 +849,57 @@
       return `${count} пар`;
     }
 
-    function selectDayIndex(index) {
+    let currentSlideDirection = 'none';
+
+    function selectDayIndex(index, hapticType = 'medium') {
       const isSundayToday = new Date().getDay() === 0;
       if (index === -1 && !isSundayToday) return;
       if (index < -1 || index >= DAYS_OF_WEEK.length) return;
       if (selectedDayIndex === index) return;
+
+      if (selectedDayIndex === -1) {
+        currentSlideDirection = 'next';
+      } else if (index === -1) {
+        currentSlideDirection = 'prev';
+      } else {
+        currentSlideDirection = index > selectedDayIndex ? 'next' : 'prev';
+      }
+
       selectedDayIndex = index;
-      triggerHaptic('selection');
+      triggerHaptic(hapticType);
       renderView();
     }
 
-    function triggerHaptic(type = 'light') {
+    function triggerHaptic(type = 'medium') {
       try {
         const haptic = window.Telegram?.WebApp?.HapticFeedback;
         if (haptic) {
-          if (type === 'selection') {
+          if (type === 'heavy' || type === 'medium' || type === 'light' || type === 'rigid' || type === 'soft') {
+            haptic.impactOccurred(type);
+          } else if (type === 'selection') {
             haptic.selectionChanged();
           } else {
-            haptic.impactOccurred(type);
+            haptic.impactOccurred('medium');
           }
         }
       } catch (e) {}
+    }
+
+    function getWeekendCardHTML() {
+      return `
+        <div class="card-glass animate-card" style="text-align: center; padding: 54px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 250px;">
+          <div style="width: 76px; height: 76px; border-radius: 24px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(245, 158, 11, 0.06)); border: 1px solid rgba(245, 158, 11, 0.32); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; box-shadow: 0 10px 28px -6px rgba(245, 158, 11, 0.28);">
+            <svg style="width: 38px; height: 38px; color: #f59e0b;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 8h1a4 4 0 1 1 0 8h-1"></path>
+              <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"></path>
+              <line x1="6" y1="2" x2="6" y2="4"></line>
+              <line x1="10" y1="2" x2="10" y2="4"></line>
+              <line x1="14" y1="2" x2="14" y2="4"></line>
+            </svg>
+          </div>
+          <h2 style="font-size: 24px; font-weight: 800; letter-spacing: -0.4px; color: var(--text-main); margin: 0;">Выходной</h2>
+        </div>
+      `;
     }
 
     function findInitialDayIndex(groupSchedule) {
@@ -849,7 +949,7 @@
 
         const btn = document.createElement('button');
         btn.className = `calendar-day-btn tap-scale ${isActive ? 'active' : ''}`;
-        btn.onclick = () => selectDayIndex(idx);
+        btn.onclick = () => selectDayIndex(idx, 'medium');
 
         btn.innerHTML = `
           ${info.isToday ? '<span class="calendar-today-dot"></span>' : ''}
@@ -857,6 +957,12 @@
           <span class="calendar-day-date">${info.dateText}</span>
         `;
         selectorBox.appendChild(btn);
+
+        if (isActive) {
+          requestAnimationFrame(() => {
+            btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          });
+        }
       });
 
       const dayFullTitle = document.getElementById('dayFullTitle');
@@ -864,27 +970,22 @@
       const container = document.getElementById('scheduleList');
       container.innerHTML = '';
 
+      // Directional slide transition
+      container.className = '';
+      void container.offsetWidth; // Force reflow to re-trigger transition
+      if (currentSlideDirection === 'next') {
+        container.classList.add('slide-in-right');
+      } else if (currentSlideDirection === 'prev') {
+        container.classList.add('slide-in-left');
+      }
+
       // Sunday special view
       if (selectedDayIndex === -1) {
         const sundayDate = now.getDate() + ' ' + monthsGenitive[now.getMonth()];
         dayFullTitle.textContent = `Сегодня • Воскресенье, ${sundayDate}`;
         badgeBox.innerHTML = '<span class="badge-subtle" style="color: #f59e0b; border-color: rgba(245,158,11,0.3); font-weight: 700;">Выходной</span>';
         document.getElementById('dayLessonsCount').textContent = 'Выходной';
-        container.innerHTML = `
-          <div class="card-glass animate-card" style="text-align: center; padding: 42px 20px;">
-            <div style="width: 60px; height: 60px; border-radius: 20px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.28); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-              <svg style="width: 30px; height: 30px; color: #f59e0b;" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-                <line x1="6" y1="1" x2="6" y2="4"></line>
-                <line x1="10" y1="1" x2="10" y2="4"></line>
-                <line x1="14" y1="1" x2="14" y2="4"></line>
-              </svg>
-            </div>
-            <h3 style="font-size: 19px; font-weight: 800; margin-bottom: 7px;">Выходной день</h3>
-            <p style="font-size: 13.5px; color: var(--text-sub); line-height: 1.5; max-width: 280px; margin: 0 auto;">На сегодня занятий нет. Можно отдохнуть перед парами.</p>
-          </div>
-        `;
+        container.innerHTML = getWeekendCardHTML();
         return;
       }
 
@@ -945,21 +1046,7 @@
       if (!times.length) {
         // Case: Weekend / Day off (0 lessons)
         document.getElementById('dayLessonsCount').textContent = 'Выходной';
-        container.innerHTML = `
-          <div class="card-glass animate-card" style="text-align: center; padding: 42px 20px;">
-            <div style="width: 60px; height: 60px; border-radius: 20px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.28); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-              <svg style="width: 30px; height: 30px; color: #f59e0b;" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-                <line x1="6" y1="1" x2="6" y2="4"></line>
-                <line x1="10" y1="1" x2="10" y2="4"></line>
-                <line x1="14" y1="1" x2="14" y2="4"></line>
-              </svg>
-            </div>
-            <h3 style="font-size: 19px; font-weight: 800; margin-bottom: 7px;">Выходной день</h3>
-            <p style="font-size: 13.5px; color: var(--text-sub); line-height: 1.5; max-width: 280px; margin: 0 auto;">На сегодня занятий нет. Можно отдохнуть перед парами.</p>
-          </div>
-        `;
+        container.innerHTML = getWeekendCardHTML();
         return;
       }
 
@@ -973,7 +1060,7 @@
         const hasImportant = items.some(item => currentProfile.important_subjects.some(imp => item.title.toLowerCase().includes(imp.toLowerCase())));
 
         const wrapper = document.createElement('div');
-        wrapper.className = (isLive ? 'active-lesson-card' : 'card-glass' + (hasImportant ? ' important-card' : '')) + (currentInfo.isPast ? ' past-day-card' : '') + ' animate-card';
+        wrapper.className = (isLive ? 'active-lesson-card' : 'card-glass' + (hasImportant ? ' important-card' : '')) + (currentInfo.isPast ? ' past-day-card' : '') + ' tap-scale animate-card';
         wrapper.style.animationDelay = `${index * 25}ms`;
 
         let innerContent = `
@@ -1310,16 +1397,16 @@
           if (deltaX < 0) {
             // Swipe Left -> Next day
             if (selectedDayIndex === -1) {
-              selectDayIndex(0);
+              selectDayIndex(0, 'heavy');
             } else if (selectedDayIndex < DAYS_OF_WEEK.length - 1) {
-              selectDayIndex(selectedDayIndex + 1);
+              selectDayIndex(selectedDayIndex + 1, 'heavy');
             }
           } else if (deltaX > 0) {
             // Swipe Right -> Previous day
             if (selectedDayIndex > 0) {
-              selectDayIndex(selectedDayIndex - 1);
+              selectDayIndex(selectedDayIndex - 1, 'heavy');
             } else if (selectedDayIndex === 0 && isSundayToday) {
-              selectDayIndex(-1);
+              selectDayIndex(-1, 'heavy');
             }
           }
         }
@@ -1332,15 +1419,15 @@
 
         if (e.key === 'ArrowRight') {
           if (selectedDayIndex === -1) {
-            selectDayIndex(0);
+            selectDayIndex(0, 'medium');
           } else if (selectedDayIndex < DAYS_OF_WEEK.length - 1) {
-            selectDayIndex(selectedDayIndex + 1);
+            selectDayIndex(selectedDayIndex + 1, 'medium');
           }
         } else if (e.key === 'ArrowLeft') {
           if (selectedDayIndex > 0) {
-            selectDayIndex(selectedDayIndex - 1);
+            selectDayIndex(selectedDayIndex - 1, 'medium');
           } else if (selectedDayIndex === 0 && isSundayToday) {
-            selectDayIndex(-1);
+            selectDayIndex(-1, 'medium');
           }
         }
       });
