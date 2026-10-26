@@ -357,6 +357,7 @@
     }
 
     .calendar-selector {
+      position: relative;
       display: flex;
       gap: 6px;
       background: var(--glass-card-subtle);
@@ -416,9 +417,9 @@
     }
 
     .calendar-day-btn.past-day {
-      flex: 0 0 44px;
-      min-width: 42px;
-      opacity: 0.48;
+      flex: 0 0 46px;
+      min-width: 46px;
+      opacity: 0.58;
       padding: 7px 2px 6px;
     }
 
@@ -558,7 +559,7 @@
     let currentProfile = {
       course: "1",
       group_name: "",
-      foreign_lang: "ALL"
+      foreign_lang: null
     };
 
     const DAY_DEFS = [
@@ -637,7 +638,7 @@
       title = title.replace(/^[-–—•,\s]+|[-–—•,\s]+$/g, '').trim();
 
       const aliases = [
-        { match: /высш(ая|\.)?\s*матем|вышмат/i, to: 'ВышМат' },
+        { match: /высш(ая|\.)?\s*матем|вышмат/i, to: 'ВЫШМАТ' },
         { match: /матем(атическ(ий|\.))?\s*анализ/i, to: 'Матанализ' },
         { match: /безопасн(ость|\.)?\s*жизнедеят|бжд|бжч/i, to: 'БЖЧ' },
         { match: /дистанционн.*зонд|дзз/i, to: 'ДЗЗ' },
@@ -665,7 +666,7 @@
 
       if (title.length > 2) {
         const words = title.split(' ');
-        const acronyms = new Set(['ГИС', 'ДЗЗ', 'БЖЧ', 'БЖД', 'СУБД', 'УСР', 'РКИ']);
+        const acronyms = new Set(['ГИС', 'ДЗЗ', 'БЖЧ', 'БЖД', 'СУБД', 'УСР', 'РКИ', 'ВЫШМАТ']);
         title = words.map((w, i) => {
           if (acronyms.has(w.toUpperCase())) return w.toUpperCase();
           if (i === 0) return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
@@ -773,26 +774,53 @@
       return { teacher: s, room };
     }
 
-    function isRussianForeignLang(text) {
-      if (!text) return false;
-      return /(?:^|[^а-яА-ЯёЁa-zA-Z])русск(?:ий|ая|ое|ие|ого|ому|им|ом|ую|их|ими)?\s*(?:как\s*иностр[а-яё]*|язык[а-яё]*)|\bрки\b/i.test(text);
+    function detectLessonLanguage(text) {
+      if (!text) return null;
+      const lower = text.toLowerCase();
+
+      // 1. Русский как иностранный / РКИ
+      if (/(?:^|[^а-яА-ЯёЁa-zA-Z])русск(?:ий|ая|ое|ие|ого|ому|им|ом|ую|их|ими)?\s*(?:как\s*иностр[а-яё]*|язык[а-яё]*)|(?:\b|_)рки(?:\b|_)/i.test(text)) {
+        return 'RKI';
+      }
+
+      // 2. Немецкий язык
+      if (/\bнем(?:ецк[а-яё]*)?(?:\s*язык|\.|\b)/i.test(lower)) {
+        return 'DE';
+      }
+
+      // 3. Французский язык
+      if (/\bфранц(?:узск[а-яё]*)?(?:\s*язык|\.|\b)/i.test(lower)) {
+        return 'FR';
+      }
+
+      // 4. Испанский язык
+      if (/\bиспан(?:ск[а-яё]*)?(?:\s*язык|\.|\b)/i.test(lower)) {
+        return 'ES';
+      }
+
+      // 5. Английский язык
+      if (/\bангл(?:ийск[а-яё]*)?(?:\s*язык|\.|\b)|eduengscience/i.test(lower)) {
+        return 'EN';
+      }
+
+      // 6. Общий "Иностранный язык" / "Язык проф. общения"
+      if (/иностранн(?:ый|\.)?\s*язык|язык\s+профессионального\s+общения/i.test(lower)) {
+        return 'EN';
+      }
+
+      return null; // Общеобразовательный предмет (физкультура, вышмат, история и т.д.)
     }
 
-    function filterByLang(text, lang) {
-      const isRki = isRussianForeignLang(text);
-      // Если в настройках не выбран русский как изучаемый (RKI), он вообще не должен отображаться
-      if (isRki) {
-        return lang === 'RKI';
-      }
-      if (!lang || lang === 'ALL') return true;
-      const lower = text.toLowerCase();
-      const map = {
-        'EN': ['нем', 'немец', 'франц', 'исп'],
-        'DE': ['англ', 'франц', 'исп'],
-        'FR': ['англ', 'нем', 'немец', 'исп'],
-        'RKI': ['англ', 'нем', 'немец', 'франц', 'исп'],
-      };
-      return !(map[lang] && map[lang].some(marker => lower.includes(marker)));
+    function filterByLang(text, userLang) {
+      const lessonLang = detectLessonLanguage(text);
+      // Если пара не языковая (физкультура, вышмат, история и др.), отображаем ВСЕГДА
+      if (!lessonLang) return true;
+
+      // Если в настройках никакой язык не выбран (null, '', 'NONE', 'ALL') — отображаем ВСЕ языки
+      if (!userLang || userLang === 'ALL' || userLang === 'NONE') return true;
+
+      // Если выбран конкретный язык — отображаем ТОЛЬКО его, остальные языки скрываем
+      return lessonLang === userLang;
     }
 
     function parseLessons(list) {
@@ -1185,6 +1213,27 @@
       return page;
     }
 
+    function scrollCalendarToSelected(smooth = true) {
+      const selectorBox = document.getElementById('calendarSelector');
+      if (!selectorBox) return;
+      const activeBtn = selectorBox.querySelector('.calendar-day-btn.active');
+      if (!activeBtn) return;
+
+      const todayIdx = currentDaysList.findIndex(item => item.isToday);
+      const isToday = selectedDayIndex === todayIdx;
+      const behavior = smooth ? 'smooth' : 'auto';
+
+      if (isToday && todayIdx > 0) {
+        // Оставляем вчерашний день отчетливо торчащим слева (~54px)
+        const targetLeft = Math.max(0, activeBtn.offsetLeft - 54);
+        selectorBox.scrollTo({ left: targetLeft, behavior });
+      } else if (selectedDayIndex < todayIdx) {
+        activeBtn.scrollIntoView({ behavior, inline: 'center', block: 'nearest' });
+      } else {
+        activeBtn.scrollIntoView({ behavior, inline: 'nearest', block: 'nearest' });
+      }
+    }
+
     function renderView() {
       document.getElementById('headerTitle').textContent = `${currentProfile.course} курс • ${currentProfile.group_name.replace('ГРУППА ', 'Группа ')}`;
       if (facultyData?.updated_times?.[currentProfile.course]) {
@@ -1222,21 +1271,10 @@
           <span class="calendar-day-date">${d.dateText}</span>
         `;
         selectorBox.appendChild(btn);
-
-        if (isActive) {
-          requestAnimationFrame(() => {
-            const todayIdx = currentDaysList.findIndex(item => item.isToday);
-            if (idx === todayIdx && todayIdx > 0) {
-              const targetLeft = Math.max(0, btn.offsetLeft - 26);
-              selectorBox.scrollTo({ left: targetLeft, behavior: 'smooth' });
-            } else if (idx < todayIdx) {
-              btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-            } else {
-              btn.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
-            }
-          });
-        }
       });
+
+      scrollCalendarToSelected(currentSlideDirection !== 'none');
+      setTimeout(() => scrollCalendarToSelected(false), 60);
 
       updateDayHeader(selectedDayIndex, groupSchedule);
 
@@ -1294,7 +1332,7 @@
       draftProfile = {
         course: currentProfile.course || '1',
         group_name: currentProfile.group_name || Object.keys(facultyData?.courses?.[1] || {})[0] || 'ГРУППА 1',
-        foreign_lang: 'ALL'
+        foreign_lang: null
       };
       modalMode = 'wizard';
       wizardStep = 1;
@@ -1306,6 +1344,24 @@
       document.getElementById('settingsModal').classList.remove('open');
     }
 
+    function toggleLangUnified(langId) {
+      if (draftProfile.foreign_lang === langId) {
+        draftProfile.foreign_lang = null;
+      } else {
+        draftProfile.foreign_lang = langId;
+      }
+      renderUnifiedSettings();
+    }
+
+    function toggleLangWizard(langId) {
+      if (draftProfile.foreign_lang === langId) {
+        draftProfile.foreign_lang = null;
+      } else {
+        draftProfile.foreign_lang = langId;
+      }
+      renderWizardStep();
+    }
+
     function renderUnifiedSettings() {
       document.getElementById('modalCategoryLabel').textContent = 'Параметры';
       document.getElementById('modalHeading').textContent = 'Настройки расписания';
@@ -1314,12 +1370,16 @@
       const groups = Object.keys(facultyData?.courses?.[draftProfile.course] || {});
 
       const langs = [
-        { id: 'ALL', label: 'Все языки (без РКИ)' },
         { id: 'EN', label: 'Английский' },
         { id: 'DE', label: 'Немецкий' },
         { id: 'FR', label: 'Французский' },
-        { id: 'RKI', label: 'Русский (РКИ)' }
+        { id: 'RKI', label: 'Русский' }
       ];
+
+      const activeLangObj = langs.find(l => l.id === draftProfile.foreign_lang);
+      const langHint = activeLangObj
+        ? `Выбран <b>${activeLangObj.label}</b>. Нажмите повторно для сброса (будут показаны все языки).`
+        : `Язык не выбран • в расписании показываются все языки. Нажмите на язык, чтобы скрыть остальные.`;
 
       const body = document.getElementById('modalBody');
       body.innerHTML = `
@@ -1354,10 +1414,12 @@
         <div>
           <div class="section-title">Изучаемый иностранный язык</div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-            ${langs.map(l => `
-              <button onclick="draftProfile.foreign_lang='${l.id}'; renderUnifiedSettings();" class="tap-scale" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-color); ${l.id === 'ALL' ? 'grid-column: span 2;' : ''} ${draftProfile.foreign_lang === l.id ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${l.label}</button>
-            `).join('')}
+            ${langs.map(l => {
+              const sel = draftProfile.foreign_lang === l.id;
+              return `<button onclick="toggleLangUnified('${l.id}')" class="tap-scale" style="padding: 11px; border-radius: 12px; font-size: 13px; font-weight: 700; border: 1px solid var(--border-color); ${sel ? 'background: var(--nav-active-bg); color: var(--nav-active-text); box-shadow: 0 4px 12px rgba(0,0,0,0.14);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${l.label}${sel ? ' ✓' : ''}</button>`;
+            }).join('')}
           </div>
+          <div style="font-size: 11px; color: var(--text-sub); margin-top: 6px; line-height: 1.4;">${langHint}</div>
         </div>
       `;
 
@@ -1423,20 +1485,26 @@
           </div>
         `;
       } else if (wizardStep === 3) {
-        document.getElementById('modalHeading').textContent = 'Иностранный язык';
+        document.getElementById('modalHeading').textContent = 'Иностранный язык (необязательно)';
         const langs = [
-          { id: 'ALL', label: 'Все языки (без РКИ)' },
           { id: 'EN', label: 'Английский' },
           { id: 'DE', label: 'Немецкий' },
           { id: 'FR', label: 'Французский' },
-          { id: 'RKI', label: 'Русский (РКИ)' }
+          { id: 'RKI', label: 'Русский' }
         ];
+        const activeLangObj = langs.find(l => l.id === draftProfile.foreign_lang);
+        const langHint = activeLangObj
+          ? `Выбран <b>${activeLangObj.label}</b>. Нажмите повторно для отмены.`
+          : `Не выбрано • отображаться будут все языки. Нажмите на язык для фильтра или нажмите «Завершить».`;
+
         body.innerHTML = `
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-            ${langs.map(l => `
-              <button onclick="draftProfile.foreign_lang='${l.id}'; renderWizardStep();" class="tap-scale" style="padding: 11px; border-radius: 12px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-color); ${l.id === 'ALL' ? 'grid-column: span 2;' : ''} ${draftProfile.foreign_lang === l.id ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${l.label}</button>
-            `).join('')}
+            ${langs.map(l => {
+              const sel = draftProfile.foreign_lang === l.id;
+              return `<button onclick="toggleLangWizard('${l.id}')" class="tap-scale" style="padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 700; border: 1px solid var(--border-color); ${sel ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${l.label}${sel ? ' ✓' : ''}</button>`;
+            }).join('')}
           </div>
+          <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 8px; line-height: 1.4;">${langHint}</div>
         `;
       }
 
@@ -1546,7 +1614,10 @@
 
       const savedProfile = localStorage.getItem('bsu_profile');
       if (savedProfile) {
-        try { currentProfile = JSON.parse(savedProfile); } catch(e) {}
+        try {
+          currentProfile = JSON.parse(savedProfile);
+          if (currentProfile.foreign_lang === 'ALL') currentProfile.foreign_lang = null;
+        } catch(e) {}
       }
 
       const ok = await loadData();
