@@ -220,8 +220,6 @@
       position: relative;
       width: 100%;
       min-height: 240px;
-      perspective: 1400px;
-      -webkit-perspective: 1400px;
       overflow: hidden;
       contain: layout style;
     }
@@ -231,8 +229,6 @@
       flex-direction: column;
       gap: 10px;
       width: 100%;
-      transform-style: preserve-3d;
-      -webkit-transform-style: preserve-3d;
       will-change: transform, opacity;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
@@ -252,76 +248,65 @@
       z-index: 2;
     }
 
-    /* Duo Fold Out to Left */
-    @keyframes duoFoldOutLeft {
+    /* Silky-smooth iOS-style Navigation transitions (60-120 FPS) */
+    @keyframes pageSlideOutLeft {
       0% {
         opacity: 1;
-        transform: perspective(1200px) translate3d(0, 0, 0) rotateY(0deg);
-        transform-origin: 0% 50%;
+        transform: translate3d(0, 0, 0);
       }
       100% {
         opacity: 0;
-        transform: perspective(1200px) translate3d(-100%, 0, -35px) rotateY(-18deg);
-        transform-origin: 0% 50%;
+        transform: translate3d(-30%, 0, 0);
       }
     }
 
-    /* Duo Fold In from Right */
-    @keyframes duoFoldInRight {
+    @keyframes pageSlideInRight {
       0% {
         opacity: 0;
-        transform: perspective(1200px) translate3d(100%, 0, -35px) rotateY(18deg);
-        transform-origin: 100% 50%;
+        transform: translate3d(100%, 0, 0);
       }
       100% {
         opacity: 1;
-        transform: perspective(1200px) translate3d(0, 0, 0) rotateY(0deg);
-        transform-origin: 100% 50%;
+        transform: translate3d(0, 0, 0);
       }
     }
 
-    /* Duo Fold Out to Right */
-    @keyframes duoFoldOutRight {
+    @keyframes pageSlideOutRight {
       0% {
         opacity: 1;
-        transform: perspective(1200px) translate3d(0, 0, 0) rotateY(0deg);
-        transform-origin: 100% 50%;
+        transform: translate3d(0, 0, 0);
       }
       100% {
         opacity: 0;
-        transform: perspective(1200px) translate3d(100%, 0, -35px) rotateY(18deg);
-        transform-origin: 100% 50%;
+        transform: translate3d(30%, 0, 0);
       }
     }
 
-    /* Duo Fold In from Left */
-    @keyframes duoFoldInLeft {
+    @keyframes pageSlideInLeft {
       0% {
         opacity: 0;
-        transform: perspective(1200px) translate3d(-100%, 0, -35px) rotateY(-18deg);
-        transform-origin: 0% 50%;
+        transform: translate3d(-100%, 0, 0);
       }
       100% {
         opacity: 1;
-        transform: perspective(1200px) translate3d(0, 0, 0) rotateY(0deg);
-        transform-origin: 0% 50%;
+        transform: translate3d(0, 0, 0);
       }
     }
 
-    .page-fold-out-left {
-      animation: duoFoldOutLeft 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+    .page-slide-out-left {
+      animation: pageSlideOutLeft 0.32s cubic-bezier(0.25, 1, 0.5, 1) both;
     }
 
-    .page-fold-in-right {
-      animation: duoFoldInRight 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+    .page-slide-in-right {
+      animation: pageSlideInRight 0.32s cubic-bezier(0.25, 1, 0.5, 1) both;
     }
 
-    .page-fold-out-right {
-      animation: duoFoldOutRight 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+    .page-slide-out-right {
+      animation: pageSlideOutRight 0.32s cubic-bezier(0.25, 1, 0.5, 1) both;
     }
 
-    .page-fold-in-left {
-      animation: duoFoldInLeft 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+    .page-slide-in-left {
+      animation: pageSlideInLeft 0.32s cubic-bezier(0.25, 1, 0.5, 1) both;
     }
 
     .subgroups-grid {
@@ -405,17 +390,17 @@
 
     .calendar-selector {
       display: flex;
-      gap: 5px;
+      gap: 6px;
       background: var(--glass-card-subtle);
       border: 1px solid var(--border-color);
       border-radius: 17px;
       padding: 4px;
       box-shadow: var(--glass-inner-bevel);
-      transform: translateZ(0);
       overflow-x: auto;
       scrollbar-width: none;
       -ms-overflow-style: none;
       scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
     }
 
     .calendar-selector::-webkit-scrollbar {
@@ -423,24 +408,24 @@
     }
 
     .calendar-day-btn {
-      flex: 1 1 0;
-      min-width: 44px;
+      flex: 0 0 calc((100% - 24px) / 5.2);
+      min-width: 52px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 2.5px;
-      padding: 7px 2px 6px;
+      padding: 7px 4px 6px;
       border-radius: 13px;
       border: 1px solid transparent;
       background: transparent;
       color: var(--text-main);
       position: relative;
-      transition: background 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-                  color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-                  transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
-                  border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-                  box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: background 0.2s cubic-bezier(0.25, 1, 0.5, 1),
+                  color 0.2s cubic-bezier(0.25, 1, 0.5, 1),
+                  transform 0.15s cubic-bezier(0.25, 1, 0.5, 1),
+                  border-color 0.2s cubic-bezier(0.25, 1, 0.5, 1),
+                  box-shadow 0.2s cubic-bezier(0.25, 1, 0.5, 1);
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
@@ -460,6 +445,15 @@
 
     .calendar-day-btn.active:active {
       transform: scale(0.96);
+    }
+
+    .calendar-day-btn.past-day {
+      opacity: 0.62;
+    }
+
+    .calendar-day-btn.past-day:hover,
+    .calendar-day-btn.past-day.active {
+      opacity: 1;
     }
 
     .calendar-day-name {
@@ -492,64 +486,9 @@
       animation: pulseAura 2.5s ease-in-out infinite;
     }
 
-    .archive-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 0 12px;
-      height: 48px;
-      border-radius: 17px;
-      background: var(--glass-card-subtle);
-      border: 1px solid var(--border-color);
-      color: var(--text-sub);
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
-      flex-shrink: 0;
-      white-space: nowrap;
-      box-shadow: var(--glass-inner-bevel);
-      transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.15s;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-
-    .archive-btn:hover, .archive-btn:active {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-main);
-      border-color: rgba(255, 255, 255, 0.22);
-    }
-
-    .archive-count-badge {
-      font-size: 10px;
-      padding: 1.5px 6px;
-      border-radius: 10px;
-      background: rgba(99, 102, 241, 0.22);
-      border: 1px solid rgba(99, 102, 241, 0.4);
-      color: #a5b4fc;
-      font-weight: 800;
-      line-height: 1.2;
-    }
-
     .archive-card {
       opacity: 0.85 !important;
       filter: saturate(0.85);
-    }
-
-    .badge-archive {
-      background: rgba(148, 163, 184, 0.12);
-      border: 1px solid rgba(148, 163, 184, 0.28);
-      color: #cbd5e1;
-      font-weight: 700;
-      font-size: 10px;
-    }
-
-    @media (max-width: 380px) {
-      .archive-btn-text {
-        display: none;
-      }
-      .archive-btn {
-        padding: 0 10px;
-      }
     }
 
     .past-day-card {
@@ -599,17 +538,7 @@
       </button>
     </div>
 
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <div id="calendarSelector" class="calendar-selector" style="flex: 1; min-width: 0;"></div>
-      <button id="archiveBtn" onclick="openArchiveModal()" class="archive-btn tap-scale" title="Архив расписания">
-        <svg style="width: 15px; height: 15px; flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="10"></circle>
-          <polyline points="12 6 12 12 16 14"></polyline>
-        </svg>
-        <span class="archive-btn-text">Архив</span>
-        <span id="archiveCountBadge" class="archive-count-badge" style="display: none;">0</span>
-      </button>
-    </div>
+    <div id="calendarSelector" class="calendar-selector"></div>
 
     <div id="dayHeaderRow" style="display: flex; align-items: center; justify-content: space-between; margin-top: 1px; padding: 0 2px;">
       <div style="display: flex; align-items: center; gap: 7px; flex-wrap: wrap;">
@@ -645,42 +574,6 @@
     </div>
   </div>
 
-  <div id="archiveModal" class="modal-overlay">
-    <div class="modal-sheet" style="max-height: 85vh; display: flex; flex-direction: column;">
-      <div class="modal-grabber"></div>
-
-      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 12px;">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <div style="width: 32px; height: 32px; border-radius: 10px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center;">
-            <svg style="width: 16px; height: 16px; color: #a5b4fc;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-          </div>
-          <div>
-            <div style="font-size: 15px; font-weight: 800;">Архив расписания</div>
-            <div style="font-size: 10.5px; color: var(--text-sub); font-weight: 500;">Прошедшие дни за 14 дней</div>
-          </div>
-        </div>
-        <button onclick="closeArchiveModal()" class="tap-scale" style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-sub); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-          <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-      </div>
-
-      <div id="archiveCalendarSelector" class="calendar-selector" style="margin-bottom: 12px;"></div>
-
-      <div id="archiveDayHeaderRow" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; padding: 0 2px;">
-        <div style="display: flex; align-items: center; gap: 7px; flex-wrap: wrap;">
-          <h3 id="archiveDayFullTitle" style="font-size: 14.5px; font-weight: 800; letter-spacing: -0.2px; margin: 0;">...</h3>
-          <span class="badge-status badge-archive">Архив • Прошедший день</span>
-        </div>
-        <div id="archiveDayLessonsCount" style="font-size: 11.5px; font-weight: 700; color: var(--text-sub);"></div>
-      </div>
-
-      <div id="archiveScheduleList" class="no-scrollbar" style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; padding-bottom: 10px;"></div>
-    </div>
-  </div>
-
   <script>
     const tg = window.Telegram?.WebApp;
     if (tg) {
@@ -711,10 +604,8 @@
       'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
     ];
 
-    let currentActiveDays = [];
-    let currentArchiveDays = [];
+    let currentDaysList = [];
     let selectedDayIndex = 0;
-    let selectedArchiveDayIndex = 0;
     
     let modalMode = 'unified';
     let wizardStep = 1;
@@ -775,13 +666,13 @@
       title = title.replace(/^[-–—•,\s]+|[-–—•,\s]+$/g, '').trim();
 
       const aliases = [
+        { match: /высш(ая|\.)?\s*матем|вышмат/i, to: 'ВышМат' },
+        { match: /матем(атическ(ий|\.))?\s*анализ/i, to: 'Матанализ' },
         { match: /безопасн(ость|\.)?\s*жизнедеят|бжд|бжч/i, to: 'БЖЧ' },
         { match: /дистанционн.*зонд|дзз/i, to: 'ДЗЗ' },
         { match: /введение\s+в\s+социально-эконом|социально-эконом.*геогр|соц.*эконом/i, to: 'Соц-эконом география' },
         { match: /информатик/i, to: 'Информатика' },
         { match: /основы\s*эколог|охрана\s*природ|эколог/i, to: 'Экология' },
-        { match: /высш(ая|\.)?\s*матем/i, to: 'Вышмат' },
-        { match: /матем(атическ(ий|\.))?\s*анализ/i, to: 'Матанализ' },
         { match: /истор(ия|\.)?\s*беларус/i, to: 'История Беларуси' },
         { match: /физическ(ая|\.)?\s*культ/i, to: 'Физкультура' },
         { match: /топограф(ия|\.)?.*геодез|топография\s+с\s+основами/i, to: 'Топография и геодезия' },
@@ -889,7 +780,7 @@
 
     async function loadData() {
       try {
-        const res = await fetch('schedule_data.json?t=' + Date.now());
+        const res = await fetch('schedule_data.json?t=' + Date.now(), { cache: 'no-store' });
         if (!res.ok) throw new Error();
         facultyData = await res.json();
         return true;
@@ -1013,88 +904,71 @@
       return DAY_DEFS[0];
     }
 
-    function getSchedulePartitions(groupSchedule) {
+    function getScheduleDays(groupSchedule) {
       const now = new Date();
       const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-      const todayDayOfWeek = now.getDay(); // 0 is Sun, 1..6 is Mon..Sat
 
       const keys = Object.keys(groupSchedule || {});
+      const daysMap = new Map();
 
-      // 1. Gather Archived days from groupSchedule (within 14 days)
-      const archiveDays = [];
-      keys.forEach(k => {
-        const keyDate = parseDayKeyDate(k, now);
-        if (keyDate && keyDate.getTime() < todayStart.getTime()) {
-          const ageDays = Math.round((todayStart.getTime() - keyDate.getTime()) / 86400000);
-          if (ageDays <= 14) {
-            const dayDef = findDayDef(k, keyDate);
-            archiveDays.push({
-              rawKey: k,
-              date: keyDate,
-              ageDays,
-              dayDef,
-              dateText: formatDDMM(keyDate),
-              formattedDate: formatDateRu(keyDate)
-            });
-          }
-        }
-      });
+      // 1. Add all parsed days from groupSchedule (within 14 days)
+      keys.forEach(rawKey => {
+        const keyDate = parseDayKeyDate(rawKey, now);
+        if (!keyDate) return;
+        const diffDays = Math.round((todayStart.getTime() - keyDate.getTime()) / 86400000);
+        if (diffDays > 14) return;
 
-      // Sort archiveDays reverse chronologically (most recent past day first)
-      archiveDays.sort((a, b) => b.date.getTime() - a.date.getTime());
-
-      // 2. Build activeDays for the current / upcoming cycle
-      const activeDays = [];
-      let startOffset = 0;
-      let totalActiveDays = 0;
-
-      if (todayDayOfWeek === 0) {
-        // Sunday: active cycle is upcoming Mon..Sat
-        startOffset = 1;
-        totalActiveDays = 6;
-      } else {
-        // Weekday: active cycle is Today through Saturday
-        startOffset = 0;
-        totalActiveDays = 7 - todayDayOfWeek;
-      }
-
-      for (let i = 0; i < totalActiveDays; i++) {
-        const targetDate = new Date(todayStart.getTime() + (startOffset + i) * 86400000);
-        const targetDayOfWeek = targetDate.getDay();
-        const dayDef = DAY_DEFS.find(d => d.index === targetDayOfWeek) || DAY_DEFS[0];
-        const dateText = formatDDMM(targetDate);
-
-        // Look for matching key in groupSchedule
-        let rawKey = keys.find(k => k.includes(dateText));
-        if (!rawKey) {
-          rawKey = keys.find(k => {
-            if (!k.toUpperCase().includes(dayDef.name)) return false;
-            const d = parseDayKeyDate(k, now);
-            return !d || d.getTime() >= todayStart.getTime();
-          });
-        }
-
-        const diffDays = Math.round((targetDate.getTime() - todayStart.getTime()) / 86400000);
+        const dayDef = findDayDef(rawKey, keyDate);
         const isToday = diffDays === 0;
-        const isTomorrow = diffDays === 1;
+        const isTomorrow = diffDays === -1;
+        const isPast = diffDays > 0;
 
-        activeDays.push({
-          index: i,
-          rawKey: rawKey || null,
-          date: targetDate,
+        daysMap.set(keyDate.getTime(), {
+          rawKey,
+          date: keyDate,
           dayDef,
           short: dayDef.short,
           full: dayDef.full,
           name: dayDef.name,
-          dateText,
-          formattedDate: formatDateRu(targetDate),
+          dateText: formatDDMM(keyDate),
+          formattedDate: formatDateRu(keyDate),
           isToday,
           isTomorrow,
-          isPast: false
+          isPast
         });
+      });
+
+      // 2. Ensure current week Monday..Saturday exists in daysMap (placeholder if not uploaded)
+      const currentWeekMonday = new Date(todayStart.getTime() - ((now.getDay() + 6) % 7) * 86400000);
+      for (let i = 0; i < 6; i++) {
+        const wDate = new Date(currentWeekMonday.getTime() + i * 86400000);
+        const timeKey = wDate.getTime();
+        if (!daysMap.has(timeKey)) {
+          const targetDayOfWeek = wDate.getDay();
+          const dayDef = DAY_DEFS.find(d => d.index === targetDayOfWeek) || DAY_DEFS[0];
+          const diffDays = Math.round((todayStart.getTime() - wDate.getTime()) / 86400000);
+          const isToday = diffDays === 0;
+          const isTomorrow = diffDays === -1;
+          const isPast = diffDays > 0;
+
+          daysMap.set(timeKey, {
+            rawKey: null,
+            date: wDate,
+            dayDef,
+            short: dayDef.short,
+            full: dayDef.full,
+            name: dayDef.name,
+            dateText: formatDDMM(wDate),
+            formattedDate: formatDateRu(wDate),
+            isToday,
+            isTomorrow,
+            isPast
+          });
+        }
       }
 
-      return { activeDays, archiveDays };
+      // 3. Sort chronologically (past days on the left, today in the middle, future on the right)
+      return Array.from(daysMap.values()).sort((a, b) => a.date.getTime() - b.date.getTime());
     }
 
     function formatLessonsCount(count) {
@@ -1112,7 +986,7 @@
     function selectDayIndex(index, hapticType = 'medium') {
       const isSundayToday = new Date().getDay() === 0;
       if (index === -1 && !isSundayToday) return;
-      if (index < -1 || index >= currentActiveDays.length) return;
+      if (index < -1 || index >= currentDaysList.length) return;
       if (selectedDayIndex === index) return;
 
       if (selectedDayIndex === -1) {
@@ -1162,17 +1036,17 @@
 
     function findInitialDayIndex(groupSchedule) {
       const now = new Date();
-      const dayOfWeek = now.getDay(); // 0 is Sunday
-      if (dayOfWeek === 0) {
+      if (now.getDay() === 0) {
         return -1; // Sunday!
       }
-      const { activeDays } = getSchedulePartitions(groupSchedule);
-      for (let i = 0; i < activeDays.length; i++) {
-        if (activeDays[i].isToday) {
+      const days = getScheduleDays(groupSchedule);
+      for (let i = 0; i < days.length; i++) {
+        if (days[i].isToday) {
           return i;
         }
       }
-      return 0;
+      const firstFuture = days.findIndex(d => !d.isPast);
+      return firstFuture !== -1 ? firstFuture : 0;
     }
 
     function updateDayHeader(dayIndex, groupSchedule) {
@@ -1196,7 +1070,7 @@
         return;
       }
 
-      const currentDay = currentActiveDays[dayIndex];
+      const currentDay = currentDaysList[dayIndex];
       if (!currentDay) return;
 
       let titlePrefix = '';
@@ -1208,7 +1082,9 @@
 
       dayFullTitle.textContent = `${titlePrefix}${currentDay.full}, ${currentDay.formattedDate}`;
 
-      if (currentDay.isToday) {
+      if (currentDay.isPast) {
+        badgeBox.innerHTML = '<span class="badge-subtle" style="color: var(--text-sub); border-color: var(--border-color); font-size: 10.5px; font-weight: 600;">Прошедший день</span>';
+      } else if (currentDay.isToday) {
         badgeBox.innerHTML = '<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.3); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981;"></span>Сегодня</span>';
       } else if (currentDay.isTomorrow) {
         badgeBox.innerHTML = '<span class="badge-subtle" style="color: var(--text-main); border-color: var(--border-color); font-weight: 700;">Завтра</span>';
@@ -1225,20 +1101,20 @@
       }
     }
 
-    function renderLessonCards(slots, isToday, isArchive = false) {
+    function renderLessonCards(slots, isToday, isPast = false) {
       const frag = document.createDocumentFragment();
       const times = Object.keys(slots);
 
       times.forEach((timeStr, index) => {
         const items = parseLessons(slots[timeStr]);
-        const isLive = isToday && !isArchive && isLessonLive(timeStr);
+        const isLive = isToday && !isPast && isLessonLive(timeStr);
         const hasImportant = items.some(item => currentProfile.important_subjects.some(imp => item.title.toLowerCase().includes(imp.toLowerCase())));
 
         const wrapper = document.createElement('div');
         let cardClasses = 'card-glass tap-scale animate-card';
         if (isLive) cardClasses = 'active-lesson-card tap-scale animate-card';
         else if (hasImportant) cardClasses += ' important-card';
-        if (isArchive) cardClasses += ' archive-card';
+        if (isPast) cardClasses += ' archive-card';
 
         wrapper.className = cardClasses;
         wrapper.style.animationDelay = `${index * 20}ms`;
@@ -1249,7 +1125,7 @@
               <span class="badge-subtle" style="font-family: monospace; font-weight: 700; ${isLive ? 'background: #10b981; color: #fff;' : ''}">${timeStr}</span>
               ${isLive ? '<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.3); font-weight: 700;">Идёт сейчас</span>' : ''}
               ${hasImportant ? '<span class="badge-subtle" style="color: #f59e0b; border-color: rgba(245,158,11,0.3); font-weight: 700;">Важная пара</span>' : ''}
-              ${isArchive ? '<span class="badge-subtle" style="color: #cbd5e1; font-weight: 600; font-size: 10px;">В архиве</span>' : ''}
+              ${isPast ? '<span class="badge-subtle" style="color: #cbd5e1; font-weight: 600; font-size: 10px;">Прошедший день</span>' : ''}
             </div>
           </div>
         `;
@@ -1311,7 +1187,7 @@
         return page;
       }
 
-      const currentDay = currentActiveDays[dayIndex];
+      const currentDay = currentDaysList[dayIndex];
       if (!currentDay || !currentDay.rawKey) {
         page.innerHTML = `
           <div class="card-glass animate-card" style="text-align: center; padding: 42px 20px;">
@@ -1339,101 +1215,9 @@
         return page;
       }
 
-      const frag = renderLessonCards(slots, currentDay.isToday, false);
+      const frag = renderLessonCards(slots, currentDay.isToday, currentDay.isPast);
       page.appendChild(frag);
       return page;
-    }
-
-    function openArchiveModal() {
-      triggerHaptic('medium');
-      selectedArchiveDayIndex = 0;
-      renderArchiveView();
-      document.getElementById('archiveModal').classList.add('open');
-    }
-
-    function closeArchiveModal() {
-      document.getElementById('archiveModal').classList.remove('open');
-    }
-
-    function selectArchiveDayIndex(idx) {
-      if (selectedArchiveDayIndex === idx) return;
-      selectedArchiveDayIndex = idx;
-      triggerHaptic('medium');
-      renderArchiveView();
-    }
-
-    function renderArchiveView() {
-      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
-      const { archiveDays } = getSchedulePartitions(groupSchedule);
-      currentArchiveDays = archiveDays;
-
-      const selectorBox = document.getElementById('archiveCalendarSelector');
-      const titleEl = document.getElementById('archiveDayFullTitle');
-      const lessonsCountBox = document.getElementById('archiveDayLessonsCount');
-      const listEl = document.getElementById('archiveScheduleList');
-
-      selectorBox.innerHTML = '';
-      listEl.innerHTML = '';
-
-      if (!archiveDays.length) {
-        selectorBox.style.display = 'none';
-        titleEl.textContent = 'Нет архивных записей';
-        lessonsCountBox.textContent = '';
-        listEl.innerHTML = `
-          <div class="card-glass" style="text-align: center; padding: 42px 20px;">
-            <div style="width: 54px; height: 54px; border-radius: 18px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px;">
-              <svg style="width: 26px; height: 26px; color: var(--text-sub);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-            </div>
-            <h4 style="font-size: 16px; font-weight: 800; margin-bottom: 6px;">Архив пуст</h4>
-            <p style="font-size: 13px; color: var(--text-sub); line-height: 1.45; max-width: 260px; margin: 0 auto;">В базе нет сохранённых прошедших дней за последние 14 дней</p>
-          </div>
-        `;
-        return;
-      }
-
-      selectorBox.style.display = 'flex';
-
-      if (selectedArchiveDayIndex >= archiveDays.length) {
-        selectedArchiveDayIndex = 0;
-      }
-
-      archiveDays.forEach((day, idx) => {
-        const isActive = idx === selectedArchiveDayIndex;
-        const btn = document.createElement('button');
-        btn.className = `calendar-day-btn tap-scale ${isActive ? 'active' : ''}`;
-        btn.onclick = () => selectArchiveDayIndex(idx);
-        btn.innerHTML = `
-          <span class="calendar-day-name">${day.dayDef.short}</span>
-          <span class="calendar-day-date">${day.dateText}</span>
-        `;
-        selectorBox.appendChild(btn);
-
-        if (isActive) {
-          requestAnimationFrame(() => {
-            btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-          });
-        }
-      });
-
-      const curDay = archiveDays[selectedArchiveDayIndex];
-      const relativeText = curDay.ageDays === 1 ? 'Вчера' : `${curDay.ageDays} дн. назад`;
-      titleEl.textContent = `${curDay.dayDef.full}, ${curDay.formattedDate}`;
-
-      const slots = groupSchedule[curDay.rawKey] || {};
-      const times = Object.keys(slots);
-
-      if (!times.length) {
-        lessonsCountBox.textContent = 'Выходной';
-        listEl.innerHTML = getWeekendCardHTML();
-        return;
-      }
-
-      lessonsCountBox.textContent = `${formatLessonsCount(times.length)} • ${relativeText}`;
-      const frag = renderLessonCards(slots, false, true);
-      listEl.appendChild(frag);
     }
 
     function renderView() {
@@ -1443,20 +1227,7 @@
       }
 
       const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
-      const { activeDays, archiveDays } = getSchedulePartitions(groupSchedule);
-      currentActiveDays = activeDays;
-      currentArchiveDays = archiveDays;
-
-      // Update Archive Button badge
-      const archiveBadge = document.getElementById('archiveCountBadge');
-      if (archiveBadge) {
-        if (archiveDays.length > 0) {
-          archiveBadge.textContent = archiveDays.length;
-          archiveBadge.style.display = 'inline-block';
-        } else {
-          archiveBadge.style.display = 'none';
-        }
-      }
+      currentDaysList = getScheduleDays(groupSchedule);
 
       const now = new Date();
       const isSundayToday = now.getDay() === 0;
@@ -1465,19 +1236,19 @@
         sundayBanner.style.display = (isSundayToday && selectedDayIndex >= 0) ? 'flex' : 'none';
       }
 
-      if (selectedDayIndex >= activeDays.length) {
+      if (selectedDayIndex >= currentDaysList.length) {
         selectedDayIndex = 0;
       }
 
-      // Render Active Calendar Selector (Пн..Сб or relevant upcoming days starting from Today)
+      // Render Continuous Timeline Carousel (Past on left, Today in center, Future on right)
       const selectorBox = document.getElementById('calendarSelector');
       selectorBox.innerHTML = '';
 
-      activeDays.forEach((d, idx) => {
+      currentDaysList.forEach((d, idx) => {
         const isActive = idx === selectedDayIndex;
 
         const btn = document.createElement('button');
-        btn.className = `calendar-day-btn tap-scale ${isActive ? 'active' : ''}`;
+        btn.className = `calendar-day-btn tap-scale ${isActive ? 'active' : ''} ${d.isPast ? 'past-day' : ''}`;
         btn.onclick = () => selectDayIndex(idx, 'medium');
 
         btn.innerHTML = `
@@ -1506,7 +1277,7 @@
         return;
       }
 
-      // Transition between days with Duo dual-page folding
+      // Smooth slide transition (60-120 FPS, GPU-accelerated)
       viewport.querySelectorAll('.schedule-page.leaving-page').forEach(p => p.remove());
 
       const oldHeight = oldPage.offsetHeight;
@@ -1516,28 +1287,23 @@
       viewport.appendChild(newPage);
       const newHeight = newPage.offsetHeight;
 
-      if (oldHeight && newHeight && Math.abs(oldHeight - newHeight) > 4) {
-        viewport.style.height = `${oldHeight}px`;
-        viewport.style.transition = 'height 0.42s cubic-bezier(0.16, 1, 0.3, 1)';
-        requestAnimationFrame(() => {
-          viewport.style.height = `${newHeight}px`;
-        });
+      if (oldHeight && newHeight && Math.abs(oldHeight - newHeight) > 6) {
+        viewport.style.minHeight = `${Math.max(oldHeight, newHeight)}px`;
       }
 
       if (currentSlideDirection === 'next') {
-        oldPage.classList.add('page-fold-out-left');
-        newPage.classList.add('page-fold-in-right');
+        oldPage.classList.add('page-slide-out-left');
+        newPage.classList.add('page-slide-in-right');
       } else {
-        oldPage.classList.add('page-fold-out-right');
-        newPage.classList.add('page-fold-in-left');
+        oldPage.classList.add('page-slide-out-right');
+        newPage.classList.add('page-slide-in-left');
       }
 
       setTimeout(() => {
         if (oldPage.parentNode) oldPage.remove();
-        newPage.classList.remove('page-fold-in-right', 'page-fold-in-left');
-        viewport.style.height = '';
-        viewport.style.transition = '';
-      }, 440);
+        newPage.classList.remove('page-slide-in-right', 'page-slide-in-left');
+        viewport.style.minHeight = '';
+      }, 340);
     }
 
     function openSettingsModal() {
@@ -1804,8 +1570,7 @@
       main.addEventListener('touchend', e => {
         if (!e.changedTouches || e.changedTouches.length !== 1) return;
         const modal = document.getElementById('settingsModal');
-        const archiveModal = document.getElementById('archiveModal');
-        if ((modal && modal.classList.contains('open')) || (archiveModal && archiveModal.classList.contains('open'))) return;
+        if (modal && modal.classList.contains('open')) return;
 
         const deltaX = e.changedTouches[0].clientX - touchStartX;
         const deltaY = e.changedTouches[0].clientY - touchStartY;
@@ -1818,7 +1583,7 @@
             // Swipe Left -> Next day
             if (selectedDayIndex === -1) {
               selectDayIndex(0, 'heavy');
-            } else if (selectedDayIndex < currentActiveDays.length - 1) {
+            } else if (selectedDayIndex < currentDaysList.length - 1) {
               selectDayIndex(selectedDayIndex + 1, 'heavy');
             }
           } else if (deltaX > 0) {
@@ -1832,31 +1597,20 @@
         }
       }, { passive: true });
 
-      const archiveModalEl = document.getElementById('archiveModal');
-      if (archiveModalEl) {
-        archiveModalEl.addEventListener('click', e => {
-          if (e.target === archiveModalEl) {
-            closeArchiveModal();
-          }
-        });
-      }
-
       window.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
-          closeArchiveModal();
           closeSettingsModal();
           return;
         }
 
         const modal = document.getElementById('settingsModal');
-        const archiveModal = document.getElementById('archiveModal');
-        if ((modal && modal.classList.contains('open')) || (archiveModal && archiveModal.classList.contains('open'))) return;
+        if (modal && modal.classList.contains('open')) return;
         const isSundayToday = new Date().getDay() === 0;
 
         if (e.key === 'ArrowRight') {
           if (selectedDayIndex === -1) {
             selectDayIndex(0, 'medium');
-          } else if (selectedDayIndex < currentActiveDays.length - 1) {
+          } else if (selectedDayIndex < currentDaysList.length - 1) {
             selectDayIndex(selectedDayIndex + 1, 'medium');
           }
         } else if (e.key === 'ArrowLeft') {

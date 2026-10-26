@@ -40,7 +40,14 @@ def format_datetime_ru(dt):
 
 def download_file(course_id, cfg):
     url = cfg["url"].replace("&dl=0", "&dl=1").replace("?dl=0", "?dl=1")
-    res = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
+    cache_buster = int(datetime.datetime.now().timestamp())
+    url = f"{url}&_ts={cache_buster}"
+    headers = {
+        "User-Agent": "Mozilla/5.0",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache"
+    }
+    res = requests.get(url, headers=headers, timeout=30)
     res.raise_for_status()
     with open(cfg["raw_file"], "wb") as f:
         f.write(res.content)
@@ -108,6 +115,8 @@ def clean_cell_text(text):
     text = text.replace('__HYPH__', '-')
 
     typos = [
+        (re.compile(r'высшая\s+математика\s+с\s+основами\s+информатики', re.I), 'ВышМат'),
+        (re.compile(r'высшая\s+математика', re.I), 'ВышМат'),
         (re.compile(r'гибробиолог', re.I), 'гидробиолог'),
         (re.compile(r'автоматизи-?рованые', re.I), 'автоматизированные'),
         (re.compile(r'геоинформа-?цинное', re.I), 'геоинформационное'),
