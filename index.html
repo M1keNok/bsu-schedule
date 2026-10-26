@@ -131,12 +131,15 @@
 
     .active-lesson-card {
       position: relative;
+      background: var(--glass-card);
+      border: 1.5px solid rgba(16, 185, 129, 0.7);
+      box-shadow: 0 4px 18px -2px rgba(16, 185, 129, 0.22), var(--glass-inner-bevel);
       border-radius: 20px;
-      padding: 1.5px;
-      overflow: hidden;
-      contain: paint;
-      box-shadow: 0 10px 24px -4px rgba(16, 185, 129, 0.25);
-      transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.16s ease;
+      padding: 14px 16px;
+      transform: translateZ(0);
+      contain: content;
+      animation: activeLessonPulse 2.8s ease-in-out infinite;
+      transition: background 0.25s ease, border-color 0.25s ease, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
@@ -145,50 +148,15 @@
       transform: scale(0.985);
     }
 
-    .active-lesson-card::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: conic-gradient(
-        transparent,
-        rgba(16, 185, 129, 0.1) 40%,
-        rgba(16, 185, 129, 0.95) 50%,
-        transparent 60%
-      );
-      animation: rotateBeam 3.6s linear infinite;
-      will-change: transform;
-      z-index: 0;
-    }
-
-    @keyframes rotateBeam {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .active-lesson-inner {
-      position: relative;
-      z-index: 1;
-      background: var(--glass-card);
-      border-radius: 18.5px;
-      padding: 14px 16px;
-      box-shadow: var(--glass-inner-bevel);
-    }
-
-    .important-card {
-      position: relative;
-    }
-    .important-card::after {
-      content: '';
-      position: absolute;
-      inset: -1px;
-      border-radius: 20px;
-      border: 1.5px solid rgba(245, 158, 11, 0.55);
-      animation: pulseAura 3s ease-in-out infinite;
-      pointer-events: none;
-      will-change: opacity;
+    @keyframes activeLessonPulse {
+      0%, 100% {
+        border-color: rgba(16, 185, 129, 0.55);
+        box-shadow: 0 4px 16px -2px rgba(16, 185, 129, 0.2), 0 0 0 0 rgba(16, 185, 129, 0.1), var(--glass-inner-bevel);
+      }
+      50% {
+        border-color: rgba(16, 185, 129, 0.95);
+        box-shadow: 0 8px 24px -2px rgba(16, 185, 129, 0.38), 0 0 0 3px rgba(16, 185, 129, 0.18), var(--glass-inner-bevel);
+      }
     }
 
     @keyframes pulseAura {
@@ -408,7 +376,7 @@
     }
 
     .calendar-day-btn {
-      flex: 0 0 calc((100% - 24px) / 5.2);
+      flex: 0 0 calc((100% - 32px) / 4.4);
       min-width: 52px;
       display: flex;
       flex-direction: column;
@@ -448,12 +416,16 @@
     }
 
     .calendar-day-btn.past-day {
-      opacity: 0.62;
+      flex: 0 0 44px;
+      min-width: 42px;
+      opacity: 0.48;
+      padding: 7px 2px 6px;
     }
 
     .calendar-day-btn.past-day:hover,
     .calendar-day-btn.past-day.active {
       opacity: 1;
+      flex: 0 0 52px;
     }
 
     .calendar-day-name {
@@ -586,8 +558,7 @@
     let currentProfile = {
       course: "1",
       group_name: "",
-      foreign_lang: "ALL",
-      important_subjects: []
+      foreign_lang: "ALL"
     };
 
     const DAY_DEFS = [
@@ -802,13 +773,23 @@
       return { teacher: s, room };
     }
 
+    function isRussianForeignLang(text) {
+      if (!text) return false;
+      return /(?:^|[^а-яА-ЯёЁa-zA-Z])русск(?:ий|ая|ое|ие|ого|ому|им|ом|ую|их|ими)?\s*(?:как\s*иностр[а-яё]*|язык[а-яё]*)|\bрки\b/i.test(text);
+    }
+
     function filterByLang(text, lang) {
+      const isRki = isRussianForeignLang(text);
+      // Если в настройках не выбран русский как изучаемый (RKI), он вообще не должен отображаться
+      if (isRki) {
+        return lang === 'RKI';
+      }
       if (!lang || lang === 'ALL') return true;
       const lower = text.toLowerCase();
       const map = {
-        'EN': ['нем', 'немец', 'франц', 'исп', 'рки'],
-        'DE': ['англ', 'франц', 'исп', 'рки'],
-        'FR': ['англ', 'нем', 'немец', 'исп', 'рки'],
+        'EN': ['нем', 'немец', 'франц', 'исп'],
+        'DE': ['англ', 'франц', 'исп'],
+        'FR': ['англ', 'нем', 'немец', 'исп'],
         'RKI': ['англ', 'нем', 'немец', 'франц', 'исп'],
       };
       return !(map[lang] && map[lang].some(marker => lower.includes(marker)));
@@ -1064,7 +1045,7 @@
 
       if (dayIndex === -1) {
         const sundayDate = now.getDate() + ' ' + monthsGenitive[now.getMonth()];
-        dayFullTitle.textContent = `Сегодня • Воскресенье, ${sundayDate}`;
+        dayFullTitle.textContent = `Воскресенье, ${sundayDate}`;
         badgeBox.innerHTML = '<span class="badge-subtle" style="color: #f59e0b; border-color: rgba(245,158,11,0.3); font-weight: 700;">Выходной</span>';
         lessonsCountBox.textContent = 'Выходной';
         return;
@@ -1073,21 +1054,14 @@
       const currentDay = currentDaysList[dayIndex];
       if (!currentDay) return;
 
-      let titlePrefix = '';
-      if (currentDay.isToday) {
-        titlePrefix = 'Сегодня • ';
-      } else if (currentDay.isTomorrow) {
-        titlePrefix = 'Завтра • ';
-      }
-
-      dayFullTitle.textContent = `${titlePrefix}${currentDay.full}, ${currentDay.formattedDate}`;
+      dayFullTitle.textContent = `${currentDay.full}, ${currentDay.formattedDate}`;
 
       if (currentDay.isPast) {
-        badgeBox.innerHTML = '<span class="badge-subtle" style="color: var(--text-sub); border-color: var(--border-color); font-size: 10.5px; font-weight: 600;">Прошедший день</span>';
+        badgeBox.innerHTML = '<span class="badge-subtle" style="color: var(--text-sub); border-color: var(--border-color); font-size: 10.5px; font-weight: 600;">Архив</span>';
       } else if (currentDay.isToday) {
-        badgeBox.innerHTML = '<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.3); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981;"></span>Сегодня</span>';
+        badgeBox.innerHTML = '<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.3); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>Сегодня</span>';
       } else if (currentDay.isTomorrow) {
-        badgeBox.innerHTML = '<span class="badge-subtle" style="color: var(--text-main); border-color: var(--border-color); font-weight: 700;">Завтра</span>';
+        badgeBox.innerHTML = '<span class="badge-subtle" style="color: #38bdf8; border-color: rgba(56,189,248,0.3); font-weight: 700;">Завтра</span>';
       } else {
         badgeBox.innerHTML = '';
       }
@@ -1108,12 +1082,10 @@
       times.forEach((timeStr, index) => {
         const items = parseLessons(slots[timeStr]);
         const isLive = isToday && !isPast && isLessonLive(timeStr);
-        const hasImportant = items.some(item => currentProfile.important_subjects.some(imp => item.title.toLowerCase().includes(imp.toLowerCase())));
 
         const wrapper = document.createElement('div');
         let cardClasses = 'card-glass tap-scale animate-card';
         if (isLive) cardClasses = 'active-lesson-card tap-scale animate-card';
-        else if (hasImportant) cardClasses += ' important-card';
         if (isPast) cardClasses += ' archive-card';
 
         wrapper.className = cardClasses;
@@ -1122,10 +1094,8 @@
         let innerContent = `
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
             <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-              <span class="badge-subtle" style="font-family: monospace; font-weight: 700; ${isLive ? 'background: #10b981; color: #fff;' : ''}">${timeStr}</span>
-              ${isLive ? '<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.3); font-weight: 700;">Идёт сейчас</span>' : ''}
-              ${hasImportant ? '<span class="badge-subtle" style="color: #f59e0b; border-color: rgba(245,158,11,0.3); font-weight: 700;">Важная пара</span>' : ''}
-              ${isPast ? '<span class="badge-subtle" style="color: #cbd5e1; font-weight: 600; font-size: 10px;">Прошедший день</span>' : ''}
+              <span class="badge-subtle" style="font-family: monospace; font-weight: 700; ${isLive ? 'background: #10b981; color: #fff; border-color: #10b981;' : ''}">${timeStr}</span>
+              ${isLive ? '<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.35); background: rgba(16,185,129,0.08); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; animation: pulseAura 2s infinite;"></span>Идёт сейчас</span>' : ''}
             </div>
           </div>
         `;
@@ -1166,12 +1136,7 @@
           });
         }
 
-        if (isLive) {
-          wrapper.innerHTML = `<div class="active-lesson-inner">${innerContent}</div>`;
-        } else {
-          wrapper.innerHTML = innerContent;
-        }
-
+        wrapper.innerHTML = innerContent;
         frag.appendChild(wrapper);
       });
 
@@ -1260,7 +1225,15 @@
 
         if (isActive) {
           requestAnimationFrame(() => {
-            btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            const todayIdx = currentDaysList.findIndex(item => item.isToday);
+            if (idx === todayIdx && todayIdx > 0) {
+              const targetLeft = Math.max(0, btn.offsetLeft - 26);
+              selectorBox.scrollTo({ left: targetLeft, behavior: 'smooth' });
+            } else if (idx < todayIdx) {
+              btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            } else {
+              btn.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+            }
           });
         }
       });
@@ -1310,8 +1283,7 @@
       draftProfile = {
         course: currentProfile.course,
         group_name: currentProfile.group_name,
-        foreign_lang: currentProfile.foreign_lang,
-        important_subjects: [...currentProfile.important_subjects]
+        foreign_lang: currentProfile.foreign_lang
       };
       modalMode = 'unified';
       document.getElementById('settingsModal').classList.add('open');
@@ -1322,8 +1294,7 @@
       draftProfile = {
         course: currentProfile.course || '1',
         group_name: currentProfile.group_name || Object.keys(facultyData?.courses?.[1] || {})[0] || 'ГРУППА 1',
-        foreign_lang: 'ALL',
-        important_subjects: []
+        foreign_lang: 'ALL'
       };
       modalMode = 'wizard';
       wizardStep = 1;
@@ -1341,14 +1312,13 @@
 
       const isDark = document.documentElement.classList.contains('dark');
       const groups = Object.keys(facultyData?.courses?.[draftProfile.course] || {});
-      const subjects = extractAllSubjectsForGroup(draftProfile.course, draftProfile.group_name);
 
       const langs = [
-        { id: 'ALL', label: 'Все языки' },
+        { id: 'ALL', label: 'Все языки (без РКИ)' },
         { id: 'EN', label: 'Английский' },
         { id: 'DE', label: 'Немецкий' },
         { id: 'FR', label: 'Французский' },
-        { id: 'RKI', label: 'РКИ' }
+        { id: 'RKI', label: 'Русский (РКИ)' }
       ];
 
       const body = document.getElementById('modalBody');
@@ -1382,26 +1352,11 @@
         </div>
 
         <div>
-          <div class="section-title">Иностранный язык</div>
+          <div class="section-title">Изучаемый иностранный язык</div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
             ${langs.map(l => `
               <button onclick="draftProfile.foreign_lang='${l.id}'; renderUnifiedSettings();" class="tap-scale" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-color); ${l.id === 'ALL' ? 'grid-column: span 2;' : ''} ${draftProfile.foreign_lang === l.id ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${l.label}</button>
             `).join('')}
-          </div>
-        </div>
-
-        <div>
-          <div class="section-title">Важные пары (подсветка в расписании)</div>
-          <div style="display: flex; flex-direction: column; gap: 6px;">
-            ${subjects.length ? subjects.map(s => {
-              const checked = draftProfile.important_subjects.includes(s);
-              return `
-                <div onclick="toggleImportantUnified('${s}')" class="tap-scale" style="padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; ${checked ? 'background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4);' : 'background: var(--glass-card-subtle);'}">
-                  <span style="font-size: 12px; font-weight: 600; padding-right: 8px;">${s}</span>
-                  <span style="width: 17px; height: 17px; border-radius: 50%; border: 1.5px solid ${checked ? '#f59e0b' : 'var(--border-color)'}; background: ${checked ? '#f59e0b' : 'transparent'}; flex-shrink: 0;"></span>
-                </div>
-              `;
-            }).join('') : '<div style="color: var(--text-sub); font-size: 12px; padding: 6px;">Дисциплины не найдены</div>'}
           </div>
         </div>
       `;
@@ -1421,13 +1376,6 @@
       renderUnifiedSettings();
     }
 
-    function toggleImportantUnified(subj) {
-      const idx = draftProfile.important_subjects.indexOf(subj);
-      if (idx > -1) draftProfile.important_subjects.splice(idx, 1);
-      else draftProfile.important_subjects.push(subj);
-      renderUnifiedSettings();
-    }
-
     function saveUnifiedProfile() {
       currentProfile = { ...draftProfile };
       localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
@@ -1438,7 +1386,7 @@
     }
 
     function renderWizardStep() {
-      document.getElementById('modalCategoryLabel').textContent = `Шаг ${wizardStep} из 4`;
+      document.getElementById('modalCategoryLabel').textContent = `Шаг ${wizardStep} из 3`;
       const body = document.getElementById('modalBody');
       const footer = document.getElementById('modalFooter');
 
@@ -1477,11 +1425,11 @@
       } else if (wizardStep === 3) {
         document.getElementById('modalHeading').textContent = 'Иностранный язык';
         const langs = [
-          { id: 'ALL', label: 'Все языки' },
+          { id: 'ALL', label: 'Все языки (без РКИ)' },
           { id: 'EN', label: 'Английский' },
           { id: 'DE', label: 'Немецкий' },
           { id: 'FR', label: 'Французский' },
-          { id: 'RKI', label: 'РКИ' }
+          { id: 'RKI', label: 'Русский (РКИ)' }
         ];
         body.innerHTML = `
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
@@ -1490,35 +1438,16 @@
             `).join('')}
           </div>
         `;
-      } else if (wizardStep === 4) {
-        document.getElementById('modalHeading').textContent = 'Важные пары';
-        const subjects = extractAllSubjectsForGroup(draftProfile.course, draftProfile.group_name);
-        body.innerHTML = subjects.length ? subjects.map(s => {
-          const checked = draftProfile.important_subjects.includes(s);
-          return `
-            <div onclick="toggleImportantWizard('${s}')" class="tap-scale" style="padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; ${checked ? 'background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4);' : 'background: var(--glass-card-subtle);'}">
-              <span style="font-size: 12px; font-weight: 600; padding-right: 8px;">${s}</span>
-              <span style="width: 17px; height: 17px; border-radius: 50%; border: 1.5px solid ${checked ? '#f59e0b' : 'var(--border-color)'}; background: ${checked ? '#f59e0b' : 'transparent'}; flex-shrink: 0;"></span>
-            </div>
-          `;
-        }).join('') : '<div style="color: var(--text-sub); font-size: 12px; padding: 6px;">Дисциплины не найдены</div>';
       }
 
       footer.innerHTML = `
         <button onclick="prevWizardStep()" class="tap-scale" style="flex: 1; padding: 12px; border-radius: 14px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-main); font-size: 13px; font-weight: 700; ${wizardStep === 1 ? 'display: none;' : ''}">Назад</button>
-        <button onclick="nextWizardStep()" class="tap-scale" style="flex: 2; padding: 12px; border-radius: 14px; background: var(--nav-active-bg); border: none; color: var(--nav-active-text); font-size: 13px; font-weight: 700;">${wizardStep === 4 ? 'Завершить' : 'Далее'}</button>
+        <button onclick="nextWizardStep()" class="tap-scale" style="flex: 2; padding: 12px; border-radius: 14px; background: var(--nav-active-bg); border: none; color: var(--nav-active-text); font-size: 13px; font-weight: 700;">${wizardStep === 3 ? 'Завершить' : 'Далее'}</button>
       `;
     }
 
-    function toggleImportantWizard(subj) {
-      const idx = draftProfile.important_subjects.indexOf(subj);
-      if (idx > -1) draftProfile.important_subjects.splice(idx, 1);
-      else draftProfile.important_subjects.push(subj);
-      renderWizardStep();
-    }
-
     function nextWizardStep() {
-      if (wizardStep < 4) {
+      if (wizardStep < 3) {
         wizardStep++;
         renderWizardStep();
       } else {
@@ -1537,18 +1466,6 @@
         wizardStep--;
         renderWizardStep();
       }
-    }
-
-    function extractAllSubjectsForGroup(course, group) {
-      const subjects = new Set();
-      const grp = facultyData?.courses?.[course]?.[group] || {};
-      Object.values(grp).forEach(day => Object.values(day).forEach(list => list.forEach(l => {
-        const parsed = parseLessonRaw(l);
-        if (parsed.title && parsed.title.length > 2 && parsed.title !== 'Пара') {
-          subjects.add(parsed.title);
-        }
-      })));
-      return Array.from(subjects).sort();
     }
 
     let touchStartX = 0;
