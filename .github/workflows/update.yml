@@ -2,8 +2,16 @@ name: Update Schedule from Decanat
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    # Run every 15 minutes at off-peak minutes to avoid GitHub Actions runner queue delays
+    - cron: '12,27,42,57 * * * *'
   workflow_dispatch:
+
+concurrency:
+  group: schedule-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -31,4 +39,4 @@ jobs:
           git config --global user.name "BSU Schedule Bot"
           git config --global user.email "bot@github.com"
           git add schedule_data.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update schedule from Decanat" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update schedule from Decanat [skip ci]" && git push)
