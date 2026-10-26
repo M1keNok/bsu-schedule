@@ -171,9 +171,77 @@ def parse_docx(path):
                 if "СПЕЦИАЛЬНОСТЬ" in lesson.upper() or "НАПРАВЛЕНИЕ" in lesson.upper():
                     continue
                 res.setdefault(g_name, {}).setdefault(cur_day, {}).setdefault(cur_time, [])
-                if lesson and lesson not in res[g_name][cur_day][cur_time]:
-                    res[g_name][cur_day][cur_time].append(lesson)
+                if lesson:
+                    # Separate multiple subjects crammed into a single cell by Decanat
+                    sub_lessons = re.split(r"\n(?=(?:Немецкий язык|Русский язык как иностранный|ИНОСТРАННЫЙ ЯЗЫК|Французский язык))", lesson, flags=re.I)
+                    for sub in sub_lessons:
+                        sub = sub.strip()
+                        if sub and sub not in res[g_name][cur_day][cur_time]:
+                            res[g_name][cur_day][cur_time].append(sub)
     return res
+
+def detect_lesson_language(text):
+    if not text:
+        return None
+    lower = text.lower()
+    # 1. French: teacher Гулезова or word франц
+    if "гулезов" in lower or "франц" in lower:
+        return "FR"
+    # 2. German: teachers Пригодич, Хадасевич or word нем (avoiding неметаллическ)
+    if ("нем" in lower and "неметал" not in lower) or "пригодич" in lower or "хадасевич" in lower:
+        return "DE"
+    # 3. Russian as foreign language (RKI)
+    if "русск" in lower or "рки" in lower:
+        if any(w in lower for w in ["иностр", "язык", "рки"]):
+            return "RKI"
+    # 4. English: teachers or explicit tokens or generic foreign language
+    if any(t in lower for t in ["шарейко", "селиванова", "дворкина", "боровикова", "давыдова", "пышняк", "англ", "eduengscience"]):
+        return "EN"
+    if "иностранн" in lower or "язык профессионального общения" in lower or "практика иностранного языка" in lower:
+        return "EN"
+    return None
+
+def propagate_stream_languages(courses_data):
+    """
+    In university schedules, foreign language stream classes (French, German)
+    are often entered by Decanat in only 1 or 2 group columns, but attendable
+    by students from any group of the same course who study that language.
+    This function shares stream language lessons across groups of the same course
+    if the group's slot is empty or only contains other foreign language / PE classes.
+    """
+    for cid, groups in courses_data.items():
+        if not isinstance(groups, dict):
+            continue
+        stream_map = {}
+        for g_name, days in groups.items():
+            if not isinstance(days, dict):
+                continue
+            for day_key, slots in days.items():
+                if not isinstance(slots, dict):
+                    continue
+                for time_str, lessons in slots.items():
+                    for l in lessons:
+                        lang = detect_lesson_language(l)
+                        if lang in ("FR", "DE"):
+                            key = (day_key, time_str, lang)
+                            if key not in stream_map:
+                                stream_map[key] = l
+
+        for (day_key, time_str, lang), stream_lesson in stream_map.items():
+            for g_name, days in groups.items():
+                if not isinstance(days, dict) or day_key not in days:
+                    continue
+                slots = days[day_key]
+                current_lessons = slots.get(time_str, [])
+                has_lang = any(detect_lesson_language(l) == lang for l in current_lessons)
+                if has_lang:
+                    continue
+                is_available = not current_lessons or all(
+                    detect_lesson_language(l) is not None or bool(re.search(r"физическ.*культ", l, re.I))
+                    for l in current_lessons
+                )
+                if is_available:
+                    slots.setdefault(time_str, []).append(stream_lesson)
 
 def parse_day_date(day_key, ref_date=None):
     if not day_key:
@@ -269,7 +337,10 @@ def build_all():
     for cid, cfg in COURSES_CONFIG.items():
         full_data["courses"][cid] = parse_docx(cfg["docx_file"])
 
+    propagate_stream_languages(full_data["courses"])
+
     final_data = merge_schedule_history(full_data, "schedule_data.json", max_history_days=14)
+    propagate_stream_languages(final_data["courses"])
 
     with open("schedule_data.json", "w", encoding="utf-8") as f:
         json.dump(final_data, f, ensure_ascii=False, indent=2)
