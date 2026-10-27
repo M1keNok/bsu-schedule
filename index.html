@@ -347,6 +347,94 @@
       margin: 0 auto 4px;
     }
 
+    .modal-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--glass-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-sub);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+    .modal-close-btn:hover {
+      background: var(--glass-card);
+      color: var(--text-main);
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: scale(1.06);
+    }
+    .modal-close-btn:active {
+      transform: scale(0.92);
+      opacity: 0.8;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 13px 20px;
+      border-radius: 14px;
+      background: var(--nav-active-bg);
+      color: var(--nav-active-text);
+      font-size: 13.5px;
+      font-weight: 700;
+      font-family: inherit;
+      border: 1px solid transparent;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+    .btn-primary:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+    }
+    .btn-primary:active {
+      transform: scale(0.98);
+      opacity: 0.85;
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 13px 20px;
+      border-radius: 14px;
+      background: var(--glass-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+    .btn-secondary:hover {
+      background: var(--glass-card);
+      border-color: rgba(99, 102, 241, 0.35);
+    }
+    .btn-secondary:active {
+      transform: scale(0.98);
+      opacity: 0.85;
+    }
+
     .section-title {
       font-size: 11px;
       font-weight: 800;
@@ -704,7 +792,7 @@
           <span id="modalCategoryLabel" style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-sub); letter-spacing: 0.5px;">Параметры</span>
           <h3 id="modalHeading" style="font-size: 16px; font-weight: 800; margin-top: 1px;">Настройки расписания</h3>
         </div>
-        <button onclick="closeSettingsModal()" class="tap-scale" style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-sub); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+        <button onclick="closeSettingsModal()" class="modal-close-btn tap-scale" title="Закрыть" aria-label="Закрыть">
           <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
@@ -722,7 +810,7 @@
 
       <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
         <span class="section-title" style="margin-bottom: 0;">О преподавателе</span>
-        <button onclick="closeTeacherModal()" class="tap-scale" style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-sub); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+        <button onclick="closeTeacherModal()" class="modal-close-btn tap-scale" title="Закрыть" aria-label="Закрыть">
           <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
@@ -730,8 +818,8 @@
       <!-- Brief Teacher Info / Краткое описание -->
       <div id="teacherDossierHeader" class="card-glass" style="padding: 16px; display: flex; gap: 14px; align-items: flex-start; margin-top: 4px;"></div>
 
-      <div style="display: flex; gap: 8px; margin-top: 10px;">
-        <button type="button" onclick="closeTeacherModal()" class="btn-primary tap-scale" style="width: 100%; justify-content: center; padding: 12px;">
+      <div style="display: flex; gap: 8px; margin-top: 12px;">
+        <button type="button" onclick="closeTeacherModal()" class="btn-primary tap-scale" style="width: 100%;">
           Закрыть
         </button>
       </div>
@@ -2102,8 +2190,8 @@
 
       const footer = document.getElementById('modalFooter');
       footer.innerHTML = `
-        <button onclick="closeSettingsModal()" class="tap-scale" style="flex: 1; padding: 12px; border-radius: 14px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-main); font-size: 13px; font-weight: 700;">Отмена</button>
-        <button onclick="saveUnifiedProfile()" class="tap-scale" style="flex: 2; padding: 12px; border-radius: 14px; background: var(--nav-active-bg); border: none; color: var(--nav-active-text); font-size: 13px; font-weight: 700;">Сохранить</button>
+        <button onclick="closeSettingsModal()" class="btn-secondary tap-scale" style="flex: 1;">Отмена</button>
+        <button onclick="saveUnifiedProfile()" class="btn-primary tap-scale" style="flex: 2;">Сохранить</button>
       `;
     }
 
@@ -2186,8 +2274,8 @@
       }
 
       footer.innerHTML = `
-        <button onclick="prevWizardStep()" class="tap-scale" style="flex: 1; padding: 12px; border-radius: 14px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-main); font-size: 13px; font-weight: 700; ${wizardStep === 1 ? 'display: none;' : ''}">Назад</button>
-        <button onclick="nextWizardStep()" class="tap-scale" style="flex: 2; padding: 12px; border-radius: 14px; background: var(--nav-active-bg); border: none; color: var(--nav-active-text); font-size: 13px; font-weight: 700;">${wizardStep === 3 ? 'Завершить' : 'Далее'}</button>
+        <button onclick="prevWizardStep()" class="btn-secondary tap-scale" style="flex: 1; ${wizardStep === 1 ? 'display: none;' : ''}">Назад</button>
+        <button onclick="nextWizardStep()" class="btn-primary tap-scale" style="flex: 2;">${wizardStep === 3 ? 'Завершить' : 'Далее'}</button>
       `;
     }
 
