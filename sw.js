@@ -2,11 +2,12 @@
 // Стратегия: Network-First для schedule_data.json (всегда свежие данные с сервера),
 //             Stale-While-Revalidate для index.html (мгновенная загрузка офлайн).
 
-const CACHE_NAME = 'bsu-schedule-v2';
+const CACHE_NAME = 'bsu-schedule-v3';
 const SHELL_ASSETS = [
   './',
   './index.html',
-  './schedule_data.json'
+  './schedule_data.json',
+  './teachers_info.json'
 ];
 
 // ─── Install: предзагрузка оболочки приложения ──────────────────────────────
@@ -37,8 +38,9 @@ self.addEventListener('fetch', event => {
 
   const path = url.pathname.replace(/\/$/, '') || '/';
 
-  // 1. schedule_data.json: Network-First (всегда пытаемся загрузить актуальное расписание)
-  if (path.endsWith('schedule_data.json')) {
+  // 1. JSON-данные (расписание и досье преподавателей): Network-First
+  if (path.endsWith('schedule_data.json') || path.endsWith('teachers_info.json')) {
+    const filename = path.endsWith('teachers_info.json') ? 'teachers_info.json' : 'schedule_data.json';
     event.respondWith(
       fetch(event.request)
         .then(response => {
@@ -46,7 +48,7 @@ self.addEventListener('fetch', event => {
             const clone = response.clone();
             caches.open(CACHE_NAME).then(cache => {
               // Сохраняем и с query-параметрами, и под чистым ключом для гарантированного офлайн-доступа
-              cache.put('./schedule_data.json', clone.clone());
+              cache.put(`./${filename}`, clone.clone());
               cache.put(event.request, clone);
             });
           }
@@ -55,9 +57,9 @@ self.addEventListener('fetch', event => {
         .catch(async () => {
           const cache = await caches.open(CACHE_NAME);
           const cached = (await cache.match(event.request, { ignoreSearch: true })) ||
-                         (await cache.match('./schedule_data.json')) ||
-                         (await cache.match('/schedule_data.json')) ||
-                         (await cache.match('schedule_data.json'));
+                         (await cache.match(`./${filename}`)) ||
+                         (await cache.match(`/${filename}`)) ||
+                         (await cache.match(filename));
           if (cached) return cached;
           return new Response(JSON.stringify({}), {
             status: 503,
