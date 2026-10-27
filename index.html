@@ -187,13 +187,12 @@
       position: relative;
       background: var(--glass-card);
       border: 1.5px solid rgba(16, 185, 129, 0.7);
-      box-shadow: 0 4px 18px -2px rgba(16, 185, 129, 0.22), var(--glass-inner-bevel);
       border-radius: 20px;
       padding: 14px 16px;
       transform: translateZ(0);
       contain: content;
-      animation: activeLessonPulse 2.8s ease-in-out infinite;
-      transition: background 0.25s ease, border-color 0.25s ease, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+      animation: activeLessonAura 3s ease-in-out infinite;
+      transition: background 0.25s ease, border-color 0.25s ease, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
@@ -202,14 +201,20 @@
       transform: scale(0.985);
     }
 
-    @keyframes activeLessonPulse {
+    @keyframes activeLessonAura {
       0%, 100% {
-        border-color: rgba(16, 185, 129, 0.55);
-        box-shadow: 0 4px 16px -2px rgba(16, 185, 129, 0.2), 0 0 0 0 rgba(16, 185, 129, 0.1), var(--glass-inner-bevel);
+        border-color: rgba(16, 185, 129, 0.60);
+        box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.25),
+                    0 8px 24px -4px rgba(16, 185, 129, 0.30),
+                    0 0 25px -3px rgba(16, 185, 129, 0.20),
+                    var(--glass-inner-bevel);
       }
       50% {
         border-color: rgba(16, 185, 129, 0.95);
-        box-shadow: 0 8px 24px -2px rgba(16, 185, 129, 0.38), 0 0 0 3px rgba(16, 185, 129, 0.18), var(--glass-inner-bevel);
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.50),
+                    0 10px 32px -2px rgba(16, 185, 129, 0.55),
+                    0 0 45px 4px rgba(16, 185, 129, 0.38),
+                    var(--glass-inner-bevel);
       }
     }
 
@@ -278,14 +283,14 @@
       }
       100% {
         opacity: 0;
-        transform: translate3d(-30%, 0, 0);
+        transform: translate3d(-24%, 0, 0);
       }
     }
 
     @keyframes pageSlideInRight {
       0% {
         opacity: 0;
-        transform: translate3d(100%, 0, 0);
+        transform: translate3d(24%, 0, 0);
       }
       100% {
         opacity: 1;
@@ -300,14 +305,14 @@
       }
       100% {
         opacity: 0;
-        transform: translate3d(30%, 0, 0);
+        transform: translate3d(24%, 0, 0);
       }
     }
 
     @keyframes pageSlideInLeft {
       0% {
         opacity: 0;
-        transform: translate3d(-100%, 0, 0);
+        transform: translate3d(-24%, 0, 0);
       }
       100% {
         opacity: 1;
@@ -316,19 +321,19 @@
     }
 
     .page-slide-out-left {
-      animation: pageSlideOutLeft 0.32s cubic-bezier(0.25, 1, 0.5, 1) both;
+      animation: pageSlideOutLeft 0.24s cubic-bezier(0.2, 0.9, 0.3, 1) both;
     }
 
     .page-slide-in-right {
-      animation: pageSlideInRight 0.32s cubic-bezier(0.25, 1, 0.5, 1) both;
+      animation: pageSlideInRight 0.24s cubic-bezier(0.2, 0.9, 0.3, 1) both;
     }
 
     .page-slide-out-right {
-      animation: pageSlideOutRight 0.32s cubic-bezier(0.25, 1, 0.5, 1) both;
+      animation: pageSlideOutRight 0.24s cubic-bezier(0.2, 0.9, 0.3, 1) both;
     }
 
     .page-slide-in-left {
-      animation: pageSlideInLeft 0.32s cubic-bezier(0.25, 1, 0.5, 1) both;
+      animation: pageSlideInLeft 0.24s cubic-bezier(0.2, 0.9, 0.3, 1) both;
     }
 
     .subgroups-grid {
@@ -617,88 +622,29 @@
       border-color: rgba(0, 0, 0, 0.14) !important;
     }
 
-    /* ─── Live Session Status Banner ───────────────────────────────────────── */
-    #liveStatusBanner {
-      display: none;
-      border-radius: 18px;
-      padding: 12px 15px;
+    /* ─── Compact Day Live Timer ─────────────────────────────────────────── */
+    #dayLiveTimer {
+      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      font-size: 12.5px;
-      font-weight: 600;
-      line-height: 1.35;
-      transform: translateZ(0);
-      contain: layout style;
-      animation: cardFadeSlide 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+      gap: 6px;
     }
-    #liveStatusBanner.status-live {
-      display: flex;
-      background: rgba(16, 185, 129, 0.10);
-      border: 1.5px solid rgba(16, 185, 129, 0.38);
-      color: var(--text-main);
-    }
-    #liveStatusBanner.status-break {
-      display: flex;
-      background: rgba(56, 189, 248, 0.09);
-      border: 1.5px solid rgba(56, 189, 248, 0.30);
-      color: var(--text-main);
-    }
-    #liveStatusBanner.status-before {
-      display: flex;
-      background: rgba(245, 158, 11, 0.09);
-      border: 1.5px solid rgba(245, 158, 11, 0.28);
-      color: var(--text-main);
-    }
-    #liveStatusBanner.status-done {
-      display: flex;
-      background: var(--glass-card-subtle);
-      border: 1px solid var(--border-color);
-      color: var(--text-sub);
-    }
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .status-dot.live { background: #10b981; box-shadow: 0 0 0 0 rgba(16,185,129,0.5); animation: statusPulse 1.8s ease-in-out infinite; }
-    .status-dot.break { background: #f59e0b; }
-    .status-dot.before { background: #f59e0b; }
-    .status-dot.done { background: var(--text-sub); opacity: 0.5; }
-    @keyframes statusPulse {
-      0%   { box-shadow: 0 0 0 0   rgba(16,185,129,0.5); }
-      60%  { box-shadow: 0 0 0 7px rgba(16,185,129,0.0); }
-      100% { box-shadow: 0 0 0 0   rgba(16,185,129,0.0); }
-    }
-    .status-timer {
-      font-family: -apple-system-monospaced-numbers, "SF Mono", monospace;
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: -0.3px;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .status-timer.live  { color: #10b981; }
-    .status-timer.break { color: #f59e0b; }
-    .status-timer.before{ color: #f59e0b; }
 
     /* ─── Teacher Dossier & Interactive Chip ──────────────────────────────── */
     .teacher-chip {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 3.5px 9px;
-      border-radius: 12px;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 10px;
       background: var(--glass-card-subtle);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
       line-height: 1.25;
-      margin-top: 3px;
+      max-width: 100%;
     }
     .teacher-chip:hover {
       background: var(--glass-card);
@@ -829,14 +775,13 @@
       </button>
     </div>
 
-    <div id="liveStatusBanner" role="status" aria-live="polite"></div>
-
     <div id="calendarSelector" class="calendar-selector"></div>
 
-    <div id="dayHeaderRow" style="display: flex; align-items: center; justify-content: space-between; margin-top: 1px; padding: 0 2px;">
-      <div style="display: flex; align-items: center; gap: 7px; flex-wrap: wrap; min-width: 0;">
+    <div id="dayHeaderRow" style="display: flex; align-items: center; justify-content: space-between; margin-top: 1px; padding: 0 2px; min-height: 28px;">
+      <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0;">
         <h2 id="dayFullTitle" style="font-size: 15px; font-weight: 800; letter-spacing: -0.2px;">...</h2>
         <div id="dayStatusBadge"></div>
+        <div id="dayLiveTimer"></div>
       </div>
       <div id="dayLessonsCount" style="font-size: 11.5px; font-weight: 700; color: var(--text-sub); flex-shrink: 0;"></div>
     </div>
@@ -1386,15 +1331,14 @@
     }
 
     function updateLiveStatusBanner(todayActiveSlots) {
-      const banner = document.getElementById('liveStatusBanner');
-      if (!banner) return;
+      const liveTimerBox = document.getElementById('dayLiveTimer');
+      if (!liveTimerBox) return;
 
       const todayIdx = currentDaysList.findIndex(d => d.isToday);
       const isViewingToday = (selectedDayIndex === todayIdx && todayIdx !== -1);
 
       if (!isViewingToday || !todayActiveSlots || !todayActiveSlots.length) {
-        banner.className = '';
-        banner.style.display = 'none';
+        liveTimerBox.innerHTML = '';
         return;
       }
 
@@ -1417,8 +1361,7 @@
         .sort((a, b) => a.startMin - b.startMin);
 
       if (!dayLessonSlots.length) {
-        banner.className = '';
-        banner.style.display = 'none';
+        liveTimerBox.innerHTML = '';
         return;
       }
 
@@ -1427,81 +1370,32 @@
 
       // 1. Пары ещё не начались
       if (curMin < firstLesson.startMin) {
-        const minsLeft = firstLesson.startMin - curMin;
-        const lessonTitle = firstLesson.items[0]?.title || '';
-        const roomBadge = firstLesson.items[0]?.room ? firstLesson.items[0].room : '';
-        const firstStart = firstLesson.timeStr.split(/[-–—]/)[0].trim();
-        banner.className = 'w-full block';
-        banner.style.display = 'block';
-        banner.innerHTML = `
-          <div class="stats shadow-sm w-full border border-base-content/10 bg-base-200/60 backdrop-blur-xl rounded-2xl">
-            <div class="stat p-3.5">
-              <div class="stat-figure text-amber-500">
-                <span class="badge badge-warning badge-sm font-bold">Скоро</span>
-              </div>
-              <div class="stat-title text-[11px] font-bold text-base-content/60">Первая пара в ${firstStart}</div>
-              <div class="stat-value text-sm font-extrabold truncate text-base-content">${lessonTitle}</div>
-              <div class="stat-desc text-[11px] text-base-content/60 flex items-center gap-1.5 mt-0.5">
-                ${roomBadge ? `<span class="badge badge-ghost badge-xs font-mono font-bold">${roomBadge}</span>` : ''}
-                <span>Начало через <b>${formatMinutesLeft(minsLeft)}</b></span>
-              </div>
-            </div>
-          </div>
+        const minsLeft = Math.min(99, Math.max(0, firstLesson.startMin - curMin));
+        liveTimerBox.innerHTML = `
+          <span class="badge badge-ghost badge-sm font-bold border border-base-content/20 gap-1" title="До начала первой пары">
+            <span>До пары</span>
+            <span class="countdown font-mono"><span style="--value:${minsLeft};"></span></span>м
+          </span>
         `;
         return;
       }
 
-      // 2. Пары на сегодня завершены
+      // 2. Пары на сегодня завершены — блок вообще не нужен
       if (curMin >= lastLesson.endMin) {
-        banner.className = 'w-full block';
-        banner.style.display = 'block';
-        const lastEnd = (lastLesson.timeStr.split(/[-–—]/)[1] || '').trim();
-        banner.innerHTML = `
-          <div class="stats shadow-sm w-full border border-base-content/10 bg-base-200/60 backdrop-blur-xl rounded-2xl">
-            <div class="stat p-3.5 flex items-center justify-between">
-              <div>
-                <div class="stat-title text-[11px] font-bold text-base-content/60">Расписание на сегодня</div>
-                <div class="stat-value text-sm font-extrabold text-base-content">Пары завершены ✨</div>
-              </div>
-              <span class="badge badge-neutral badge-sm font-bold text-xs">${lastEnd ? 'Окончание в ' + lastEnd : 'Отдых'}</span>
-            </div>
-          </div>
-        `;
+        liveTimerBox.innerHTML = '';
         return;
       }
 
       // 3. Идёт пара прямо сейчас
       const liveLesson = dayLessonSlots.find(s => curMin >= s.startMin && curMin < s.endMin);
       if (liveLesson) {
-        const minsLeft = Math.max(0, liveLesson.endMin - curMin);
-        const lessonTitle = liveLesson.items[0]?.title || '';
-        const room = liveLesson.items[0]?.room || '';
-        const liveSlotIndex = dayLessonSlots.indexOf(liveLesson);
-        const nextSlot = dayLessonSlots[liveSlotIndex + 1];
-        const nextStart = nextSlot ? nextSlot.timeStr.split(/[-–—]/)[0].trim() : null;
-
-        banner.className = 'w-full block';
-        banner.style.display = 'block';
-        banner.innerHTML = `
-          <div class="stats shadow-sm w-full border border-emerald-500/30 bg-emerald-500/10 backdrop-blur-xl rounded-2xl">
-            <div class="stat p-3.5">
-              <div class="stat-figure text-emerald-500">
-                <span class="relative flex h-3.5 w-3.5">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
-                </span>
-              </div>
-              <div class="stat-title text-[11px] font-bold text-emerald-400 flex items-center gap-1.5">
-                <span>ИДЁТ ПАРА</span>
-                <span class="badge badge-accent badge-xs font-mono font-bold">Осталось ${minsLeft} мин</span>
-              </div>
-              <div class="stat-value text-sm font-extrabold truncate text-base-content">${lessonTitle}</div>
-              <div class="stat-desc text-[11px] text-base-content/70 flex items-center gap-1.5 mt-0.5">
-                ${room ? `<span class="badge badge-ghost badge-xs font-mono font-bold">${room}</span>` : ''}
-                <span>${nextStart ? 'След. пара в ' + nextStart : 'Последняя пара на сегодня'}</span>
-              </div>
-            </div>
-          </div>
+        const minsLeft = Math.min(99, Math.max(0, liveLesson.endMin - curMin));
+        liveTimerBox.innerHTML = `
+          <span class="badge badge-accent badge-sm font-bold gap-1 text-white shadow-sm" title="Идёт пара">
+            <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+            <span>Пара</span>
+            <span class="countdown font-mono"><span style="--value:${minsLeft};"></span></span>м
+          </span>
         `;
         return;
       }
@@ -1509,36 +1403,18 @@
       // 4. Перемена между парами
       const nextLesson = dayLessonSlots.find(s => s.startMin > curMin);
       if (nextLesson) {
-        const minsLeft = Math.max(0, nextLesson.startMin - curMin);
-        const nextTitle = nextLesson.items[0]?.title || '';
-        const nextRoom = nextLesson.items[0]?.room || '';
-        const nextStart = nextLesson.timeStr.split(/[-–—]/)[0].trim();
-
-        banner.className = 'w-full block';
-        banner.style.display = 'block';
-        banner.innerHTML = `
-          <div class="stats shadow-sm w-full border border-amber-500/30 bg-amber-500/10 backdrop-blur-xl rounded-2xl">
-            <div class="stat p-3.5">
-              <div class="stat-figure text-amber-500">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>
-              </div>
-              <div class="stat-title text-[11px] font-bold text-amber-400 flex items-center gap-1.5">
-                <span>ПЕРЕМЕНА</span>
-                <span class="badge badge-warning badge-xs font-mono font-bold">${formatMinutesLeft(minsLeft)}</span>
-              </div>
-              <div class="stat-value text-sm font-extrabold truncate text-base-content">${nextTitle}</div>
-              <div class="stat-desc text-[11px] text-base-content/70 flex items-center gap-1.5 mt-0.5">
-                <span>Начало в ${nextStart}</span>
-                ${nextRoom ? `<span class="badge badge-ghost badge-xs font-mono font-bold">${nextRoom}</span>` : ''}
-              </div>
-            </div>
-          </div>
+        const minsLeft = Math.min(99, Math.max(0, nextLesson.startMin - curMin));
+        liveTimerBox.innerHTML = `
+          <span class="badge badge-warning badge-sm font-bold gap-1 shadow-sm" title="Перемена">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>
+            <span>Перемена</span>
+            <span class="countdown font-mono"><span style="--value:${minsLeft};"></span></span>м
+          </span>
         `;
         return;
       }
 
-      banner.className = '';
-      banner.style.display = 'none';
+      liveTimerBox.innerHTML = '';
     }
 
     function startLiveStatusTimer(groupSchedule) {
@@ -1548,8 +1424,8 @@
       function tick() {
         const todayIdx = currentDaysList.findIndex(d => d.isToday);
         if (todayIdx === -1) {
-          const banner = document.getElementById('liveStatusBanner');
-          if (banner) { banner.className = ''; banner.style.display = 'none'; }
+          const liveTimerBox = document.getElementById('dayLiveTimer');
+          if (liveTimerBox) liveTimerBox.innerHTML = '';
           return;
         }
 
@@ -1557,7 +1433,7 @@
         const slots = todayDay.rawKey ? getProcessedDaySlots(todayDay.rawKey, groupSchedule) : [];
         updateLiveStatusBanner(slots);
 
-        // Если открыт день «Сегодня», проверяем, не сменилась ли текущая пара (чтобы переключить подсветку карточки)
+        // Если открыт день «Сегодня», проверяем, не сменилась ли текущая пара
         if (selectedDayIndex === todayIdx) {
           const activeLiveSlot = slots.find(s => s.items?.length && isLessonLive(s.timeStr))?.timeStr || null;
           if (activeLiveSlot !== _lastLiveSlotKey) {
@@ -1609,7 +1485,7 @@
       if (!rawTeacherStr) return '—';
       const m = rawTeacherStr.match(/([А-ЯЁ][а-яё]+)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/);
       if (!m) {
-        return `<span style="font-size: 11px; font-weight: 600; color: var(--text-sub);">${rawTeacherStr}</span>`;
+        return `<span style="font-size: 11px; color: var(--text-sub); font-weight: 500;">${rawTeacherStr}</span>`;
       }
       let initials = m[2].replace(/\s+/g, '');
       if (!initials.endsWith('.')) initials += '.';
@@ -1618,10 +1494,10 @@
 
       return `
         <div style="display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-top: 2px;">
-          ${rank ? `<span style="font-size: 11px; color: var(--text-sub); font-weight: 500;">${rank}</span>` : ''}
+          ${rank ? `<span style="font-size: 10.5px; color: var(--text-sub); font-weight: 500;">${rank}</span>` : ''}
           <button type="button" class="teacher-chip tap-scale" onclick="event.stopPropagation(); openTeacherModal('${teacherName.replace(/'/g, "\\'")}')" title="Открыть досье преподавателя">
             <span class="teacher-chip-icon">👤</span>
-            <span class="teacher-chip-name">${teacherName}</span>
+            <span class="teacher-chip-name" style="max-width: 125px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${teacherName}</span>
             <span class="teacher-chip-arrow">›</span>
           </button>
         </div>
@@ -1647,7 +1523,7 @@
           ${prefix ? `<span style="font-size: 11px; color: var(--text-sub); font-weight: 500;">${prefix}</span>` : ''}
           <button type="button" class="teacher-chip tap-scale" onclick="event.stopPropagation(); openTeacherModal('${teacherName.replace(/'/g, "\\'")}')" title="Открыть досье преподавателя">
             <span class="teacher-chip-icon">👤</span>
-            <span class="teacher-chip-name">${teacherName}</span>
+            <span class="teacher-chip-name" style="max-width: 135px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${teacherName}</span>
             <span class="teacher-chip-arrow">›</span>
           </button>
           ${suffix ? `<span style="font-size: 11px; color: var(--text-sub); font-weight: 500;">• ${suffix}</span>` : ''}
@@ -1885,6 +1761,8 @@
       const badgeBox = document.getElementById('dayStatusBadge');
       const lessonsCountBox = document.getElementById('dayLessonsCount');
       const dayHeaderRow = document.getElementById('dayHeaderRow');
+      const liveTimerBox = document.getElementById('dayLiveTimer');
+      if (liveTimerBox) liveTimerBox.innerHTML = '';
 
       if (dayHeaderRow && currentSlideDirection !== 'none') {
         dayHeaderRow.style.animation = 'none';
@@ -1924,6 +1802,9 @@
         } else {
           const lessonCount = activeSlots.filter(s => s.items && s.items.length > 0).length;
           lessonsCountBox.innerHTML = '<span class="badge badge-ghost badge-sm font-bold">' + formatLessonsCount(lessonCount) + '</span>';
+          if (currentDay.isToday) {
+            updateLiveStatusBanner(activeSlots);
+          }
         }
       }
     }
@@ -1950,7 +1831,7 @@
 
     function renderLessonCards(activeSlots, isToday, isPast = false) {
       const container = document.createElement('ul');
-      container.className = 'timeline timeline-vertical timeline-compact w-full space-y-2.5';
+      container.className = 'timeline timeline-vertical timeline-compact w-full space-y-2';
 
       activeSlots.forEach((slotData, index) => {
         const { timeStr, items } = slotData;
@@ -1958,24 +1839,23 @@
         const isBreak = !items || !items.length;
 
         const li = document.createElement('li');
-        li.className = 'w-full animate-card';
-        li.style.animationDelay = `${index * 20}ms`;
+        li.className = 'w-full';
 
         // Timeline connector
         const topHr = index > 0 ? '<hr class="bg-base-content/10" />' : '';
         const bottomHr = index < activeSlots.length - 1 ? '<hr class="bg-base-content/10" />' : '';
 
-        // Timeline middle marker
+        // Timeline middle marker with Aura for active pair
         let middleHtml = '';
         if (isLive) {
           middleHtml = `
             <div class="timeline-middle">
               <div class="indicator">
-                <span class="indicator-item flex h-2 w-2 -top-0.5 -right-0.5">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                <span class="indicator-item flex h-2.5 w-2.5 -top-1 -right-1">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-80"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
-                <div class="w-3.5 h-3.5 rounded-full bg-emerald-500/20 border-2 border-emerald-500"></div>
+                <div class="w-4 h-4 rounded-full bg-emerald-500/25 border-2 border-emerald-500 shadow-[0_0_14px_rgba(16,185,129,0.7)]"></div>
               </div>
             </div>
           `;
@@ -2019,18 +1899,30 @@
         if (isLive) cardClasses = 'active-lesson-card tap-scale rounded-2xl p-3.5';
         if (isPast) cardClasses += ' archive-card';
 
+        // Countdown inside active pair card
+        let liveCountdownHTML = '';
+        if (isLive) {
+          const slotMin = parseTimeSlotMinutes(timeStr);
+          const curMin = new Date().getHours() * 60 + new Date().getMinutes();
+          const leftMin = slotMin ? Math.min(99, Math.max(0, slotMin.endMin - curMin)) : 0;
+          liveCountdownHTML = `
+            <span class="badge badge-accent badge-sm font-bold gap-1 text-white shadow-sm">
+              <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+              <span>Идёт пара • <span class="countdown font-mono"><span style="--value:${leftMin};"></span></span> мин</span>
+            </span>
+          `;
+        }
+
+        // Room badge from first item if present
+        const roomBadge = items[0]?.room ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${items[0].room}</span>` : '';
+
         let innerContent = `
           <div class="flex items-center justify-between gap-2 mb-2">
-            <div class="flex items-center gap-1.5 flex-wrap">
+            <div class="flex items-center gap-1.5 flex-wrap min-w-0">
               <span class="badge ${isLive ? 'badge-accent font-bold text-white shadow-sm' : 'badge-ghost font-bold font-mono'} badge-sm">${timeStr}</span>
-              ${isLive ? (() => {
-                const slotMin = parseTimeSlotMinutes(timeStr);
-                const curMin = new Date().getHours() * 60 + new Date().getMinutes();
-                const leftMin = slotMin ? Math.max(0, slotMin.endMin - curMin) : 0;
-                const leftLabel = leftMin > 0 ? ` • ${leftMin} мин` : '';
-                return `<span class="badge badge-accent badge-sm font-bold gap-1 text-white"><span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>Идёт пара${leftLabel}</span>`;
-              })() : ''}
+              ${liveCountdownHTML}
             </div>
+            ${roomBadge}
           </div>
         `;
 
@@ -2039,34 +1931,29 @@
             <div class="${idx > 0 ? 'mt-2.5 pt-2.5 border-t border-base-content/10' : ''}">
               <div class="flex items-start justify-between gap-2">
                 <div class="flex items-center gap-1.5 flex-wrap min-w-0">
-                  <span class="text-[13.5px] font-bold leading-snug">${item.title}</span>
+                  <span class="text-[14px] font-bold leading-snug">${item.title}</span>
                   ${item.type ? `<span class="badge badge-sm font-bold flex-shrink-0" style="color: ${item.type.color}; background: ${item.type.bg};">${item.type.label}</span>` : ''}
                 </div>
-                ${item.room ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${item.room}</span>` : ''}
               </div>
 
               ${item.subgroups ? `
-                <div class="collapse collapse-arrow bg-base-200/40 border border-base-content/10 rounded-xl mt-2">
-                  <input type="checkbox" checked />
-                  <div class="collapse-title text-xs font-bold py-1.5 px-3 min-h-0 flex items-center gap-1 text-base-content/70">
-                    Подгруппы
+                <div class="grid grid-cols-2 gap-2 mt-2.5 pt-2.5 border-t border-base-content/10">
+                  <div class="subgroup-box">
+                    <div class="flex items-center justify-between text-[10px] font-extrabold text-base-content/60 uppercase">
+                      <span>1 подгруппа</span>
+                      ${item.subgroups[0].room ? `<span class="font-mono text-base-content/80 font-bold">${item.subgroups[0].room}</span>` : ''}
+                    </div>
+                    <div class="mt-0.5">
+                      ${formatTeacherChipHTML(item.subgroups[0].teacher)}
+                    </div>
                   </div>
-                  <div class="collapse-content px-3 pb-2 pt-0">
-                    <div class="subgroups-grid mt-1">
-                      <div class="subgroup-box">
-                        <div class="flex justify-between text-[9.5px] font-extrabold text-base-content/60 uppercase">
-                          <span>1 подгруппа</span>
-                          ${item.subgroups[0].room ? `<span>${item.subgroups[0].room}</span>` : ''}
-                        </div>
-                        ${formatTeacherChipHTML(item.subgroups[0].teacher)}
-                      </div>
-                      <div class="subgroup-box">
-                        <div class="flex justify-between text-[9.5px] font-extrabold text-base-content/60 uppercase">
-                          <span>2 подгруппа</span>
-                          ${item.subgroups[1].room ? `<span>${item.subgroups[1].room}</span>` : ''}
-                        </div>
-                        ${formatTeacherChipHTML(item.subgroups[1].teacher)}
-                      </div>
+                  <div class="subgroup-box">
+                    <div class="flex items-center justify-between text-[10px] font-extrabold text-base-content/60 uppercase">
+                      <span>2 подгруппа</span>
+                      ${item.subgroups[1].room ? `<span class="font-mono text-base-content/80 font-bold">${item.subgroups[1].room}</span>` : ''}
+                    </div>
+                    <div class="mt-0.5">
+                      ${formatTeacherChipHTML(item.subgroups[1].teacher)}
                     </div>
                   </div>
                 </div>
@@ -2214,16 +2101,10 @@
       // Smooth slide transition (60-120 FPS, GPU-accelerated)
       viewport.querySelectorAll('.schedule-page.leaving-page').forEach(p => p.remove());
 
-      const oldHeight = oldPage.offsetHeight;
       const newPage = buildDayPage(selectedDayIndex, groupSchedule);
       oldPage.classList.remove('active-page');
       oldPage.classList.add('leaving-page');
       viewport.appendChild(newPage);
-      const newHeight = newPage.offsetHeight;
-
-      if (oldHeight && newHeight && Math.abs(oldHeight - newHeight) > 6) {
-        viewport.style.minHeight = `${Math.max(oldHeight, newHeight)}px`;
-      }
 
       if (currentSlideDirection === 'next') {
         oldPage.classList.add('page-slide-out-left');
@@ -2236,8 +2117,7 @@
       setTimeout(() => {
         if (oldPage.parentNode) oldPage.remove();
         newPage.classList.remove('page-slide-in-right', 'page-slide-in-left');
-        viewport.style.minHeight = '';
-      }, 340);
+      }, 250);
     }
 
     function openSettingsModal() {
@@ -2306,18 +2186,6 @@
 
       const body = document.getElementById('modalBody');
       body.innerHTML = `
-        <div>
-          <div class="section-title">Тема оформления (Theme Controller)</div>
-          <div class="tabs tabs-boxed bg-base-300/40 p-1 rounded-2xl grid grid-cols-2">
-            <a onclick="setTheme('light')" class="tab tab-sm font-bold rounded-xl transition-all ${!isDark ? 'tab-active bg-primary text-primary-content shadow-sm' : 'text-base-content/60'}">
-              ☀️ Светлая
-            </a>
-            <a onclick="setTheme('dark')" class="tab tab-sm font-bold rounded-xl transition-all ${isDark ? 'tab-active bg-primary text-primary-content shadow-sm' : 'text-base-content/60'}">
-              🌙 OLED Тёмная
-            </a>
-          </div>
-        </div>
-
         <div>
           <div class="section-title">Курс</div>
           <div class="tabs tabs-boxed bg-base-300/40 p-1 rounded-2xl grid grid-cols-4">
@@ -2399,7 +2267,7 @@
             <div class="section-title">Тема оформления</div>
             <div class="tabs tabs-boxed bg-base-300/40 p-1 rounded-2xl grid grid-cols-2">
               <a onclick="setTheme('light')" class="tab tab-sm font-bold rounded-xl transition-all ${!isDark ? 'tab-active bg-primary text-primary-content shadow-sm' : 'text-base-content/60'}">☀️ Светлая</a>
-              <a onclick="setTheme('dark')" class="tab tab-sm font-bold rounded-xl transition-all ${isDark ? 'tab-active bg-primary text-primary-content shadow-sm' : 'text-base-content/60'}">🌙 OLED Тёмная</a>
+              <a onclick="setTheme('dark')" class="tab tab-sm font-bold rounded-xl transition-all ${isDark ? 'tab-active bg-primary text-primary-content shadow-sm' : 'text-base-content/60'}">🌙 Тёмная</a>
             </div>
           </div>
           <div>
