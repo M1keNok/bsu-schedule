@@ -475,6 +475,123 @@
       border-color: rgba(0, 0, 0, 0.14) !important;
     }
 
+    /* ─── Live Session Status Banner ───────────────────────────────────────── */
+    #liveStatusBanner {
+      display: none;
+      border-radius: 18px;
+      padding: 12px 15px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      line-height: 1.35;
+      transform: translateZ(0);
+      contain: layout style;
+      animation: cardFadeSlide 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    #liveStatusBanner.status-live {
+      display: flex;
+      background: rgba(16, 185, 129, 0.10);
+      border: 1.5px solid rgba(16, 185, 129, 0.38);
+      color: var(--text-main);
+    }
+    #liveStatusBanner.status-break {
+      display: flex;
+      background: rgba(56, 189, 248, 0.09);
+      border: 1.5px solid rgba(56, 189, 248, 0.30);
+      color: var(--text-main);
+    }
+    #liveStatusBanner.status-before {
+      display: flex;
+      background: rgba(245, 158, 11, 0.09);
+      border: 1.5px solid rgba(245, 158, 11, 0.28);
+      color: var(--text-main);
+    }
+    #liveStatusBanner.status-done {
+      display: flex;
+      background: var(--glass-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-sub);
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .status-dot.live { background: #10b981; box-shadow: 0 0 0 0 rgba(16,185,129,0.5); animation: statusPulse 1.8s ease-in-out infinite; }
+    .status-dot.break { background: #38bdf8; }
+    .status-dot.before { background: #f59e0b; }
+    .status-dot.done { background: var(--text-sub); opacity: 0.5; }
+    @keyframes statusPulse {
+      0%   { box-shadow: 0 0 0 0   rgba(16,185,129,0.5); }
+      60%  { box-shadow: 0 0 0 7px rgba(16,185,129,0.0); }
+      100% { box-shadow: 0 0 0 0   rgba(16,185,129,0.0); }
+    }
+    .status-timer {
+      font-family: -apple-system-monospaced-numbers, "SF Mono", monospace;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .status-timer.live  { color: #10b981; }
+    .status-timer.break { color: #38bdf8; }
+    .status-timer.before{ color: #f59e0b; }
+
+    /* ─── Copy Button & Toast Notification ─────────────────────────────────── */
+    .btn-copy {
+      padding: 4px 9px;
+      border-radius: 10px;
+      background: var(--glass-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-sub);
+      display: inline-flex;
+      align-items: center;
+      gap: 4.5px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-copy:hover {
+      color: var(--text-main);
+      border-color: rgba(99, 102, 241, 0.35);
+    }
+    .btn-copy:active {
+      transform: scale(0.95);
+    }
+    .toast-notification {
+      position: fixed;
+      bottom: calc(24px + env(safe-area-inset-bottom, 24px));
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--glass-card);
+      backdrop-filter: blur(24px) saturate(190%);
+      -webkit-backdrop-filter: blur(24px) saturate(190%);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.4), var(--glass-inner-bevel);
+      padding: 10px 18px;
+      border-radius: 16px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s ease;
+    }
+    .toast-notification.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+
     .past-day-card {
       opacity: 0.88;
     }
@@ -522,14 +639,25 @@
       </button>
     </div>
 
+    <div id="liveStatusBanner" role="status" aria-live="polite"></div>
+
     <div id="calendarSelector" class="calendar-selector"></div>
 
     <div id="dayHeaderRow" style="display: flex; align-items: center; justify-content: space-between; margin-top: 1px; padding: 0 2px;">
-      <div style="display: flex; align-items: center; gap: 7px; flex-wrap: wrap;">
+      <div style="display: flex; align-items: center; gap: 7px; flex-wrap: wrap; min-width: 0;">
         <h2 id="dayFullTitle" style="font-size: 15px; font-weight: 800; letter-spacing: -0.2px;">...</h2>
         <div id="dayStatusBadge"></div>
       </div>
-      <div id="dayLessonsCount" style="font-size: 11.5px; font-weight: 700; color: var(--text-sub);"></div>
+      <div style="display: flex; align-items: center; gap: 7px; flex-shrink: 0;">
+        <div id="dayLessonsCount" style="font-size: 11.5px; font-weight: 700; color: var(--text-sub);"></div>
+        <button id="copyScheduleBtn" onclick="copyDaySchedule()" class="btn-copy tap-scale" title="Скопировать расписание для чата группы">
+          <svg style="width: 12.5px; height: 12.5px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span id="copyBtnText">Скопировать</span>
+        </button>
+      </div>
     </div>
 
     <div id="scheduleViewport" class="schedule-viewport">
@@ -801,6 +929,14 @@
         facultyData = await res.json();
         return true;
       } catch (e) {
+        // Офлайн-фоллбэк: если сеть недоступна, загружаем из Service Worker кэша
+        try {
+          const fallbackRes = await fetch('schedule_data.json');
+          if (fallbackRes.ok) {
+            facultyData = await fallbackRes.json();
+            return true;
+          }
+        } catch (err) {}
         return false;
       }
     }
@@ -978,14 +1114,338 @@
       return items;
     }
 
+    function parseTimeSlotMinutes(timeSlot) {
+      if (!timeSlot) return null;
+      const m = timeSlot.match(/(\d{1,2})[:.]?(\d{2})\s*[-–—]\s*(\d{1,2})[:.]?(\d{2})/);
+      if (!m) return null;
+      return {
+        startMin: parseInt(m[1], 10) * 60 + parseInt(m[2], 10),
+        endMin: parseInt(m[3], 10) * 60 + parseInt(m[4], 10)
+      };
+    }
+
     function isLessonLive(timeSlot) {
-      const m = timeSlot.match(/(\d{2})[:.](\d{2})[–-](\d{2})[:.](\d{2})/);
-      if (!m) return false;
+      const parsed = parseTimeSlotMinutes(timeSlot);
+      if (!parsed) return false;
       const now = new Date();
       const cur = now.getHours() * 60 + now.getMinutes();
-      const start = parseInt(m[1]) * 60 + parseInt(m[2]);
-      const end = parseInt(m[3]) * 60 + parseInt(m[4]);
-      return cur >= start && cur <= end;
+      return cur >= parsed.startMin && cur < parsed.endMin;
+    }
+
+    // ─── Live Session Status Banner ─────────────────────────────────────────
+    let _liveStatusTimer = null;
+    let _liveTimeoutTimer = null;
+    let _lastLiveSlotKey = null;
+
+    function formatMinutesLeft(mins) {
+      if (mins <= 0) return '0 мин';
+      if (mins >= 60) {
+        const h = Math.floor(mins / 60);
+        const m = mins % 60;
+        return m > 0 ? `${h} ч ${m} мин` : `${h} ч`;
+      }
+      return `${mins} мин`;
+    }
+
+    function updateLiveStatusBanner(todayActiveSlots) {
+      const banner = document.getElementById('liveStatusBanner');
+      if (!banner) return;
+
+      const todayIdx = currentDaysList.findIndex(d => d.isToday);
+      const isViewingToday = (selectedDayIndex === todayIdx && todayIdx !== -1);
+
+      if (!isViewingToday || !todayActiveSlots || !todayActiveSlots.length) {
+        banner.className = '';
+        banner.style.display = 'none';
+        return;
+      }
+
+      const now = new Date();
+      const curMin = now.getHours() * 60 + now.getMinutes();
+
+      const dayLessonSlots = todayActiveSlots
+        .filter(s => s.items && s.items.length > 0)
+        .map(s => {
+          const parsed = parseTimeSlotMinutes(s.timeStr);
+          if (!parsed) return null;
+          return {
+            timeStr: s.timeStr,
+            startMin: parsed.startMin,
+            endMin: parsed.endMin,
+            items: s.items,
+          };
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.startMin - b.startMin);
+
+      if (!dayLessonSlots.length) {
+        banner.className = '';
+        banner.style.display = 'none';
+        return;
+      }
+
+      const firstLesson = dayLessonSlots[0];
+      const lastLesson = dayLessonSlots[dayLessonSlots.length - 1];
+
+      // 1. Пары ещё не начались
+      if (curMin < firstLesson.startMin) {
+        const minsLeft = firstLesson.startMin - curMin;
+        const lessonTitle = firstLesson.items[0]?.title || '';
+        const roomBadge = firstLesson.items[0]?.room ? ` • ${firstLesson.items[0].room}` : '';
+        const firstStart = firstLesson.timeStr.split(/[-–—]/)[0].trim();
+        banner.className = 'status-before';
+        banner.style.display = 'flex';
+        banner.innerHTML = `
+          <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">
+            <span class="status-dot before"></span>
+            <div style="min-width:0;">
+              <div style="font-weight:700;font-size:12px;">Первая пара в ${firstStart}</div>
+              <div style="font-size:11px;color:var(--text-sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${lessonTitle}${roomBadge}</div>
+            </div>
+          </div>
+          <span class="status-timer before" style="flex-shrink:0;">${formatMinutesLeft(minsLeft)}</span>
+        `;
+        return;
+      }
+
+      // 2. Пары на сегодня завершены
+      if (curMin >= lastLesson.endMin) {
+        banner.className = 'status-done';
+        banner.style.display = 'flex';
+        const lastEnd = (lastLesson.timeStr.split(/[-–—]/)[1] || '').trim();
+        banner.innerHTML = `
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="status-dot done"></span>
+            <span style="font-size:12.5px;font-weight:700;">Пары на сегодня завершены</span>
+          </div>
+          <span style="font-size:11px;color:var(--text-sub);flex-shrink:0;">${lastEnd ? 'Окончание в ' + lastEnd : ''}</span>
+        `;
+        return;
+      }
+
+      // 3. Идёт пара прямо сейчас
+      const liveLesson = dayLessonSlots.find(s => curMin >= s.startMin && curMin < s.endMin);
+      if (liveLesson) {
+        const minsLeft = Math.max(0, liveLesson.endMin - curMin);
+        const lessonTitle = liveLesson.items[0]?.title || '';
+        const room = liveLesson.items[0]?.room || '';
+        banner.className = 'status-live';
+        banner.style.display = 'flex';
+        banner.innerHTML = `
+          <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">
+            <span class="status-dot live"></span>
+            <div style="min-width:0;">
+              <div style="font-weight:700;font-size:12px;display:flex;align-items:center;gap:5px;">
+                Идёт пара • До конца ${minsLeft} мин
+                ${room ? `<span class="badge-subtle" style="font-family:monospace;font-size:10px;padding:1.5px 5px;">${room}</span>` : ''}
+              </div>
+              <div style="font-size:11px;color:var(--text-sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${lessonTitle}</div>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div class="status-timer live">${minsLeft} мин</div>
+            <div style="font-size:10px;color:var(--text-sub);">до звонка</div>
+          </div>
+        `;
+        return;
+      }
+
+      // 4. Перемена между парами
+      const nextLesson = dayLessonSlots.find(s => s.startMin > curMin);
+      if (nextLesson) {
+        const minsLeft = Math.max(0, nextLesson.startMin - curMin);
+        const nextTitle = nextLesson.items[0]?.title || '';
+        const nextRoom = nextLesson.items[0]?.room || '';
+        const roomText = nextRoom ? ` (${nextRoom})` : '';
+        banner.className = 'status-break';
+        banner.style.display = 'flex';
+        banner.innerHTML = `
+          <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">
+            <span class="status-dot break"></span>
+            <div style="min-width:0;">
+              <div style="font-weight:700;font-size:12px;">Перемена • Следующая пара через ${minsLeft} мин${roomText}</div>
+              <div style="font-size:11px;color:var(--text-sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                ${nextTitle}
+              </div>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div class="status-timer break">${minsLeft} мин</div>
+            <div style="font-size:10px;color:var(--text-sub);">до пары</div>
+          </div>
+        `;
+        return;
+      }
+
+      banner.className = '';
+      banner.style.display = 'none';
+    }
+
+    function startLiveStatusTimer(groupSchedule) {
+      if (_liveStatusTimer) { clearInterval(_liveStatusTimer); _liveStatusTimer = null; }
+      if (_liveTimeoutTimer) { clearTimeout(_liveTimeoutTimer); _liveTimeoutTimer = null; }
+
+      function tick() {
+        const todayIdx = currentDaysList.findIndex(d => d.isToday);
+        if (todayIdx === -1) {
+          const banner = document.getElementById('liveStatusBanner');
+          if (banner) { banner.className = ''; banner.style.display = 'none'; }
+          return;
+        }
+
+        const todayDay = currentDaysList[todayIdx];
+        const slots = todayDay.rawKey ? getProcessedDaySlots(todayDay.rawKey, groupSchedule) : [];
+        updateLiveStatusBanner(slots);
+
+        // Если открыт день «Сегодня», проверяем, не сменилась ли текущая пара (чтобы переключить подсветку карточки)
+        if (selectedDayIndex === todayIdx) {
+          const activeLiveSlot = slots.find(s => s.items?.length && isLessonLive(s.timeStr))?.timeStr || null;
+          if (activeLiveSlot !== _lastLiveSlotKey) {
+            _lastLiveSlotKey = activeLiveSlot;
+            const viewport = document.getElementById('scheduleViewport');
+            if (viewport) {
+              viewport.innerHTML = '';
+              const newPage = buildDayPage(selectedDayIndex, groupSchedule);
+              viewport.appendChild(newPage);
+            }
+          }
+        }
+      }
+
+      tick();
+      const msToNextMin = (60 - new Date().getSeconds()) * 1000 - new Date().getMilliseconds() + 50;
+      _liveTimeoutTimer = setTimeout(() => {
+        tick();
+        _liveStatusTimer = setInterval(tick, 60_000);
+      }, msToNextMin);
+    }
+
+    // ─── «Кнопка старосты»: Копирование расписания в буфер обмена ──────────
+    let _toastTimeout = null;
+    function showToast(msg) {
+      let toast = document.getElementById('toastNotice');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toastNotice';
+        toast.className = 'toast-notification';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = msg;
+      toast.classList.add('show');
+      if (_toastTimeout) clearTimeout(_toastTimeout);
+      _toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2300);
+    }
+
+    function copyTextToClipboard(text, successMsg = 'Скопировано в буфер') {
+      function onSuccess() {
+        triggerHaptic('medium');
+
+        const btnText = document.getElementById('copyBtnText');
+        const btn = document.getElementById('copyScheduleBtn');
+        if (btnText && btn) {
+          const original = btnText.textContent;
+          btnText.textContent = 'Скопировано!';
+          btn.style.borderColor = 'rgba(16, 185, 129, 0.6)';
+          btn.style.color = '#10b981';
+          setTimeout(() => {
+            btnText.textContent = original;
+            btn.style.borderColor = '';
+            btn.style.color = '';
+          }, 2200);
+        }
+
+        showToast(`✓ ${successMsg}`);
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
+          fallbackCopy(text, onSuccess);
+        });
+      } else {
+        fallbackCopy(text, onSuccess);
+      }
+    }
+
+    function fallbackCopy(text, onSuccess) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        if (ok) onSuccess();
+        else showToast('Не удалось скопировать');
+      } catch (err) {
+        showToast('Не удалось скопировать');
+      }
+    }
+
+    function copyDaySchedule() {
+      triggerHaptic('selection');
+
+      if (selectedDayIndex === -1) {
+        const text = `📅 Воскресенье\n🏛 ${currentProfile.course} курс • ${currentProfile.group_name.replace('ГРУППА ', 'Группа ')}\n\n🎉 Выходной день (пар нет)`;
+        copyTextToClipboard(text, 'Расписание скопировано для группы');
+        return;
+      }
+
+      const currentDay = currentDaysList[selectedDayIndex];
+      if (!currentDay) return;
+
+      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
+      const activeSlots = currentDay.rawKey ? getProcessedDaySlots(currentDay.rawKey, groupSchedule) : [];
+
+      const groupLabel = `${currentProfile.course} курс • ${currentProfile.group_name.replace('ГРУППА ', 'Группа ')}`;
+      const dateLabel = `${currentDay.full}, ${currentDay.formattedDate}`;
+
+      let text = `📅 ${dateLabel}\n🏛 ${groupLabel}\n\n`;
+
+      const realLessons = activeSlots.filter(s => s.items && s.items.length > 0);
+      if (!realLessons.length) {
+        text += `🎉 Выходной день (пар нет)`;
+      } else {
+        const numIcons = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣'];
+        let lessonIndex = 0;
+
+        activeSlots.forEach(slot => {
+          if (!slot.items || !slot.items.length) {
+            text += `⏰ ${slot.timeStr} — Окно (перерыв)\n\n`;
+            return;
+          }
+
+          slot.items.forEach(item => {
+            const icon = numIcons[lessonIndex] || `[${lessonIndex + 1}]`;
+            const typeBadge = item.type?.label ? ` (${item.type.label})` : '';
+            const roomBadge = item.room ? ` • ${item.room}` : '';
+
+            text += `${icon} ${slot.timeStr} | ${item.title}${typeBadge}\n`;
+
+            if (item.subgroups) {
+              if (item.subgroups[0]?.teacher || item.subgroups[0]?.room) {
+                text += `   1 п/г: ${item.subgroups[0].teacher || ''}${item.subgroups[0].room ? ' (' + item.subgroups[0].room + ')' : ''}\n`;
+              }
+              if (item.subgroups[1]?.teacher || item.subgroups[1]?.room) {
+                text += `   2 п/г: ${item.subgroups[1].teacher || ''}${item.subgroups[1].room ? ' (' + item.subgroups[1].room + ')' : ''}\n`;
+              }
+            } else if (item.details) {
+              text += `   ${item.details}${roomBadge}\n`;
+            } else if (roomBadge) {
+              text += `   ${roomBadge.replace(/^ • /, '')}\n`;
+            }
+            text += `\n`;
+            lessonIndex++;
+          });
+        });
+      }
+
+      text = text.trim();
+      copyTextToClipboard(text, 'Расписание скопировано для группы');
     }
 
     function parseDayKeyDate(rawKey, refDate = new Date()) {
@@ -1283,7 +1743,13 @@
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
             <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
               <span class="badge-subtle" style="font-family: monospace; font-weight: 700; ${isLive ? 'background: #10b981; color: #fff; border-color: #10b981;' : ''}">${timeStr}</span>
-              ${isLive ? '<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.35); background: rgba(16,185,129,0.08); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; animation: pulseAura 2s infinite;"></span>Идёт сейчас</span>' : ''}
+              ${isLive ? (() => {
+                const slotMin = parseTimeSlotMinutes(timeStr);
+                const curMin = new Date().getHours() * 60 + new Date().getMinutes();
+                const leftMin = slotMin ? Math.max(0, slotMin.endMin - curMin) : 0;
+                const leftLabel = leftMin > 0 ? ` • До конца ${leftMin} мин` : '';
+                return `<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.35); background: rgba(16,185,129,0.08); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; animation: pulseAura 2s infinite;"></span>Идёт пара${leftLabel}</span>`;
+              })() : ''}
             </div>
           </div>
         `;
@@ -1431,6 +1897,9 @@
       setTimeout(() => scrollCalendarToSelected(false), 60);
 
       updateDayHeader(selectedDayIndex, groupSchedule);
+
+      // Запускаем / обновляем живой таймер статуса пары
+      startLiveStatusTimer(groupSchedule);
 
       const viewport = document.getElementById('scheduleViewport');
       const oldPage = viewport.querySelector('.schedule-page.active-page');
@@ -1792,6 +2261,20 @@
     }
 
     init();
+
+    // ─── Service Worker (Offline PWA) ───────────────────────────────────────
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => {
+            reg.update();
+          })
+          .catch(err => {
+            console.warn('SW registration failed:', err);
+          });
+      });
+    }
+
   </script>
 </body>
 </html>
