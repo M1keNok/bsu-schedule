@@ -885,6 +885,12 @@
       <!-- Brief Teacher Info / Краткое описание -->
       <div id="teacherDossierHeader" class="card-glass" style="padding: 16px; display: flex; gap: 14px; align-items: flex-start; margin-top: 4px;"></div>
 
+      <!-- Живой локатор («Где сейчас преподаватель?») -->
+      <div id="teacherLiveLocator" style="margin-top: 10px;"></div>
+
+      <!-- Расписание преподавателя на сегодня -->
+      <div id="teacherTodayScheduleSection" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;"></div>
+
       <div style="display: flex; gap: 8px; margin-top: 12px;">
         <button type="button" onclick="closeTeacherModal()" class="btn-primary tap-scale" style="width: 100%;">
           Закрыть
@@ -1705,16 +1711,17 @@
       if (headerContainer) {
         headerContainer.innerHTML = `
           <div class="teacher-avatar-box">
-            ${photo ? `<img src="${photo}" alt="${fullName}" onerror="this.onerror=null;this.parentElement.textContent='${initials}'">` : `<span>${initials}</span>`}
+            ${photo ? `<img src="${photo}" alt="${fullName}" onerror="this.onerror=null;this.parentElement.innerHTML='<span>${initials}</span>'">` : `<span>${initials}</span>`}
           </div>
           <div style="min-width: 0; flex: 1;">
             <h3 style="font-size: 16px; font-weight: 800; letter-spacing: -0.2px; line-height: 1.25;">${fullName}</h3>
-            <div style="font-size: 11.5px; font-weight: 700; color: var(--accent-emerald); margin-top: 3px;">${department}</div>
+            <div style="font-size: 11.5px; font-weight: 700; color: #10b981; margin-top: 3px;">${department}</div>
             <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 4px; line-height: 1.4;">${bio}</div>
           </div>
         `;
       }
 
+      renderTeacherLocator(teacherName);
 
       document.getElementById('teacherModal').classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -1724,6 +1731,178 @@
       _activeTeacherName = null;
       document.getElementById('teacherModal').classList.remove('open');
       document.body.style.overflow = '';
+    }
+
+    function findTeacherScheduleToday(teacherName) {
+      const todayIdx = currentDaysList.findIndex(d => d.isToday);
+      const todayDate = (todayIdx !== -1 && currentDaysList[todayIdx]) ? currentDaysList[todayIdx].date : new Date();
+      const todayDDMM = formatDDMM(todayDate);
+
+      const matches = [];
+      if (!facultyData?.courses) return matches;
+
+      const lastName = teacherName.split(' ')[0].toLowerCase().replace(/ё/g, 'е');
+
+      Object.entries(facultyData.courses).forEach(([course, groups]) => {
+        Object.entries(groups).forEach(([groupName, days]) => {
+          Object.entries(days).forEach(([dayKey, times]) => {
+            if (!dayKey.includes(todayDDMM)) return;
+
+            Object.entries(times).forEach(([timeStr, items]) => {
+              const itemList = Array.isArray(items) ? items : [items];
+              itemList.forEach(rawItem => {
+                const rawLower = rawItem.toLowerCase().replace(/ё/g, 'е');
+                if (rawLower.includes(lastName)) {
+                  const slotMin = parseTimeSlotMinutes(timeStr);
+                  const roomMatch = rawItem.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
+                  const room = roomMatch ? roomMatch[0].trim() : '';
+                  const title = rawItem.split('\n')[0].replace(/\((?:лекц|практ|лаб|сем)[^)]*\)/i, '').trim();
+
+                  matches.push({
+                    timeStr,
+                    startMin: slotMin ? slotMin.startMin : 0,
+                    endMin: slotMin ? slotMin.endMin : 0,
+                    course,
+                    groupName,
+                    room,
+                    title
+                  });
+                }
+              });
+            });
+          });
+        });
+      });
+
+      const grouped = [];
+      matches.forEach(m => {
+        const cleanGroup = m.groupName.replace(/^ГРУППА\s*/i, 'Гр. ');
+        const existing = grouped.find(g => g.timeStr === m.timeStr && g.title === m.title && g.course === m.course);
+        if (existing) {
+          if (!existing.groups.includes(cleanGroup)) existing.groups.push(cleanGroup);
+        } else {
+          grouped.push({
+            ...m,
+            groups: [cleanGroup]
+          });
+        }
+      });
+
+      grouped.sort((a, b) => a.startMin - b.startMin);
+      return grouped;
+    }
+
+    function renderTeacherLocator(teacherName) {
+      const container = document.getElementById('teacherLiveLocator');
+      const schedSection = document.getElementById('teacherTodayScheduleSection');
+      if (!container) return;
+
+      const now = new Date();
+      const curMin = now.getHours() * 60 + now.getMinutes();
+      const lessonsToday = findTeacherScheduleToday(teacherName);
+
+      if (!lessonsToday.length) {
+        container.innerHTML = `
+          <div class="card-glass" style="padding: 12px 14px; display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 20px;">☕</span>
+            <div>
+              <div style="font-size: 13px; font-weight: 800;">Сегодня пар в расписании нет</div>
+              <div style="font-size: 11px; color: var(--text-sub); margin-top: 1px;">Преподаватель сегодня не ведёт занятий по расписанию факультета.</div>
+            </div>
+          </div>
+        `;
+        if (schedSection) schedSection.innerHTML = '';
+        return;
+      }
+
+      const liveLesson = lessonsToday.find(l => curMin >= l.startMin && curMin < l.endMin);
+      const nextLesson = lessonsToday.find(l => l.startMin > curMin);
+      const lastLesson = lessonsToday[lessonsToday.length - 1];
+
+      let locatorHTML = '';
+      if (liveLesson) {
+        const minsLeft = Math.max(0, liveLesson.endMin - curMin);
+        const endStr = (liveLesson.timeStr.split(/[-–—]/)[1] || '').trim();
+        locatorHTML = `
+          <div class="card-glass" style="padding: 13px 15px; border-color: rgba(16, 185, 129, 0.6); background: rgba(16, 185, 129, 0.08);">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);" class="animate-pulse"></span>
+                <span style="font-size: 12px; font-weight: 800; color: #10b981;">Прямо сейчас идёт пара</span>
+              </div>
+              <span class="badge badge-accent badge-sm font-bold text-white shadow-sm">до ${endStr} (${minsLeft} мин)</span>
+            </div>
+            <div style="font-size: 14.5px; font-weight: 800; margin-top: 6px;">
+              Аудитория: <span style="font-family: monospace; color: var(--text-main); font-weight: 800;">${liveLesson.room || 'не указана'}</span>
+            </div>
+            <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px;">
+              ${liveLesson.title} • ${liveLesson.course} курс (${liveLesson.groups.join(', ')})
+            </div>
+          </div>
+        `;
+      } else if (nextLesson) {
+        const minsTo = Math.max(0, nextLesson.startMin - curMin);
+        const startStr = (nextLesson.timeStr.split(/[-–—]/)[0] || '').trim();
+        locatorHTML = `
+          <div class="card-glass" style="padding: 13px 15px; border-color: rgba(56, 189, 248, 0.45); background: rgba(56, 189, 248, 0.08);">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);"></span>
+                <span style="font-size: 12px; font-weight: 800; color: #38bdf8;">Следующая пара через ${formatMinutesLeft(minsTo)}</span>
+              </div>
+              <span class="badge badge-info badge-sm font-bold text-white shadow-sm">в ${startStr}</span>
+            </div>
+            <div style="font-size: 14.5px; font-weight: 800; margin-top: 6px;">
+              Аудитория: <span style="font-family: monospace; color: var(--text-main); font-weight: 800;">${nextLesson.room || 'не указана'}</span>
+            </div>
+            <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px;">
+              ${nextLesson.title} • ${nextLesson.course} курс (${nextLesson.groups.join(', ')})
+            </div>
+          </div>
+        `;
+      } else if (curMin >= lastLesson.endMin) {
+        const endStr = (lastLesson.timeStr.split(/[-–—]/)[1] || '').trim();
+        locatorHTML = `
+          <div class="card-glass" style="padding: 12px 14px; opacity: 0.85;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--text-sub); opacity: 0.6;"></span>
+              <span style="font-size: 12px; font-weight: 800; color: var(--text-sub);">Пары на сегодня завершены</span>
+            </div>
+            <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px;">
+              Последнее занятие преподавателя закончилось в ${endStr}
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = locatorHTML;
+
+      if (schedSection) {
+        schedSection.innerHTML = `
+          <div style="font-size: 10.5px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">
+            Расписание на сегодня (${lessonsToday.length} ${lessonsToday.length === 1 ? 'пара' : lessonsToday.length < 5 ? 'пары' : 'пар'})
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            ${lessonsToday.map(l => {
+              const isCur = liveLesson && liveLesson.timeStr === l.timeStr && liveLesson.title === l.title;
+              return `
+                <div class="card-glass" style="padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; ${isCur ? 'border-color: rgba(16,185,129,0.5); background: rgba(16,185,129,0.07);' : ''}">
+                  <div style="min-width: 0;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <span class="badge ${isCur ? 'badge-accent font-bold text-white shadow-sm' : 'badge-ghost font-bold font-mono'} badge-sm">${l.timeStr}</span>
+                      <span style="font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${l.title}</span>
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">
+                      ${l.course} курс • ${l.groups.join(', ')}
+                    </div>
+                  </div>
+                  ${l.room ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${l.room}</span>` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
     }
 
     function parseDayKeyDate(rawKey, refDate = new Date()) {
