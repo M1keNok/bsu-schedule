@@ -160,6 +160,9 @@
       padding: 14px 16px;
       transform: translateZ(0);
       contain: content;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
       transition: background 0.25s ease, border-color 0.25s ease, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.16s ease;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
@@ -191,6 +194,9 @@
       padding: 14px 16px;
       transform: translateZ(0);
       contain: content;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
       animation: activeLessonAura 3s ease-in-out infinite;
       transition: background 0.25s ease, border-color 0.25s ease, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
       -webkit-tap-highlight-color: transparent;
@@ -246,6 +252,7 @@
     .schedule-viewport {
       position: relative;
       width: 100%;
+      box-sizing: border-box;
       min-height: 240px;
       overflow: hidden;
       contain: layout style;
@@ -256,6 +263,7 @@
       flex-direction: column;
       gap: 10px;
       width: 100%;
+      box-sizing: border-box;
       will-change: transform, opacity;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
@@ -343,6 +351,9 @@
       margin-top: 10px;
       padding-top: 8px;
       border-top: 1px solid var(--border-color);
+      min-width: 0;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .subgroup-box {
@@ -353,6 +364,9 @@
       display: flex;
       flex-direction: column;
       gap: 3px;
+      min-width: 0;
+      overflow: hidden;
+      box-sizing: border-box;
     }
 
     .modal-overlay {
@@ -432,6 +446,18 @@
     .modal-close-btn:active {
       transform: scale(0.92);
       opacity: 0.8;
+    }
+
+    /* Disable bounce/scale jumps on modal option and parameter selection buttons */
+    .modal-sheet button:not(.modal-close-btn),
+    .modal-sheet .btn:not(.modal-close-btn) {
+      transform: none !important;
+      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease !important;
+    }
+    .modal-sheet button:not(.modal-close-btn):active,
+    .modal-sheet .btn:not(.modal-close-btn):active {
+      transform: none !important;
+      opacity: 0.88;
     }
 
     .btn-primary {
@@ -743,8 +769,8 @@
       </div>
 
       <div style="display: flex; align-items: center; gap: 8px;">
-        <!-- daisyUI Theme Controller -->
-        <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm border border-base-content/10 bg-base-200/50" title="Сменить тему">
+        <!-- daisyUI Theme Controller (fluid, zero rotation lag) -->
+        <label class="swap btn btn-ghost btn-circle btn-sm border border-base-content/10 bg-base-200/50" title="Сменить тему">
           <input type="checkbox" class="theme-controller" id="headerThemeToggle" onchange="toggleThemeFromController(this.checked)" />
           <!-- sun icon (active when dark mode is on, clicking switches to light) -->
           <svg class="swap-on fill-current w-4 h-4 text-amber-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM6.34,6.34a1,1,0,0,0,0-1.41L5.64,4.22a1,1,0,0,0-1.41,1.41L5.64,6.34A1,1,0,0,0,6.34,6.34ZM12,7a5,5,0,1,0,5,5A5,5,0,0,0,12,7Zm0,8a3,3,0,1,1,3-3A3,3,0,0,1,12,15Zm8-3a1,1,0,0,0-1-1H18a1,1,0,0,0,0,2h1A1,1,0,0,0,20,12Zm-1.66,5.66a1,1,0,0,0,1.41-1.41l-.71-.71a1,1,0,0,0-1.41,1.41ZM17.66,4.22l-.71.71A1,1,0,0,0,18.36,6.34l.71-.71A1,1,0,0,0,17.66,4.22ZM12,19a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19Z"/></svg>
@@ -1075,8 +1101,11 @@
       localStorage.setItem('bsu_theme', mode);
       const headerToggle = document.getElementById('headerThemeToggle');
       if (headerToggle) headerToggle.checked = isDark;
-      if (modalMode === 'wizard') renderWizardStep();
-      else renderUnifiedSettings();
+      const modal = document.getElementById('settingsModal');
+      if (modal && modal.classList.contains('open')) {
+        if (modalMode === 'wizard') renderWizardStep();
+        else renderUnifiedSettings();
+      }
     }
 
     function toggleThemeFromController(isDark) {
@@ -1830,74 +1859,35 @@
     }
 
     function renderLessonCards(activeSlots, isToday, isPast = false) {
-      const container = document.createElement('ul');
-      container.className = 'timeline timeline-vertical timeline-compact w-full space-y-2';
+      const frag = document.createDocumentFragment();
 
       activeSlots.forEach((slotData, index) => {
         const { timeStr, items } = slotData;
         const isLive = isToday && !isPast && isLessonLive(timeStr);
         const isBreak = !items || !items.length;
 
-        const li = document.createElement('li');
-        li.className = 'w-full';
-
-        // Timeline connector
-        const topHr = index > 0 ? '<hr class="bg-base-content/10" />' : '';
-        const bottomHr = index < activeSlots.length - 1 ? '<hr class="bg-base-content/10" />' : '';
-
-        // Timeline middle marker with Aura for active pair
-        let middleHtml = '';
-        if (isLive) {
-          middleHtml = `
-            <div class="timeline-middle">
-              <div class="indicator">
-                <span class="indicator-item flex h-2.5 w-2.5 -top-1 -right-1">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-80"></span>
-                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                </span>
-                <div class="w-4 h-4 rounded-full bg-emerald-500/25 border-2 border-emerald-500 shadow-[0_0_14px_rgba(16,185,129,0.7)]"></div>
-              </div>
-            </div>
-          `;
-        } else if (isBreak) {
-          middleHtml = `
-            <div class="timeline-middle">
-              <div class="w-2.5 h-2.5 rounded-full bg-base-content/20 border border-base-content/30"></div>
-            </div>
-          `;
-        } else {
-          middleHtml = `
-            <div class="timeline-middle">
-              <div class="w-2.5 h-2.5 rounded-full ${isPast ? 'bg-base-content/20' : 'bg-base-content/40'}"></div>
-            </div>
-          `;
-        }
-
         if (isBreak) {
-          li.innerHTML = `
-            ${topHr}
-            ${middleHtml}
-            <div class="timeline-end w-full pl-2">
-              <div class="card-glass tap-scale break-window-card flex items-center justify-between py-2.5 px-3.5 rounded-2xl ${isPast ? 'archive-card' : ''}">
-                <div class="flex items-center gap-2">
-                  <span class="badge badge-ghost badge-sm font-mono font-bold">${timeStr}</span>
-                  <span class="text-xs font-semibold text-base-content/60 flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5 opacity-60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>
-                    Окно между парами
-                  </span>
-                </div>
-                <span class="badge badge-ghost badge-xs opacity-60">Форточка</span>
-              </div>
+          const breakDiv = document.createElement('div');
+          breakDiv.className = `card-glass break-window-card flex items-center justify-between py-2.5 px-3.5 rounded-2xl w-full box-border ${isPast ? 'archive-card' : ''}`;
+          breakDiv.innerHTML = `
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${timeStr}</span>
+              <span class="text-xs font-semibold text-base-content/60 flex items-center gap-1.5 truncate">
+                <svg class="w-3.5 h-3.5 opacity-60 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>
+                <span class="truncate">Окно между парами</span>
+              </span>
             </div>
-            ${bottomHr}
+            <span class="badge badge-ghost badge-xs opacity-60 flex-shrink-0">Форточка</span>
           `;
-          container.appendChild(li);
+          frag.appendChild(breakDiv);
           return;
         }
 
-        let cardClasses = 'card-glass tap-scale rounded-2xl p-3.5';
-        if (isLive) cardClasses = 'active-lesson-card tap-scale rounded-2xl p-3.5';
+        const card = document.createElement('div');
+        let cardClasses = 'card-glass rounded-2xl p-3.5 w-full box-border';
+        if (isLive) cardClasses = 'active-lesson-card rounded-2xl p-3.5 w-full box-border';
         if (isPast) cardClasses += ' archive-card';
+        card.className = cardClasses;
 
         // Countdown inside active pair card
         let liveCountdownHTML = '';
@@ -1906,7 +1896,7 @@
           const curMin = new Date().getHours() * 60 + new Date().getMinutes();
           const leftMin = slotMin ? Math.min(99, Math.max(0, slotMin.endMin - curMin)) : 0;
           liveCountdownHTML = `
-            <span class="badge badge-accent badge-sm font-bold gap-1 text-white shadow-sm">
+            <span class="badge badge-accent badge-sm font-bold gap-1 text-white shadow-sm flex-shrink-0">
               <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
               <span>Идёт пара • <span class="countdown font-mono"><span style="--value:${leftMin};"></span></span> мин</span>
             </span>
@@ -1919,7 +1909,7 @@
         let innerContent = `
           <div class="flex items-center justify-between gap-2 mb-2">
             <div class="flex items-center gap-1.5 flex-wrap min-w-0">
-              <span class="badge ${isLive ? 'badge-accent font-bold text-white shadow-sm' : 'badge-ghost font-bold font-mono'} badge-sm">${timeStr}</span>
+              <span class="badge ${isLive ? 'badge-accent font-bold text-white shadow-sm' : 'badge-ghost font-bold font-mono'} badge-sm flex-shrink-0">${timeStr}</span>
               ${liveCountdownHTML}
             </div>
             ${roomBadge}
@@ -1937,22 +1927,22 @@
               </div>
 
               ${item.subgroups ? `
-                <div class="grid grid-cols-2 gap-2 mt-2.5 pt-2.5 border-t border-base-content/10">
-                  <div class="subgroup-box">
+                <div class="grid grid-cols-2 gap-2 mt-2.5 pt-2.5 border-t border-base-content/10 w-full box-border">
+                  <div class="subgroup-box min-w-0 overflow-hidden">
                     <div class="flex items-center justify-between text-[10px] font-extrabold text-base-content/60 uppercase">
                       <span>1 подгруппа</span>
                       ${item.subgroups[0].room ? `<span class="font-mono text-base-content/80 font-bold">${item.subgroups[0].room}</span>` : ''}
                     </div>
-                    <div class="mt-0.5">
+                    <div class="mt-0.5 min-w-0">
                       ${formatTeacherChipHTML(item.subgroups[0].teacher)}
                     </div>
                   </div>
-                  <div class="subgroup-box">
+                  <div class="subgroup-box min-w-0 overflow-hidden">
                     <div class="flex items-center justify-between text-[10px] font-extrabold text-base-content/60 uppercase">
                       <span>2 подгруппа</span>
                       ${item.subgroups[1].room ? `<span class="font-mono text-base-content/80 font-bold">${item.subgroups[1].room}</span>` : ''}
                     </div>
-                    <div class="mt-0.5">
+                    <div class="mt-0.5 min-w-0">
                       ${formatTeacherChipHTML(item.subgroups[1].teacher)}
                     </div>
                   </div>
@@ -1962,21 +1952,10 @@
           `;
         });
 
-        li.innerHTML = `
-          ${topHr}
-          ${middleHtml}
-          <div class="timeline-end w-full pl-2">
-            <div class="${cardClasses}">
-              ${innerContent}
-            </div>
-          </div>
-          ${bottomHr}
-        `;
-        container.appendChild(li);
+        card.innerHTML = innerContent;
+        frag.appendChild(card);
       });
 
-      const frag = document.createDocumentFragment();
-      frag.appendChild(container);
       return frag;
     }
 
@@ -2169,7 +2148,6 @@
       document.getElementById('modalCategoryLabel').textContent = 'Параметры';
       document.getElementById('modalHeading').textContent = 'Настройки расписания';
 
-      const isDark = document.documentElement.classList.contains('dark');
       const groups = Object.keys(facultyData?.courses?.[draftProfile.course] || {});
 
       const langs = [
@@ -2188,10 +2166,11 @@
       body.innerHTML = `
         <div>
           <div class="section-title">Курс</div>
-          <div class="tabs tabs-boxed bg-base-300/40 p-1 rounded-2xl grid grid-cols-4">
-            ${['1','2','3','4'].map(c => `
-              <a onclick="draftProfile.course='${c}'; onCourseChangedUnified('${c}');" class="tab tab-sm font-extrabold rounded-xl transition-all ${draftProfile.course === c ? 'tab-active bg-primary text-primary-content shadow-sm' : 'text-base-content/60'}">${c} курс</a>
-            `).join('')}
+          <div class="grid grid-cols-4 gap-2">
+            ${['1','2','3','4'].map(c => {
+              const sel = draftProfile.course === c;
+              return `<button type="button" onclick="draftProfile.course='${c}'; onCourseChangedUnified('${c}');" class="btn btn-md rounded-2xl font-black text-lg border border-base-content/10 transition-colors ${sel ? 'btn-primary shadow-md' : 'btn-ghost bg-base-200/50'}">${c}</button>`;
+            }).join('')}
           </div>
         </div>
 
@@ -2201,7 +2180,7 @@
             ${groups.map(g => {
               const num = g.replace(/^ГРУППА\s*/i, '');
               const sel = draftProfile.group_name === g;
-              return `<button onclick="draftProfile.group_name='${g}'; renderUnifiedSettings();" class="btn btn-sm rounded-xl font-bold border border-base-content/10 ${sel ? 'btn-primary shadow-md' : 'btn-ghost bg-base-200/50'}">${num}</button>`;
+              return `<button type="button" onclick="draftProfile.group_name='${g}'; renderUnifiedSettings();" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-colors ${sel ? 'btn-primary shadow-md' : 'btn-ghost bg-base-200/50'}">${num}</button>`;
             }).join('')}
           </div>
         </div>
@@ -2211,9 +2190,9 @@
           <div class="grid grid-cols-2 gap-2">
             ${langs.map(l => {
               const sel = draftProfile.foreign_lang === l.id;
-              return `<button onclick="toggleLangUnified('${l.id}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 justify-between ${sel ? 'btn-primary shadow-md' : 'btn-ghost bg-base-200/50'}">
+              return `<button type="button" onclick="toggleLangUnified('${l.id}')" class="btn h-11 min-h-[44px] px-2 py-2 rounded-xl font-bold text-[13px] border border-base-content/10 flex items-center justify-center gap-1.5 transition-colors ${sel ? 'btn-primary shadow-md' : 'btn-ghost bg-base-200/50'}">
                 <span>${l.label}</span>
-                ${sel ? '<span class="badge badge-accent badge-xs">✓</span>' : ''}
+                ${sel ? '<span class="text-xs font-bold">✓</span>' : ''}
               </button>`;
             }).join('')}
           </div>
@@ -2223,8 +2202,8 @@
 
       const footer = document.getElementById('modalFooter');
       footer.innerHTML = `
-        <button onclick="closeSettingsModal()" class="btn btn-ghost border border-base-content/10 flex-1 rounded-2xl font-bold">Отмена</button>
-        <button onclick="saveUnifiedProfile()" class="btn btn-primary flex-2 rounded-2xl font-bold shadow-lg">Сохранить</button>
+        <button type="button" onclick="closeSettingsModal()" class="btn btn-ghost border border-base-content/10 flex-1 rounded-2xl font-bold">Отмена</button>
+        <button type="button" onclick="saveUnifiedProfile()" class="btn btn-primary flex-2 rounded-2xl font-bold shadow-lg">Сохранить</button>
       `;
     }
 
@@ -2265,17 +2244,18 @@
           ${stepsBar}
           <div>
             <div class="section-title">Тема оформления</div>
-            <div class="tabs tabs-boxed bg-base-300/40 p-1 rounded-2xl grid grid-cols-2">
-              <a onclick="setTheme('light')" class="tab tab-sm font-bold rounded-xl transition-all ${!isDark ? 'tab-active bg-primary text-primary-content shadow-sm' : 'text-base-content/60'}">☀️ Светлая</a>
-              <a onclick="setTheme('dark')" class="tab tab-sm font-bold rounded-xl transition-all ${isDark ? 'tab-active bg-primary text-primary-content shadow-sm' : 'text-base-content/60'}">🌙 Тёмная</a>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" onclick="setTheme('light')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-colors ${!isDark ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">☀️ Светлая</button>
+              <button type="button" onclick="setTheme('dark')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-colors ${isDark ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">🌙 Тёмная</button>
             </div>
           </div>
           <div>
             <div class="section-title">Курс</div>
-            <div class="tabs tabs-boxed bg-base-300/40 p-1 rounded-2xl grid grid-cols-4">
-              ${['1','2','3','4'].map(c => `
-                <a onclick="draftProfile.course='${c}'; nextWizardStep();" class="tab tab-md font-extrabold rounded-xl transition-all ${draftProfile.course === c ? 'tab-active bg-primary text-primary-content shadow-sm' : 'text-base-content/60'}">${c} курс</a>
-              `).join('')}
+            <div class="grid grid-cols-4 gap-2">
+              ${['1','2','3','4'].map(c => {
+                const sel = draftProfile.course === c;
+                return `<button type="button" onclick="draftProfile.course='${c}'; nextWizardStep();" class="btn btn-md rounded-2xl font-black text-lg border border-base-content/10 transition-colors ${sel ? 'btn-primary shadow-md' : 'btn-ghost bg-base-200/50'}">${c}</button>`;
+              }).join('')}
             </div>
           </div>
         `;
@@ -2288,7 +2268,7 @@
             ${groups.map(g => {
               const num = g.replace(/^ГРУППА\s*/i, '');
               const sel = draftProfile.group_name === g;
-              return `<button onclick="draftProfile.group_name='${g}'; nextWizardStep();" class="btn btn-md rounded-2xl font-bold border border-base-content/10 ${sel ? 'btn-primary shadow-md' : 'btn-ghost bg-base-200/50'}">${num}</button>`;
+              return `<button type="button" onclick="draftProfile.group_name='${g}'; nextWizardStep();" class="btn btn-md rounded-2xl font-bold border border-base-content/10 transition-colors ${sel ? 'btn-primary shadow-md' : 'btn-ghost bg-base-200/50'}">${num}</button>`;
             }).join('')}
           </div>
         `;
@@ -2310,9 +2290,9 @@
           <div class="grid grid-cols-2 gap-2">
             ${langs.map(l => {
               const sel = draftProfile.foreign_lang === l.id;
-              return `<button onclick="toggleLangWizard('${l.id}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 justify-between ${sel ? 'btn-primary shadow-md' : 'btn-ghost bg-base-200/50'}">
+              return `<button type="button" onclick="toggleLangWizard('${l.id}')" class="btn h-11 min-h-[44px] px-2 py-2 rounded-xl font-bold text-[13px] border border-base-content/10 flex items-center justify-center gap-1.5 transition-colors ${sel ? 'btn-primary shadow-md' : 'btn-ghost bg-base-200/50'}">
                 <span>${l.label}</span>
-                ${sel ? '<span class="badge badge-accent badge-xs">✓</span>' : ''}
+                ${sel ? '<span class="text-xs font-bold">✓</span>' : ''}
               </button>`;
             }).join('')}
           </div>
@@ -2321,8 +2301,8 @@
       }
 
       footer.innerHTML = `
-        <button onclick="prevWizardStep()" class="btn btn-ghost border border-base-content/10 flex-1 rounded-2xl font-bold ${wizardStep === 1 ? 'hidden' : ''}">Назад</button>
-        <button onclick="nextWizardStep()" class="btn btn-primary flex-2 rounded-2xl font-bold shadow-lg">${wizardStep === 3 ? 'Завершить' : 'Далее'}</button>
+        <button type="button" onclick="prevWizardStep()" class="btn btn-ghost border border-base-content/10 flex-1 rounded-2xl font-bold ${wizardStep === 1 ? 'hidden' : ''}">Назад</button>
+        <button type="button" onclick="nextWizardStep()" class="btn btn-primary flex-2 rounded-2xl font-bold shadow-lg">${wizardStep === 3 ? 'Завершить' : 'Далее'}</button>
       `;
     }
 
