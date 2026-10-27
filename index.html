@@ -541,173 +541,6 @@
     .status-timer.break { color: #38bdf8; }
     .status-timer.before{ color: #f59e0b; }
 
-    /* ─── Attendance Feature («Лимит 10 часов») ────────────────────────────── */
-    .absences-header-btn {
-      padding: 6px 10px;
-      border-radius: 12px;
-      background: var(--glass-card-subtle);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      cursor: pointer;
-      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .absences-header-btn:active {
-      transform: scale(0.95);
-    }
-    .absences-dot {
-      width: 6.5px;
-      height: 6.5px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .absences-dot.safe    { background: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.6); }
-    .absences-dot.warning { background: #f59e0b; box-shadow: 0 0 6px rgba(245, 158, 11, 0.6); }
-    .absences-dot.danger  { background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.8); animation: statusPulse 1.8s infinite; }
-
-    .att-status-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 4.5px;
-      padding: 3.5px 8.5px;
-      border-radius: 10px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      border: 1px solid var(--border-color);
-      background: var(--glass-card-subtle);
-      color: var(--text-sub);
-      transition: all 0.16s ease;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-    .att-status-btn:active {
-      transform: scale(0.95);
-    }
-    .att-status-btn.status-present {
-      color: var(--text-sub);
-      opacity: 0.85;
-    }
-    .att-status-btn.status-present:hover {
-      color: var(--text-main);
-      border-color: rgba(99, 102, 241, 0.35);
-    }
-    .att-status-btn.status-unexcused {
-      background: rgba(239, 68, 68, 0.12);
-      border-color: rgba(239, 68, 68, 0.38);
-      color: #ef4444;
-    }
-    .att-status-btn.status-excused {
-      background: rgba(59, 130, 246, 0.12);
-      border-color: rgba(59, 130, 246, 0.38);
-      color: #3b82f6;
-    }
-
-    .day-att-btn {
-      padding: 4px 10px;
-      border-radius: 11px;
-      background: var(--glass-card-subtle);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .day-att-btn:hover {
-      border-color: rgba(99, 102, 241, 0.4);
-      background: var(--glass-card);
-    }
-    .day-att-btn:active {
-      transform: scale(0.95);
-    }
-
-    /* Segmented attendance control */
-    .att-segmented-control {
-      display: grid;
-      grid-template-columns: 1fr 1.15fr 1.1fr;
-      gap: 4px;
-      background: var(--glass-card-subtle);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 3px;
-    }
-    .att-segment-btn {
-      padding: 6px 4px;
-      border-radius: 9px;
-      border: none;
-      background: transparent;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-sub);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      transition: all 0.16s ease;
-      white-space: nowrap;
-    }
-    .att-segment-btn.active-present {
-      background: #10b981;
-      color: #ffffff;
-      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35);
-    }
-    .att-segment-btn.active-unexcused {
-      background: #ef4444;
-      color: #ffffff;
-      box-shadow: 0 2px 10px rgba(239, 68, 68, 0.35);
-    }
-    .att-segment-btn.active-excused {
-      background: #3b82f6;
-      color: #ffffff;
-      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.35);
-    }
-
-    .preset-pill-btn {
-      padding: 7px 6px;
-      border-radius: 12px;
-      background: var(--glass-card-subtle);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      transition: all 0.16s ease;
-      text-align: center;
-    }
-    .preset-pill-btn:hover {
-      border-color: rgba(99, 102, 241, 0.35);
-      background: var(--glass-card);
-    }
-    .preset-pill-btn:active {
-      transform: scale(0.96);
-    }
-
-    .absences-meter-bar-track {
-      width: 100%;
-      height: 10px;
-      border-radius: 6px;
-      background: var(--glass-card-subtle);
-      border: 1px solid var(--border-color);
-      overflow: hidden;
-      position: relative;
-    }
-    .absences-meter-bar-fill {
-      height: 100%;
-      border-radius: 5px;
-      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
-    }
-
     /* ─── Teacher Dossier & Interactive Chip ──────────────────────────────── */
     .teacher-chip {
       display: inline-flex;
@@ -766,77 +599,6 @@
       object-fit: cover;
     }
 
-    .locator-box {
-      border-radius: 16px;
-      padding: 12px 14px;
-      border: 1px solid var(--border-color);
-      background: var(--glass-card-subtle);
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .locator-box.locator-live {
-      background: rgba(16, 185, 129, 0.10);
-      border-color: rgba(16, 185, 129, 0.38);
-    }
-    .locator-box.locator-upcoming {
-      background: rgba(56, 189, 248, 0.10);
-      border-color: rgba(56, 189, 248, 0.38);
-    }
-    .locator-box.locator-done {
-      background: var(--glass-card-subtle);
-      border-color: var(--border-color);
-    }
-    .locator-box.locator-free {
-      background: rgba(245, 158, 11, 0.08);
-      border-color: rgba(245, 158, 11, 0.28);
-    }
-
-    /* Reviews */
-    .review-item {
-      padding: 11px 13px;
-      border-radius: 15px;
-      background: var(--glass-card-subtle);
-      border: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-    .review-stars {
-      color: #f59e0b;
-      font-size: 13px;
-      letter-spacing: 1.5px;
-    }
-    .star-select-btn {
-      font-size: 22px;
-      color: var(--text-sub);
-      cursor: pointer;
-      transition: transform 0.12s, color 0.12s;
-      padding: 0 3px;
-      opacity: 0.5;
-    }
-    .star-select-btn.active {
-      color: #f59e0b;
-      opacity: 1;
-      transform: scale(1.15);
-    }
-    .btn-delete-rev {
-      padding: 3px 8px;
-      border-radius: 8px;
-      background: rgba(239, 68, 68, 0.12);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #ef4444;
-      font-size: 10.5px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-    }
-    .btn-delete-rev:active {
-      transform: scale(0.95);
-    }
-
     /* ─── Toast Notification ─────────────────────────────────────────────── */
     .toast-notification {
       position: fixed;
@@ -893,12 +655,6 @@
       </div>
 
       <div style="display: flex; align-items: center; gap: 6px;">
-        <button id="openAbsencesBtn" onclick="openAbsencesModal()" class="tap-scale absences-header-btn" title="Контроль пропусков БГУ (лимит 10 часов)">
-          <span style="font-size: 13px;">🛡</span>
-          <span id="headerAbsencesText" style="font-size: 11px; font-weight: 800; font-family: -apple-system-monospaced-numbers, monospace;">0/10 ч</span>
-          <span id="headerAbsencesDot" class="absences-dot safe"></span>
-        </button>
-
         <button onclick="openSettingsModal()" class="tap-scale" style="padding: 7px 11px; border-radius: 12px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-main); font-size: 11.5px; font-weight: 700; display: flex; align-items: center; gap: 5.5px;" title="Параметры и настройки">
           <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="3"></circle>
@@ -930,13 +686,7 @@
         <h2 id="dayFullTitle" style="font-size: 15px; font-weight: 800; letter-spacing: -0.2px;">...</h2>
         <div id="dayStatusBadge"></div>
       </div>
-      <div style="display: flex; align-items: center; gap: 7px; flex-shrink: 0;">
-        <div id="dayLessonsCount" style="font-size: 11.5px; font-weight: 700; color: var(--text-sub);"></div>
-        <button id="openDayAttendanceBtn" onclick="openDayAttendanceModal()" class="day-att-btn tap-scale" title="Отметить посещение пар на этот день">
-          <span style="font-size: 12px;">✍️</span>
-          <span>Отметить день</span>
-        </button>
-      </div>
+      <div id="dayLessonsCount" style="font-size: 11.5px; font-weight: 700; color: var(--text-sub); flex-shrink: 0;"></div>
     </div>
 
     <div id="scheduleViewport" class="schedule-viewport">
@@ -965,111 +715,24 @@
     </div>
   </div>
 
-  <!-- Modal: Контроль пропусков БГУ (лимит 10 часов) -->
-  <div id="absencesModal" class="modal-overlay" onclick="if(event.target===this)closeAbsencesModal()">
-    <div class="modal-sheet" style="max-height: 86vh; overflow-y: auto;">
-      <div class="modal-grabber"></div>
-
-      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 20px;">🛡</span>
-          <div>
-            <h3 style="font-size: 16px; font-weight: 800; letter-spacing: -0.2px;">Контроль пропусков</h3>
-            <div id="absencesMonthLabel" style="font-size: 11px; color: var(--text-sub); font-weight: 600;">Лимит: 10 академических часов / месяц</div>
-          </div>
-        </div>
-        <button onclick="closeAbsencesModal()" class="tap-scale" style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-sub); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-          <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-      </div>
-
-      <div id="absencesMeterCard" class="card-glass" style="padding: 14px; display: flex; flex-direction: column; gap: 10px;"></div>
-
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 2px;">
-        <span class="section-title" style="margin-bottom: 0;">Пропущенные пары за месяц</span>
-        <button id="clearAllAbsencesBtn" onclick="clearMonthAbsences()" class="tap-scale" style="background: none; border: none; font-size: 11px; font-weight: 700; color: #ef4444; cursor: pointer; display: none;">Очистить все</button>
-      </div>
-
-      <div id="absencesList" style="display: flex; flex-direction: column; gap: 8px; max-height: 38vh; overflow-y: auto; padding-right: 2px;"></div>
-
-      <div style="padding: 10px 12px; border-radius: 14px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); font-size: 11px; color: var(--text-sub); line-height: 1.45;">
-        💡 <b>Правило БГУ:</b> 1 пара = 2 часа. За 10 часов пропусков без уважительной причины в месяц деканат имеет право объявить выговор. Отметки «По справке» в 10-часовой лимит не входят.
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal: Досье преподавателя -->
+  <!-- Modal: О преподавателе -->
   <div id="teacherModal" class="modal-overlay" onclick="if(event.target===this)closeTeacherModal()">
-    <div class="modal-sheet" style="max-height: 88vh; overflow-y: auto;">
+    <div class="modal-sheet" style="max-height: 85vh; overflow-y: auto;">
       <div class="modal-grabber"></div>
 
       <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-        <span class="section-title" style="margin-bottom: 0;">Досье преподавателя</span>
+        <span class="section-title" style="margin-bottom: 0;">О преподавателе</span>
         <button onclick="closeTeacherModal()" class="tap-scale" style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-sub); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
           <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
 
-      <!-- Dossier Header -->
-      <div id="teacherDossierHeader" class="card-glass" style="padding: 14px; display: flex; gap: 12px; align-items: flex-start;"></div>
+      <!-- Brief Teacher Info / Краткое описание -->
+      <div id="teacherDossierHeader" class="card-glass" style="padding: 16px; display: flex; gap: 14px; align-items: flex-start; margin-top: 4px;"></div>
 
-      <!-- Live Locator ("Где препод сейчас?") -->
-      <div id="teacherLiveLocator" style="display: flex; flex-direction: column; gap: 6px;"></div>
-
-      <!-- Teacher Today Schedule Strip -->
-      <div id="teacherTodayScheduleSection" style="display: flex; flex-direction: column; gap: 6px;"></div>
-
-      <!-- Anonymous Reviews Section -->
-      <div id="teacherReviewsSection" style="display: flex; flex-direction: column; gap: 10px; margin-top: 4px;"></div>
-    </div>
-  </div>
-
-  <!-- Modal: Отметка пар за день -->
-  <div id="dayAttendanceModal" class="modal-overlay" onclick="if(event.target===this)closeDayAttendanceModal()">
-    <div class="modal-sheet" style="max-height: 86vh; overflow-y: auto;">
-      <div class="modal-grabber"></div>
-
-      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 20px;">✍️</span>
-          <div>
-            <h3 id="dayAttModalTitle" style="font-size: 16px; font-weight: 800; letter-spacing: -0.2px;">Посещение пар</h3>
-            <div id="dayAttModalSubtitle" style="font-size: 11px; color: var(--text-sub); font-weight: 600;">...</div>
-          </div>
-        </div>
-        <button onclick="closeDayAttendanceModal()" class="tap-scale" style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-sub); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-          <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-      </div>
-
-      <!-- Quick 1-tap Batch Presets for the Day -->
-      <div style="display: flex; flex-direction: column; gap: 6px;">
-        <span class="section-title" style="margin-bottom: 0;">Быстро для всего дня:</span>
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;">
-          <button type="button" class="preset-pill-btn tap-scale" onclick="setDayAttendancePreset('present')" title="Отметить все пары дня как посещенные">
-            <span style="color: #10b981;">✓</span> Был на всех
-          </button>
-          <button type="button" class="preset-pill-btn tap-scale" onclick="setDayAttendancePreset('unexcused')" title="Отметить все пары дня как неуважительный пропуск">
-            <span style="color: #ef4444;">✕</span> Пропуск всех
-          </button>
-          <button type="button" class="preset-pill-btn tap-scale" onclick="setDayAttendancePreset('excused')" title="Отметить все пары дня как пропуск по справке">
-            <span style="color: #3b82f6;">📄</span> Все по справке
-          </button>
-        </div>
-      </div>
-
-      <!-- Live Day Summary & Limit preview -->
-      <div id="dayAttSummaryBox" class="card-glass" style="padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px;"></div>
-
-      <!-- List of all real lessons of the day with Segmented Control -->
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        <span class="section-title" style="margin-bottom: 0;">Пары этого дня:</span>
-        <div id="dayAttLessonsList" style="display: flex; flex-direction: column; gap: 8px;"></div>
-      </div>
-
-      <div style="display: flex; gap: 8px; margin-top: 4px;">
-        <button type="button" onclick="closeDayAttendanceModal()" class="btn-primary tap-scale" style="width: 100%; justify-content: center; padding: 12px;">
-          Готово
+      <div style="display: flex; gap: 8px; margin-top: 10px;">
+        <button type="button" onclick="closeTeacherModal()" class="btn-primary tap-scale" style="width: 100%; justify-content: center; padding: 12px;">
+          Закрыть
         </button>
       </div>
     </div>
@@ -1311,11 +974,7 @@
       else renderUnifiedSettings();
     }
 
-    const ADMIN_TELEGRAM_ID = [0];
-    const API_REVIEWS_URL = '';
-    const ATTENDANCE_STORAGE_KEY = 'bsu_attendance_v1';
     let teachersInfo = {};
-    let currentReviewRating = 5;
     let _activeTeacherName = null;
 
     async function loadTeachersInfo() {
@@ -1752,600 +1411,7 @@
       }, 2300);
     }
 
-    function copyTelegramId() {
-      const uid = getCurrentTelegramUserId();
-      if (!uid) {
-        showToast('Открыто в браузере (вне Telegram)');
-        return;
-      }
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(String(uid));
-      }
-      showToast('✓ ID скопирован: ' + uid);
-      triggerHaptic('medium');
-    }
-
-    let headerTapTimer = null;
-    function setupHeaderLongTap() {
-      const el = document.getElementById('headerTitle');
-      if (!el) return;
-      const onStart = () => {
-        headerTapTimer = setTimeout(() => {
-          const uid = getCurrentTelegramUserId();
-          showToast('Ваш Telegram ID: ' + (uid || 'Вне Telegram'));
-          triggerHaptic('heavy');
-        }, 600);
-      };
-      const onEnd = () => { if (headerTapTimer) clearTimeout(headerTapTimer); };
-      el.addEventListener('touchstart', onStart, { passive: true });
-      el.addEventListener('touchend', onEnd, { passive: true });
-      el.addEventListener('touchcancel', onEnd, { passive: true });
-      el.addEventListener('mousedown', onStart);
-      el.addEventListener('mouseup', onEnd);
-      el.addEventListener('mouseleave', onEnd);
-    }
-
-    // ─── Контроль пропусков БГУ (Лимит 10 часов) ───────────────────────────
-    function getISODateString(d) {
-      if (!d) return '';
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
-
-    function getCurrentMonthKey(d = new Date()) {
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      return `${year}-${month}`;
-    }
-
-    function getAttendanceRecords() {
-      try {
-        const raw = localStorage.getItem(ATTENDANCE_STORAGE_KEY);
-        if (raw) return JSON.parse(raw);
-      } catch (e) {}
-      return {};
-    }
-
-    function saveAttendanceRecords(records) {
-      try {
-        localStorage.setItem(ATTENDANCE_STORAGE_KEY, JSON.stringify(records));
-      } catch (e) {}
-    }
-
-    function getAttendanceKey(dateISO, timeStr) {
-      return `${dateISO}_${timeStr}`;
-    }
-
-    function getLessonAttendance(dateISO, timeStr) {
-      const recs = getAttendanceRecords();
-      const key = getAttendanceKey(dateISO, timeStr);
-      return recs[key]?.status || 'present';
-    }
-
-    function cycleLessonAttendance(dateISO, timeStr, title, btnElement) {
-      const recs = getAttendanceRecords();
-      const key = getAttendanceKey(dateISO, timeStr);
-      const curStatus = recs[key]?.status || 'present';
-
-      let nextStatus = 'unexcused';
-      if (curStatus === 'present') nextStatus = 'unexcused';
-      else if (curStatus === 'unexcused') nextStatus = 'excused';
-      else if (curStatus === 'excused') nextStatus = 'present';
-
-      const monthKey = dateISO.slice(0, 7);
-
-      if (nextStatus === 'present') {
-        delete recs[key];
-        triggerHaptic('light');
-        showToast('✓ Отметка снята («Был на паре»)');
-      } else {
-        recs[key] = {
-          key,
-          dateISO,
-          month: monthKey,
-          timeStr,
-          title: title || 'Пара',
-          status: nextStatus,
-          hours: nextStatus === 'unexcused' ? 2 : 0,
-          updatedAt: Date.now()
-        };
-        triggerHaptic('medium');
-        if (nextStatus === 'unexcused') {
-          showToast('⚠️ Пропуск добавлен (+2 ч)');
-        } else {
-          showToast('📄 Отмечено «По справке» (0 ч)');
-        }
-      }
-
-      saveAttendanceRecords(recs);
-
-      // Instant update of button in DOM
-      if (btnElement) {
-        btnElement.className = 'att-status-btn status-' + nextStatus + ' tap-scale';
-        if (nextStatus === 'present') {
-          btnElement.innerHTML = '<span style="opacity: 0.7;">✓</span> Был';
-        } else if (nextStatus === 'unexcused') {
-          btnElement.innerHTML = '<span style="font-weight: 800;">✕</span> Пропуск (2 ч)';
-        } else {
-          btnElement.innerHTML = '<span>📄</span> По справке';
-        }
-      }
-
-      updateHeaderAbsencesBadge();
-    }
-
-    function setLessonAttendanceStatus(dateISO, timeStr, title, nextStatus) {
-      const recs = getAttendanceRecords();
-      const key = getAttendanceKey(dateISO, timeStr);
-      const monthKey = dateISO.slice(0, 7);
-
-      if (nextStatus === 'present') {
-        delete recs[key];
-        triggerHaptic('light');
-      } else {
-        recs[key] = {
-          key,
-          dateISO,
-          month: monthKey,
-          timeStr,
-          title: title || 'Пара',
-          status: nextStatus,
-          hours: nextStatus === 'unexcused' ? 2 : 0,
-          updatedAt: Date.now()
-        };
-        triggerHaptic('medium');
-      }
-
-      saveAttendanceRecords(recs);
-      updateHeaderAbsencesBadge();
-
-      // Update segment controls in modal
-      const segId = `att-seg-${timeStr.replace(/[^a-zA-Z0-9]/g, '_')}`;
-      const segControl = document.getElementById(segId);
-      if (segControl) {
-        segControl.querySelectorAll('.att-segment-btn').forEach(btn => {
-          const btnSt = btn.dataset.status;
-          btn.className = 'att-segment-btn' + (btnSt === nextStatus ? ' active-' + nextStatus : '');
-        });
-      }
-
-      // Update live summary in modal
-      updateDayAttendanceSummary();
-
-      // Re-render schedule cards in background
-      renderCurrentPageOnly();
-    }
-
-    function setDayAttendancePreset(targetStatus) {
-      if (selectedDayIndex === -1 || !currentDaysList[selectedDayIndex]) return;
-      const currentDay = currentDaysList[selectedDayIndex];
-      if (!currentDay.rawKey || !facultyData) return;
-
-      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
-      const activeSlots = getProcessedDaySlots(currentDay.rawKey, groupSchedule);
-      const realSlots = activeSlots.filter(s => s.items && s.items.length > 0);
-      if (!realSlots.length) return;
-
-      const dateISO = getISODateString(currentDay.date);
-      const monthKey = dateISO.slice(0, 7);
-      const recs = getAttendanceRecords();
-
-      realSlots.forEach(slot => {
-        const key = getAttendanceKey(dateISO, slot.timeStr);
-        if (targetStatus === 'present') {
-          delete recs[key];
-        } else {
-          const mainTitle = slot.items[0]?.title || 'Пара';
-          recs[key] = {
-            key,
-            dateISO,
-            month: monthKey,
-            timeStr: slot.timeStr,
-            title: mainTitle,
-            status: targetStatus,
-            hours: targetStatus === 'unexcused' ? 2 : 0,
-            updatedAt: Date.now()
-          };
-        }
-      });
-
-      saveAttendanceRecords(recs);
-      triggerHaptic('medium');
-
-      if (targetStatus === 'present') {
-        showToast('✓ Все пары: «Был на паре»');
-      } else if (targetStatus === 'unexcused') {
-        showToast(`⚠️ Все пары: «Пропуск» (+${realSlots.length * 2} ч)`);
-      } else {
-        showToast('📄 Все пары: «По справке» (0 ч)');
-      }
-
-      updateHeaderAbsencesBadge();
-      renderDayAttendanceModal();
-      renderCurrentPageOnly();
-    }
-
-    function openDayAttendanceModal(focusTime = null) {
-      if (selectedDayIndex === -1) {
-        showToast('В воскресенье пар нет');
-        return;
-      }
-      const currentDay = currentDaysList[selectedDayIndex];
-      if (!currentDay || !currentDay.rawKey) {
-        showToast('На этот день нет расписания');
-        return;
-      }
-
-      triggerHaptic('selection');
-      renderDayAttendanceModal(focusTime);
-      document.getElementById('dayAttendanceModal').classList.add('open');
-      document.body.style.overflow = 'hidden';
-
-      if (focusTime) {
-        setTimeout(() => {
-          const targetEl = document.getElementById(`att-row-${focusTime.replace(/[^a-zA-Z0-9]/g, '_')}`);
-          if (targetEl) {
-            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            targetEl.style.transition = 'box-shadow 0.3s ease, border-color 0.3s ease';
-            targetEl.style.borderColor = 'rgba(99, 102, 241, 0.6)';
-            targetEl.style.boxShadow = '0 0 16px rgba(99, 102, 241, 0.25)';
-            setTimeout(() => {
-              targetEl.style.borderColor = '';
-              targetEl.style.boxShadow = '';
-            }, 1200);
-          }
-        }, 150);
-      }
-    }
-
-    function closeDayAttendanceModal() {
-      const modal = document.getElementById('dayAttendanceModal');
-      if (modal) modal.classList.remove('open');
-      document.body.style.overflow = '';
-    }
-
-    function updateDayAttendanceSummary() {
-      const summaryBox = document.getElementById('dayAttSummaryBox');
-      if (!summaryBox || selectedDayIndex === -1 || !currentDaysList[selectedDayIndex]) return;
-
-      const currentDay = currentDaysList[selectedDayIndex];
-      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
-      if (!currentDay.rawKey) return;
-
-      const activeSlots = getProcessedDaySlots(currentDay.rawKey, groupSchedule);
-      const realSlots = activeSlots.filter(s => s.items && s.items.length > 0);
-      const dateISO = getISODateString(currentDay.date);
-
-      let presentCount = 0;
-      let unexcusedCount = 0;
-      let excusedCount = 0;
-
-      realSlots.forEach(slot => {
-        const st = getLessonAttendance(dateISO, slot.timeStr);
-        if (st === 'unexcused') unexcusedCount++;
-        else if (st === 'excused') excusedCount++;
-        else presentCount++;
-      });
-
-      const monthStats = getMonthAttendanceStats();
-
-      summaryBox.innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 2px;">
-          <div style="font-size: 10px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.3px;">Статистика за день</div>
-          <div style="display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; flex-wrap: wrap;">
-            <span style="color: #10b981;">✓ ${presentCount} был</span>
-            <span style="color: var(--text-sub); opacity: 0.4;">•</span>
-            <span style="color: #ef4444;">✕ ${unexcusedCount} пропуск (${unexcusedCount * 2} ч)</span>
-            ${excusedCount > 0 ? `
-              <span style="color: var(--text-sub); opacity: 0.4;">•</span>
-              <span style="color: #3b82f6;">📄 ${excusedCount} справка</span>
-            ` : ''}
-          </div>
-        </div>
-        <div style="text-align: right; flex-shrink: 0;">
-          <div style="font-size: 10px; font-weight: 800; color: var(--text-sub); text-transform: uppercase;">Лимит БГУ</div>
-          <div style="font-size: 13px; font-weight: 800; font-family: -apple-system-monospaced-numbers, monospace; color: ${monthStats.unexcusedHours <= 4 ? '#10b981' : monthStats.unexcusedHours <= 8 ? '#f59e0b' : '#ef4444'};">
-            ${monthStats.unexcusedHours}/10 ч
-          </div>
-        </div>
-      `;
-    }
-
-    function renderDayAttendanceModal(focusTime = null) {
-      if (selectedDayIndex === -1 || !currentDaysList[selectedDayIndex]) return;
-      const currentDay = currentDaysList[selectedDayIndex];
-      const titleEl = document.getElementById('dayAttModalTitle');
-      const subtitleEl = document.getElementById('dayAttModalSubtitle');
-      const listContainer = document.getElementById('dayAttLessonsList');
-      if (!listContainer) return;
-
-      if (titleEl) titleEl.textContent = 'Отметка пар за день';
-      if (subtitleEl) subtitleEl.textContent = `${currentDay.full}, ${currentDay.formattedDate}`;
-
-      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
-      if (!currentDay.rawKey) {
-        listContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-sub);">Нет расписания на этот день</div>';
-        return;
-      }
-
-      const activeSlots = getProcessedDaySlots(currentDay.rawKey, groupSchedule);
-      const realSlots = activeSlots.filter(s => s.items && s.items.length > 0);
-
-      if (!realSlots.length) {
-        listContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-sub);">В этот день занятий нет</div>';
-        return;
-      }
-
-      const dateISO = getISODateString(currentDay.date);
-
-      listContainer.innerHTML = realSlots.map(slot => {
-        const { timeStr, items } = slot;
-        const mainItem = items[0] || {};
-        const safeTitle = (mainItem.title || 'Пара').replace(/'/g, "\\'");
-        const currentStatus = getLessonAttendance(dateISO, timeStr);
-        const rowId = `att-row-${timeStr.replace(/[^a-zA-Z0-9]/g, '_')}`;
-        const segId = `att-seg-${timeStr.replace(/[^a-zA-Z0-9]/g, '_')}`;
-
-        let roomLabel = mainItem.room || '';
-        if (!roomLabel && mainItem.subgroups) {
-          const rooms = mainItem.subgroups.map(sg => sg.room).filter(Boolean);
-          if (rooms.length) roomLabel = rooms.join(' / ');
-        }
-
-        return `
-          <div id="${rowId}" class="card-glass" style="padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
-            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
-              <div style="min-width: 0;">
-                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                  <span class="badge-subtle" style="font-family: monospace; font-weight: 700;">${timeStr}</span>
-                  ${mainItem.type ? `<span class="badge-subtle" style="color: ${mainItem.type.color}; background: ${mainItem.type.bg}; font-size: 9.5px; padding: 1.5px 5.5px;">${mainItem.type.label}</span>` : ''}
-                  ${roomLabel ? `<span class="badge-subtle" style="font-family: monospace; font-size: 9.5px;">${roomLabel}</span>` : ''}
-                </div>
-                <div style="font-size: 13px; font-weight: 700; margin-top: 3px; line-height: 1.3;">${mainItem.title}</div>
-              </div>
-            </div>
-
-            <div id="${segId}" class="att-segmented-control">
-              <button type="button" data-status="present" class="att-segment-btn ${currentStatus === 'present' ? 'active-present' : ''}" onclick="setLessonAttendanceStatus('${dateISO}', '${timeStr}', '${safeTitle}', 'present')">
-                <span style="font-size: 11px;">✓</span> Был
-              </button>
-              <button type="button" data-status="unexcused" class="att-segment-btn ${currentStatus === 'unexcused' ? 'active-unexcused' : ''}" onclick="setLessonAttendanceStatus('${dateISO}', '${timeStr}', '${safeTitle}', 'unexcused')">
-                <span style="font-size: 11px;">✕</span> Пропуск (2ч)
-              </button>
-              <button type="button" data-status="excused" class="att-segment-btn ${currentStatus === 'excused' ? 'active-excused' : ''}" onclick="setLessonAttendanceStatus('${dateISO}', '${timeStr}', '${safeTitle}', 'excused')">
-                <span style="font-size: 11px;">📄</span> Справка
-              </button>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      updateDayAttendanceSummary();
-    }
-
-    function getMonthAttendanceStats(targetMonth = getCurrentMonthKey()) {
-      const recs = getAttendanceRecords();
-      let unexcusedCount = 0;
-      let excusedCount = 0;
-      const list = [];
-
-      Object.values(recs).forEach(r => {
-        if (r.month === targetMonth) {
-          if (r.status === 'unexcused') {
-            unexcusedCount++;
-            list.push(r);
-          } else if (r.status === 'excused') {
-            excusedCount++;
-            list.push(r);
-          }
-        }
-      });
-
-      list.sort((a, b) => (b.dateISO + b.timeStr).localeCompare(a.dateISO + a.timeStr));
-
-      return {
-        month: targetMonth,
-        unexcusedCount,
-        unexcusedHours: unexcusedCount * 2,
-        excusedCount,
-        excusedHours: excusedCount * 2,
-        list
-      };
-    }
-
-    function updateHeaderAbsencesBadge() {
-      const stats = getMonthAttendanceStats();
-      const textEl = document.getElementById('headerAbsencesText');
-      const dotEl = document.getElementById('headerAbsencesDot');
-      if (!textEl || !dotEl) return;
-
-      textEl.textContent = `${stats.unexcusedHours}/10 ч`;
-
-      dotEl.className = 'absences-dot';
-      if (stats.unexcusedHours <= 4) {
-        dotEl.classList.add('safe');
-      } else if (stats.unexcusedHours <= 8) {
-        dotEl.classList.add('warning');
-      } else {
-        dotEl.classList.add('danger');
-      }
-    }
-
-    function openAbsencesModal() {
-      triggerHaptic('selection');
-      renderAbsencesModal();
-      document.getElementById('absencesModal').classList.add('open');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeAbsencesModal() {
-      document.getElementById('absencesModal').classList.remove('open');
-      document.body.style.overflow = '';
-    }
-
-    function renderAbsencesModal() {
-      const now = new Date();
-      const monthNames = [
-        'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-        'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
-      ];
-      const curMonthLabel = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
-      const monthHeader = document.getElementById('absencesMonthLabel');
-      if (monthHeader) monthHeader.textContent = `${curMonthLabel} • Лимит: 10 часов`;
-
-      const stats = getMonthAttendanceStats();
-      const meterCard = document.getElementById('absencesMeterCard');
-      if (!meterCard) return;
-
-      const percent = Math.min(100, Math.round((stats.unexcusedHours / 10) * 100));
-      let zoneColor = '#10b981';
-      let zoneBadge = '';
-
-      if (stats.unexcusedHours <= 4) {
-        zoneColor = '#10b981';
-        zoneBadge = `🟢 Безопасная зона • Осталось ${Math.max(0, 10 - stats.unexcusedHours)} ч`;
-      } else if (stats.unexcusedHours <= 8) {
-        zoneColor = '#f59e0b';
-        zoneBadge = `🟡 Внимание! Осталось ${Math.max(0, 10 - stats.unexcusedHours)} ч до выговора`;
-      } else {
-        zoneColor = '#ef4444';
-        zoneBadge = `🔴 Лимит исчерпан (${stats.unexcusedHours} ч) • Риск выговора`;
-      }
-
-      meterCard.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          <div style="display: flex; align-items: baseline; gap: 4px;">
-            <span style="font-size: 28px; font-weight: 800; font-family: -apple-system-monospaced-numbers, monospace; letter-spacing: -1px; color: ${zoneColor};">${stats.unexcusedHours}</span>
-            <span style="font-size: 14px; font-weight: 700; color: var(--text-sub);">/ 10 ч</span>
-          </div>
-          <span class="badge-subtle" style="font-size: 11px; font-weight: 700; color: ${zoneColor}; border-color: ${zoneColor}66; background: ${zoneColor}14;">
-            ${zoneBadge}
-          </span>
-        </div>
-
-        <div>
-          <div class="absences-meter-bar-track">
-            <div class="absences-meter-bar-fill" style="width: ${percent}%; background: ${zoneColor};"></div>
-          </div>
-          <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 700; color: var(--text-sub); margin-top: 4px; font-family: monospace;">
-            <span>0 ч</span>
-            <span>2 ч</span>
-            <span>4 ч</span>
-            <span>6 ч</span>
-            <span>8 ч</span>
-            <span>10 ч</span>
-          </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 2px;">
-          <div style="padding: 8px 10px; border-radius: 12px; background: var(--glass-card-subtle); border: 1px solid var(--border-color);">
-            <div style="font-size: 10px; color: var(--text-sub); font-weight: 700; text-transform: uppercase;">Неуважительных</div>
-            <div style="font-size: 13px; font-weight: 800; margin-top: 2px; color: #ef4444;">${stats.unexcusedHours} ч <span style="font-size: 11px; font-weight: 600; color: var(--text-sub);">(${stats.unexcusedCount} пар)</span></div>
-          </div>
-          <div style="padding: 8px 10px; border-radius: 12px; background: var(--glass-card-subtle); border: 1px solid var(--border-color);">
-            <div style="font-size: 10px; color: var(--text-sub); font-weight: 700; text-transform: uppercase;">По справке</div>
-            <div style="font-size: 13px; font-weight: 800; margin-top: 2px; color: #3b82f6;">${stats.excusedHours} ч <span style="font-size: 11px; font-weight: 600; color: var(--text-sub);">(${stats.excusedCount} пар)</span></div>
-          </div>
-        </div>
-      `;
-
-      // List of absences
-      const listContainer = document.getElementById('absencesList');
-      const clearBtn = document.getElementById('clearAllAbsencesBtn');
-      if (!listContainer) return;
-
-      if (!stats.list.length) {
-        if (clearBtn) clearBtn.style.display = 'none';
-        listContainer.innerHTML = `
-          <div style="text-align: center; padding: 28px 12px; color: var(--text-sub);">
-            <div style="font-size: 32px; margin-bottom: 6px;">🎉</div>
-            <div style="font-size: 13.5px; font-weight: 800; color: var(--text-main);">В этом месяце нет пропусков</div>
-            <div style="font-size: 12px; margin-top: 2px;">Все пары посещены без пропусков! Так держать.</div>
-          </div>
-        `;
-        return;
-      }
-
-      if (clearBtn) clearBtn.style.display = 'block';
-      listContainer.innerHTML = stats.list.map(rec => {
-        const isUnex = rec.status === 'unexcused';
-        const parts = rec.dateISO.split('-');
-        const dateObj = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-        const dayDef = DAY_DEFS.find(dd => dd.index === dateObj.getDay());
-        const dayShort = dayDef ? dayDef.short : '';
-        const dateFormatted = `${parseInt(parts[2], 10)} ${monthsGenitive[dateObj.getMonth()]} (${dayShort})`;
-
-        return `
-          <div class="card-glass" style="padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-            <div style="min-width: 0;">
-              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                <span class="badge-subtle" style="font-size: 10px; font-weight: 800;">${dateFormatted}</span>
-                <span class="badge-subtle" style="font-family: monospace; font-size: 10px; font-weight: 700;">${rec.timeStr}</span>
-              </div>
-              <div style="font-size: 12.5px; font-weight: 700; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rec.title}</div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-              <button onclick="toggleSingleAbsenceRecord('${rec.key}')" class="att-status-btn ${isUnex ? 'status-unexcused' : 'status-excused'} tap-scale" title="Нажмите для смены статуса">
-                ${isUnex ? '✕ Пропуск (2 ч)' : '📄 По справке'}
-              </button>
-              <button onclick="removeAbsenceRecord('${rec.key}')" class="tap-scale" style="width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--glass-card-subtle); color: var(--text-sub); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px;" title="Удалить запись">
-                ✕
-              </button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function toggleSingleAbsenceRecord(key) {
-      const recs = getAttendanceRecords();
-      if (!recs[key]) return;
-      recs[key].status = recs[key].status === 'unexcused' ? 'excused' : 'unexcused';
-      recs[key].hours = recs[key].status === 'unexcused' ? 2 : 0;
-      saveAttendanceRecords(recs);
-      triggerHaptic('medium');
-      renderAbsencesModal();
-      updateHeaderAbsencesBadge();
-      renderCurrentPageOnly();
-    }
-
-    function removeAbsenceRecord(key) {
-      const recs = getAttendanceRecords();
-      delete recs[key];
-      saveAttendanceRecords(recs);
-      triggerHaptic('light');
-      showToast('✓ Отметка снята («Был на паре»)');
-      renderAbsencesModal();
-      updateHeaderAbsencesBadge();
-      renderCurrentPageOnly();
-    }
-
-    function clearMonthAbsences() {
-      if (!confirm('Сбросить все отметки пропусков за текущий месяц?')) return;
-      const recs = getAttendanceRecords();
-      const curMonth = getCurrentMonthKey();
-      Object.keys(recs).forEach(k => {
-        if (recs[k].month === curMonth) delete recs[k];
-      });
-      saveAttendanceRecords(recs);
-      triggerHaptic('heavy');
-      showToast('История за месяц очищена');
-      renderAbsencesModal();
-      updateHeaderAbsencesBadge();
-      renderCurrentPageOnly();
-    }
-
-    function renderCurrentPageOnly() {
-      const viewport = document.getElementById('scheduleViewport');
-      if (!viewport) return;
-      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
-      viewport.innerHTML = '';
-      viewport.appendChild(buildDayPage(selectedDayIndex, groupSchedule));
-    }
-
-    // ─── Досье преподавателя, Живой локатор & Отзывы ───────────────────────
+    // ─── Преподаватель (краткое описание) ──────────────────────────────────
     function formatTeacherChipHTML(rawTeacherStr) {
       if (!rawTeacherStr) return '—';
       const m = rawTeacherStr.match(/([А-ЯЁ][а-яё]+)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/);
@@ -2425,8 +1491,6 @@
         `;
       }
 
-      renderTeacherLocator(teacherName);
-      renderTeacherReviews(teacherName);
 
       document.getElementById('teacherModal').classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -2436,442 +1500,6 @@
       _activeTeacherName = null;
       document.getElementById('teacherModal').classList.remove('open');
       document.body.style.overflow = '';
-    }
-
-    function findTeacherScheduleToday(teacherName) {
-      const todayIdx = currentDaysList.findIndex(d => d.isToday);
-      const todayDate = (todayIdx !== -1 && currentDaysList[todayIdx]) ? currentDaysList[todayIdx].date : new Date();
-      const todayDDMM = formatDDMM(todayDate);
-
-      const matches = [];
-      if (!facultyData?.courses) return matches;
-
-      const lastName = teacherName.split(' ')[0].toLowerCase();
-
-      Object.entries(facultyData.courses).forEach(([course, groups]) => {
-        Object.entries(groups).forEach(([groupName, days]) => {
-          Object.entries(days).forEach(([dayKey, times]) => {
-            if (!dayKey.includes(todayDDMM)) return;
-
-            Object.entries(times).forEach(([timeStr, items]) => {
-              items.forEach(rawItem => {
-                const rawLower = rawItem.toLowerCase();
-                if (rawLower.includes(lastName)) {
-                  const slotMin = parseTimeSlotMinutes(timeStr);
-                  const roomMatch = rawItem.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
-                  const room = roomMatch ? roomMatch[0].trim() : '';
-                  const title = rawItem.split('\n')[0].replace(/\((?:лекц|практ|лаб|сем)[^)]*\)/i, '').trim();
-
-                  matches.push({
-                    timeStr,
-                    startMin: slotMin ? slotMin.startMin : 0,
-                    endMin: slotMin ? slotMin.endMin : 0,
-                    course,
-                    groupName,
-                    room,
-                    title
-                  });
-                }
-              });
-            });
-          });
-        });
-      });
-
-      const grouped = [];
-      matches.forEach(m => {
-        const cleanGroup = m.groupName.replace(/^ГРУППА\s*/i, 'Гр. ');
-        const existing = grouped.find(g => g.timeStr === m.timeStr && g.title === m.title && g.course === m.course);
-        if (existing) {
-          if (!existing.groups.includes(cleanGroup)) existing.groups.push(cleanGroup);
-        } else {
-          grouped.push({
-            ...m,
-            groups: [cleanGroup]
-          });
-        }
-      });
-
-      grouped.sort((a, b) => a.startMin - b.startMin);
-      return grouped;
-    }
-
-    function renderTeacherLocator(teacherName) {
-      const container = document.getElementById('teacherLiveLocator');
-      const schedSection = document.getElementById('teacherTodayScheduleSection');
-      if (!container) return;
-
-      const now = new Date();
-      const curMin = now.getHours() * 60 + now.getMinutes();
-      const lessonsToday = findTeacherScheduleToday(teacherName);
-
-      if (!lessonsToday.length) {
-        container.innerHTML = `
-          <div class="locator-box locator-free">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="font-size: 18px;">☕</span>
-              <div style="font-weight: 800; font-size: 13px;">Сегодня пар в расписании нет</div>
-            </div>
-            <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px;">
-              Преподаватель сегодня не ведёт занятий по расписанию факультета.
-            </div>
-          </div>
-        `;
-        if (schedSection) schedSection.innerHTML = '';
-        return;
-      }
-
-      const liveLesson = lessonsToday.find(l => curMin >= l.startMin && curMin < l.endMin);
-      const nextLesson = lessonsToday.find(l => l.startMin > curMin);
-      const lastLesson = lessonsToday[lessonsToday.length - 1];
-
-      let locatorHTML = '';
-      if (liveLesson) {
-        const minsLeft = Math.max(0, liveLesson.endMin - curMin);
-        const endStr = (liveLesson.timeStr.split(/[-–—]/)[1] || '').trim();
-        locatorHTML = `
-          <div class="locator-box locator-live">
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-              <div style="display: flex; align-items: center; gap: 6px;">
-                <span class="status-dot live"></span>
-                <span style="font-weight: 800; font-size: 12.5px; color: #10b981;">Прямо сейчас идёт пара</span>
-              </div>
-              <span class="badge-subtle" style="font-size: 11px; font-weight: 800; color: #10b981; border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.08);">до ${endStr} (${minsLeft} мин)</span>
-            </div>
-            <div style="font-size: 14.5px; font-weight: 800; margin-top: 5px;">
-              Аудитория: <span style="font-family: monospace; color: var(--text-main);">${liveLesson.room || 'не указана'}</span>
-            </div>
-            <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 1px;">
-              ${liveLesson.title} • ${liveLesson.course} курс (${liveLesson.groups.join(', ')})
-            </div>
-          </div>
-        `;
-      } else if (nextLesson) {
-        const minsTo = Math.max(0, nextLesson.startMin - curMin);
-        const startStr = (nextLesson.timeStr.split(/[-–—]/)[0] || '').trim();
-        locatorHTML = `
-          <div class="locator-box locator-upcoming">
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-              <div style="display: flex; align-items: center; gap: 6px;">
-                <span class="status-dot break"></span>
-                <span style="font-weight: 800; font-size: 12.5px; color: #0284c7;">Следующая пара через ${formatMinutesLeft(minsTo)}</span>
-              </div>
-              <span class="badge-subtle" style="font-size: 11px; font-weight: 800; color: #0284c7; border-color: rgba(56,189,248,0.4);">в ${startStr}</span>
-            </div>
-            <div style="font-size: 14.5px; font-weight: 800; margin-top: 5px;">
-              Аудитория: <span style="font-family: monospace; color: var(--text-main);">${nextLesson.room || 'не указана'}</span>
-            </div>
-            <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 1px;">
-              ${nextLesson.title} • ${nextLesson.course} курс (${nextLesson.groups.join(', ')})
-            </div>
-          </div>
-        `;
-      } else if (curMin >= lastLesson.endMin) {
-        const endStr = (lastLesson.timeStr.split(/[-–—]/)[1] || '').trim();
-        locatorHTML = `
-          <div class="locator-box locator-done">
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <span class="status-dot done"></span>
-              <span style="font-weight: 800; font-size: 12.5px; color: var(--text-sub);">Пары на сегодня завершены</span>
-            </div>
-            <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px;">
-              Последнее занятие преподавателя закончилось в ${endStr}
-            </div>
-          </div>
-        `;
-      }
-
-      container.innerHTML = locatorHTML;
-
-      if (schedSection) {
-        schedSection.innerHTML = `
-          <div style="font-size: 10.5px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 6px;">
-            Расписание на сегодня (${lessonsToday.length} ${lessonsToday.length === 1 ? 'пара' : lessonsToday.length < 5 ? 'пары' : 'пар'})
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 6px;">
-            ${lessonsToday.map(l => {
-              const isCur = liveLesson && liveLesson.timeStr === l.timeStr && liveLesson.title === l.title;
-              return `
-                <div class="card-glass" style="padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; ${isCur ? 'border-color: rgba(16,185,129,0.5); background: rgba(16,185,129,0.07);' : ''}">
-                  <div style="min-width: 0;">
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                      <span class="badge-subtle" style="font-family: monospace; font-size: 10.5px; font-weight: 800; ${isCur ? 'background: #10b981; color: #fff;' : ''}">${l.timeStr}</span>
-                      <span style="font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${l.title}</span>
-                    </div>
-                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">
-                      ${l.course} курс • ${l.groups.join(', ')}
-                    </div>
-                  </div>
-                  ${l.room ? `<span class="badge-subtle" style="font-family: monospace; font-weight: 800; font-size: 11px; flex-shrink: 0;">${l.room}</span>` : ''}
-                </div>
-              `;
-            }).join('')}
-          </div>
-        `;
-      }
-    }
-
-    async function renderTeacherReviews(teacherName) {
-      const container = document.getElementById('teacherReviewsSection');
-      if (!container) return;
-
-      container.innerHTML = `<div style="font-size: 12px; color: var(--text-sub); text-align: center; padding: 10px;">Загрузка отзывов...</div>`;
-      const reviews = await fetchReviews(teacherName);
-      const admin = isUserAdmin();
-
-      let reviewsListHTML = '';
-      if (!reviews.length) {
-        reviewsListHTML = `
-          <div style="text-align: center; padding: 18px 10px; color: var(--text-sub); font-size: 12px; background: var(--glass-card-subtle); border-radius: 14px; border: 1px solid var(--border-color);">
-            Пока нет отзывов. Будьте первым, кто поделится полезным советом!
-          </div>
-        `;
-      } else {
-        reviewsListHTML = reviews.map(r => {
-          const starStr = '★'.repeat(r.rating || 5) + '☆'.repeat(5 - (r.rating || 5));
-          const dateStr = r.date ? new Date(r.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }) : '';
-          return `
-            <div class="review-item">
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <span class="review-stars">${starStr}</span>
-                  <span style="font-size: 10.5px; color: var(--text-sub);">${dateStr}</span>
-                </div>
-                ${admin ? `
-                  <button onclick="handleDeleteReview('${teacherName.replace(/'/g, "\\'")}', '${r.id}')" class="btn-delete-rev tap-scale" title="Удалить отзыв">
-                    🗑 Удалить
-                  </button>
-                ` : ''}
-              </div>
-              <div style="font-size: 12px; line-height: 1.45; color: var(--text-main);">${escapeHTML(r.text)}</div>
-            </div>
-          `;
-        }).join('');
-      }
-
-      container.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          <span class="section-title" style="margin-bottom: 0;">Анонимные отзывы и советы (${reviews.length})</span>
-          ${admin ? '<span class="badge-subtle" style="font-size: 9.5px; color: #ef4444; border-color: rgba(239,68,68,0.4);">Режим админа</span>' : ''}
-        </div>
-
-        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 28vh; overflow-y: auto; padding-right: 2px;">
-          ${reviewsListHTML}
-        </div>
-
-        <!-- Форма отзыва -->
-        <div class="card-glass" style="padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
-          <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-size: 12px; font-weight: 700;">Оставить анонимный совет</span>
-            <div id="starRatingSelector" style="display: flex; align-items: center; gap: 2px;">
-              ${[1, 2, 3, 4, 5].map(star => `
-                <span class="star-select-btn ${star <= currentReviewRating ? 'active' : ''}" onclick="setReviewRating(${star})">★</span>
-              `).join('')}
-            </div>
-          </div>
-          <textarea id="newReviewText" rows="2" placeholder="Как сдавать зачёт/экзамен? Строгий ли? На что обратить внимание..." style="width: 100%; border-radius: 10px; padding: 8px 10px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-main); font-size: 12px; font-family: inherit; resize: none; outline: none;"></textarea>
-          <button onclick="submitTeacherReview('${teacherName.replace(/'/g, "\\'")}')" class="tap-scale" style="padding: 9px; border-radius: 10px; background: var(--nav-active-bg); color: var(--nav-active-text); font-size: 12px; font-weight: 700; border: none; cursor: pointer;">
-            Отправить анонимно
-          </button>
-        </div>
-      `;
-    }
-
-    function setReviewRating(r) {
-      currentReviewRating = r;
-      const selector = document.getElementById('starRatingSelector');
-      if (!selector) return;
-      const stars = selector.querySelectorAll('.star-select-btn');
-      stars.forEach((s, idx) => {
-        s.classList.toggle('active', idx < r);
-      });
-      triggerHaptic('light');
-    }
-
-    async function submitTeacherReview(teacherName) {
-      const textarea = document.getElementById('newReviewText');
-      if (!textarea) return;
-      const text = textarea.value.trim();
-      if (text.length < 3) {
-        showToast('Напишите хотя бы пару слов отзыва');
-        return;
-      }
-
-      await postReview(teacherName, {
-        rating: currentReviewRating,
-        text: text
-      });
-
-      triggerHaptic('medium');
-      showToast('✓ Отзыв успешно отправлен анонимно!');
-      currentReviewRating = 5;
-      renderTeacherReviews(teacherName);
-    }
-
-    async function handleDeleteReview(teacherName, reviewId) {
-      if (!confirm('Удалить этот отзыв?')) return;
-      await deleteReview(teacherName, reviewId);
-      triggerHaptic('heavy');
-      showToast('Отзыв удален');
-      renderTeacherReviews(teacherName);
-    }
-
-    function escapeHTML(str) {
-      if (!str) return '';
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    async function fetchReviews(teacherId) {
-      if (API_REVIEWS_URL) {
-        try {
-          const res = await fetch(`${API_REVIEWS_URL}/reviews?teacher=${encodeURIComponent(teacherId)}`);
-          if (res.ok) {
-            const data = await res.json();
-            if (Array.isArray(data)) return data;
-          }
-        } catch (e) {
-          console.warn('API reviews fetch failed', e);
-        }
-      }
-
-      try {
-        const raw = localStorage.getItem('bsu_reviews_' + teacherId);
-        if (raw) return JSON.parse(raw);
-      } catch (e) {}
-
-      return getDefaultStarterReviews(teacherId);
-    }
-
-    async function postReview(teacherId, reviewData) {
-      const newReview = {
-        id: 'rev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-        teacherId,
-        rating: reviewData.rating || 5,
-        text: reviewData.text,
-        date: Date.now()
-      };
-
-      if (API_REVIEWS_URL) {
-        try {
-          await fetch(`${API_REVIEWS_URL}/reviews`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newReview)
-          });
-        } catch (e) {
-          console.warn('API review post failed', e);
-        }
-      }
-
-      try {
-        const currentList = await fetchReviews(teacherId);
-        currentList.unshift(newReview);
-        localStorage.setItem('bsu_reviews_' + teacherId, JSON.stringify(currentList));
-      } catch (e) {}
-
-      return newReview;
-    }
-
-    async function deleteReview(teacherId, reviewId) {
-      if (API_REVIEWS_URL) {
-        try {
-          await fetch(`${API_REVIEWS_URL}/reviews/${reviewId}`, { method: 'DELETE' });
-        } catch (e) {
-          console.warn('API review delete failed', e);
-        }
-      }
-
-      try {
-        const currentList = await fetchReviews(teacherId);
-        const filtered = currentList.filter(r => r.id !== reviewId);
-        localStorage.setItem('bsu_reviews_' + teacherId, JSON.stringify(filtered));
-      } catch (e) {}
-
-      return true;
-    }
-
-    function getDefaultStarterReviews(teacherId) {
-      const starters = {
-        'Лисовская Т.В.': [
-          {
-            id: 'init_1',
-            teacherId: 'Лисовская Т.В.',
-            rating: 5,
-            text: 'Очень интересно читает лекции! Главное — не пропускать семинары и знать основные даты по истории Беларуси.',
-            date: Date.now() - 86400000 * 3
-          }
-        ],
-        'Карпиченко А.А.': [
-          {
-            id: 'init_2',
-            teacherId: 'Карпиченко А.А.',
-            rating: 5,
-            text: 'Отличный преподаватель по геохимии. Сдавайте практические вовремя, на зачете ценит понимание предмета.',
-            date: Date.now() - 86400000 * 5
-          }
-        ],
-        'Романкевич А.П.': [
-          {
-            id: 'init_3',
-            teacherId: 'Романкевич А.П.',
-            rating: 5,
-            text: 'Понятно объясняет работу с приборами и теорию геодезии. Всегда готов ответить на вопросы.',
-            date: Date.now() - 86400000 * 7
-          }
-        ],
-        'Ковальчик Н.В.': [
-          {
-            id: 'init_4',
-            teacherId: 'Ковальчик Н.В.',
-            rating: 5,
-            text: 'Хороший лектор по почвоведению, материал структурирован, конспекты очень помогают на зачёте.',
-            date: Date.now() - 86400000 * 4
-          }
-        ],
-        'Гледко Ю.А.': [
-          {
-            id: 'init_5',
-            teacherId: 'Гледко Ю.А.',
-            rating: 5,
-            text: 'Прекрасно ведет общее землеведение, очень душевный и компетентный преподаватель!',
-            date: Date.now() - 86400000 * 2
-          }
-        ],
-        'Гулезова А.А.': [
-          {
-            id: 'init_6',
-            teacherId: 'Гулезова А.А.',
-            rating: 5,
-            text: 'Замечательный преподаватель французского языка. На парах много разговорной практики и полезной лексики.',
-            date: Date.now() - 86400000 * 6
-          }
-        ]
-      };
-      return starters[teacherId] || [];
-    }
-
-    function getCurrentTelegramUserId() {
-      return window.Telegram?.WebApp?.initDataUnsafe?.user?.id || null;
-    }
-
-    function isUserAdmin() {
-      const uid = getCurrentTelegramUserId();
-      if (uid && ADMIN_TELEGRAM_ID.includes(uid)) return true;
-      return localStorage.getItem('bsu_test_admin') === 'true';
-    }
-
-    function toggleTestAdmin() {
-      const cur = localStorage.getItem('bsu_test_admin') === 'true';
-      localStorage.setItem('bsu_test_admin', cur ? 'false' : 'true');
-      triggerHaptic('medium');
-      showToast(cur ? 'Режим тест-админа выключен' : '✓ Режим тест-админа включен');
-      if (_activeTeacherName) renderTeacherReviews(_activeTeacherName);
-      if (modalMode === 'unified') renderUnifiedSettings();
     }
 
     function parseDayKeyDate(rawKey, refDate = new Date()) {
@@ -3070,14 +1698,11 @@
         dayHeaderRow.style.animation = 'fadeSettle 0.22s cubic-bezier(0.16, 1, 0.3, 1) both';
       }
 
-      const dayAttBtn = document.getElementById('openDayAttendanceBtn');
-
       if (dayIndex === -1) {
         const sundayDate = now.getDate() + ' ' + monthsGenitive[now.getMonth()];
         dayFullTitle.textContent = `Воскресенье, ${sundayDate}`;
         badgeBox.innerHTML = '<span class="badge-subtle" style="color: #f59e0b; border-color: rgba(245,158,11,0.3); font-weight: 700;">Выходной</span>';
         lessonsCountBox.textContent = 'Выходной';
-        if (dayAttBtn) dayAttBtn.style.display = 'none';
         return;
       }
 
@@ -3098,16 +1723,13 @@
 
       if (!currentDay.rawKey) {
         lessonsCountBox.textContent = 'Нет данных';
-        if (dayAttBtn) dayAttBtn.style.display = 'none';
       } else {
         const activeSlots = getProcessedDaySlots(currentDay.rawKey, groupSchedule);
         if (!activeSlots.length) {
           lessonsCountBox.textContent = 'Выходной';
-          if (dayAttBtn) dayAttBtn.style.display = 'none';
         } else {
           const lessonCount = activeSlots.filter(s => s.items && s.items.length > 0).length;
           lessonsCountBox.textContent = formatLessonsCount(lessonCount);
-          if (dayAttBtn) dayAttBtn.style.display = lessonCount > 0 ? 'inline-flex' : 'none';
         }
       }
     }
@@ -3132,9 +1754,8 @@
       return slotsWithItems.slice(firstIdx, lastIdx + 1);
     }
 
-    function renderLessonCards(activeSlots, isToday, isPast = false, dateISO = null) {
+    function renderLessonCards(activeSlots, isToday, isPast = false) {
       const frag = document.createDocumentFragment();
-      const effDateISO = dateISO || getISODateString(new Date());
 
       activeSlots.forEach((slotData, index) => {
         const { timeStr, items } = slotData;
@@ -3172,20 +1793,8 @@
         wrapper.className = cardClasses;
         wrapper.style.animationDelay = `${index * 20}ms`;
 
-        const mainTitle = items[0]?.title || 'Пара';
-        const attStatus = getLessonAttendance(effDateISO, timeStr);
-        let attClass = 'status-present';
-        let attText = '<span style="opacity: 0.7;">✓</span> Был';
-        if (attStatus === 'unexcused') {
-          attClass = 'status-unexcused';
-          attText = '<span style="font-weight: 800;">✕</span> Пропуск (2 ч)';
-        } else if (attStatus === 'excused') {
-          attClass = 'status-excused';
-          attText = '<span>📄</span> По справке';
-        }
-
         let innerContent = `
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; gap: 6px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px;">
             <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
               <span class="badge-subtle" style="font-family: monospace; font-weight: 700; ${isLive ? 'background: #10b981; color: #fff; border-color: #10b981;' : ''}">${timeStr}</span>
               ${isLive ? (() => {
@@ -3196,9 +1805,6 @@
                 return `<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.35); background: rgba(16,185,129,0.08); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; animation: pulseAura 2s infinite;"></span>Идёт пара${leftLabel}</span>`;
               })() : ''}
             </div>
-            <button type="button" class="att-status-btn ${attClass} tap-scale" onclick="event.stopPropagation(); openDayAttendanceModal('${timeStr}')" title="Отметить посещение пар на этот день">
-              ${attText}
-            </button>
           </div>
         `;
 
@@ -3276,8 +1882,7 @@
         return page;
       }
 
-      const dateISO = currentDay.date ? getISODateString(currentDay.date) : getISODateString(new Date());
-      const frag = renderLessonCards(activeSlots, currentDay.isToday, currentDay.isPast, dateISO);
+      const frag = renderLessonCards(activeSlots, currentDay.isToday, currentDay.isPast);
       page.appendChild(frag);
       return page;
     }
@@ -3493,22 +2098,6 @@
           </div>
           <div style="font-size: 11px; color: var(--text-sub); margin-top: 6px; line-height: 1.4;">${langHint}</div>
         </div>
-
-        <div style="margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--border-color);">
-          <div class="section-title">Системная информация & Модерация</div>
-          <div class="card-glass" style="padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-              <span style="font-size: 11.5px; color: var(--text-sub);">Ваш Telegram ID:</span>
-              <span style="font-family: monospace; font-size: 11.5px; font-weight: 800; cursor: pointer; color: #6366f1;" onclick="copyTelegramId()" title="Нажмите, чтобы скопировать">${getCurrentTelegramUserId() || 'Вне Telegram (браузер)'}</span>
-            </div>
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-              <span style="font-size: 11.5px; color: var(--text-sub);">Режим тест-админа (отзывы):</span>
-              <button onclick="toggleTestAdmin()" class="tap-scale" style="padding: 4px 9px; border-radius: 9px; font-size: 11px; font-weight: 700; border: 1px solid var(--border-color); cursor: pointer; ${isUserAdmin() ? 'background: rgba(16,185,129,0.15); color: #10b981; border-color: rgba(16,185,129,0.4);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}">
-                ${isUserAdmin() ? '✓ Активен' : 'Выключен'}
-              </button>
-            </div>
-          </div>
-        </div>
       `;
 
       const footer = document.getElementById('modalFooter');
@@ -3673,9 +2262,7 @@
       window.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
           closeSettingsModal();
-          closeAbsencesModal();
           closeTeacherModal();
-          closeDayAttendanceModal();
           return;
         }
 
@@ -3702,7 +2289,6 @@
     async function init() {
       initTheme();
       setupSwipeGestures();
-      setupHeaderLongTap();
 
       const savedProfile = localStorage.getItem('bsu_profile');
       if (savedProfile) {
@@ -3716,8 +2302,6 @@
         loadData(),
         loadTeachersInfo()
       ]);
-
-      updateHeaderAbsencesBadge();
 
       if (!okSchedule) {
         document.getElementById('headerTitle').textContent = 'Ошибка загрузки расписания';
