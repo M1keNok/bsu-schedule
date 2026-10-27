@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" class="h-full">
+<html lang="ru" class="h-full" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -8,6 +8,17 @@
   <meta http-equiv="Expires" content="0">
   <title>Расписание Геофак БГУ</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Tailwind CSS & daisyUI (Component Library) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {}
+      }
+    };
+  </script>
   <style>
     :root {
       --bg-gradient: linear-gradient(180deg, #f1f4f9 0%, #e5ebf4 100%);
@@ -1053,10 +1064,12 @@
     function initTheme() {
       const saved = localStorage.getItem('bsu_theme') || 'dark';
       document.documentElement.classList.toggle('dark', saved === 'dark');
+      document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
     }
 
     function setTheme(mode) {
       document.documentElement.classList.toggle('dark', mode === 'dark');
+      document.documentElement.setAttribute('data-theme', mode === 'dark' ? 'dark' : 'light');
       localStorage.setItem('bsu_theme', mode);
       if (modalMode === 'wizard') renderWizardStep();
       else renderUnifiedSettings();

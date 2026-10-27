@@ -1,8 +1,9 @@
 // BSU Schedule - Service Worker
-// Стратегия: Network-First для schedule_data.json (всегда свежие данные с сервера),
-//             Stale-While-Revalidate для index.html (мгновенная загрузка офлайн).
+// Стратегия: Network-First для schedule_data.json и teachers_info.json,
+//             Stale-While-Revalidate для index.html (мгновенная загрузка офлайн),
+//             Cache-First для внешних CDN библиотек (Tailwind CSS, daisyUI, Telegram SDK).
 
-const CACHE_NAME = 'bsu-schedule-v3';
+const CACHE_NAME = 'bsu-schedule-v4';
 const SHELL_ASSETS = [
   './',
   './index.html',
@@ -10,12 +11,30 @@ const SHELL_ASSETS = [
   './teachers_info.json'
 ];
 
+const CDN_ASSETS = [
+  'https://cdn.tailwindcss.com',
+  'https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css',
+  'https://telegram.org/js/telegram-web-app.js'
+];
+
 // ─── Install: предзагрузка оболочки приложения ──────────────────────────────
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache =>
-      cache.addAll(SHELL_ASSETS.map(url => new Request(url, { cache: 'reload' })))
-    ).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(async cache => {
+      await cache.addAll(SHELL_ASSETS.map(url => new Request(url, { cache: 'reload' })));
+      // Предзагружаем CDN-ресурсы, не блокируя установку в случае сбоя сети
+      await Promise.allSettled(
+        CDN_ASSETS.map(url =>
+          fetch(url)
+            .then(res => {
+              if (res.ok || res.type === 'opaque') {
+                return cache.put(url, res);
+              }
+            })
+            .catch(() => null)
+        )
+      );
+    }).then(() => self.skipWaiting())
   );
 });
 
@@ -34,11 +53,33 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   const isLocal = url.origin === self.location.origin;
-  if (event.request.method !== 'GET' || !isLocal) return;
+  const isCdn = url.hostname === 'cdn.tailwindcss.com' ||
+                url.hostname === 'cdn.jsdelivr.net' ||
+                url.hostname === 'telegram.org';
+
+  if (event.request.method !== 'GET') return;
+  if (!isLocal && !isCdn) return;
+
+  // 1. Внешние CDN-библиотеки (Tailwind CSS, daisyUI, Telegram SDK): Cache-First
+  if (isCdn) {
+    event.respondWith(
+      caches.match(event.request).then(cached => {
+        if (cached) return cached;
+        return fetch(event.request).then(networkResponse => {
+          if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          }
+          return networkResponse;
+        }).catch(() => cached || new Response('', { status: 408, statusText: 'Offline' }));
+      })
+    );
+    return;
+  }
 
   const path = url.pathname.replace(/\/$/, '') || '/';
 
-  // 1. JSON-данные (расписание и досье преподавателей): Network-First
+  // 2. JSON-данные (расписание и досье преподавателей): Network-First
   if (path.endsWith('schedule_data.json') || path.endsWith('teachers_info.json')) {
     const filename = path.endsWith('teachers_info.json') ? 'teachers_info.json' : 'schedule_data.json';
     event.respondWith(
@@ -47,7 +88,6 @@ self.addEventListener('fetch', event => {
           if (response.ok) {
             const clone = response.clone();
             caches.open(CACHE_NAME).then(cache => {
-              // Сохраняем и с query-параметрами, и под чистым ключом для гарантированного офлайн-доступа
               cache.put(`./${filename}`, clone.clone());
               cache.put(event.request, clone);
             });
@@ -71,7 +111,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // 2. index.html и корень: Stale-While-Revalidate (мгновенный старт из кэша, обновление в фоне)
+  // 3. index.html и корень: Stale-While-Revalidate (мгновенный старт из кэша, обновление в фоне)
   if (path.endsWith('.html') || path === '/' || path.endsWith('/')) {
     event.respondWith(
       caches.open(CACHE_NAME).then(async cache => {
