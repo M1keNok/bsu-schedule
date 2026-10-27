@@ -14,42 +14,85 @@
   <script>
     tailwind.config = {
       darkMode: 'class',
-      theme: {
-        extend: {}
+      daisyui: {
+        themes: [
+          {
+            dark: {
+              "primary": "#ffffff",
+              "primary-content": "#000000",
+              "secondary": "#27272a",
+              "secondary-content": "#f4f4f5",
+              "accent": "#10b981",
+              "accent-content": "#ffffff",
+              "neutral": "#18181b",
+              "neutral-content": "#f4f4f5",
+              "base-100": "#000000",
+              "base-200": "#0c0c0e",
+              "base-300": "#18181b",
+              "base-content": "#f4f4f5",
+              "info": "#a1a1aa",
+              "success": "#10b981",
+              "warning": "#f59e0b",
+              "error": "#ef4444",
+            },
+            light: {
+              "primary": "#09090b",
+              "primary-content": "#ffffff",
+              "secondary": "#f4f4f5",
+              "secondary-content": "#09090b",
+              "accent": "#10b981",
+              "accent-content": "#ffffff",
+              "neutral": "#e4e4e7",
+              "neutral-content": "#09090b",
+              "base-100": "#ffffff",
+              "base-200": "#f8fafc",
+              "base-300": "#f1f5f9",
+              "base-content": "#09090b",
+              "info": "#71717a",
+              "success": "#10b981",
+              "warning": "#f59e0b",
+              "error": "#ef4444",
+            }
+          }
+        ]
       }
     };
   </script>
   <style>
     :root {
-      --bg-gradient: linear-gradient(180deg, #f1f4f9 0%, #e5ebf4 100%);
-      --text-main: #0f172a;
-      --text-sub: #64748b;
-      --glass-card: rgba(255, 255, 255, 0.76);
-      --glass-card-subtle: rgba(255, 255, 255, 0.52);
-      --glass-border: rgba(255, 255, 255, 0.95);
+      --bg-gradient: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      --text-main: #09090b;
+      --text-sub: #71717a;
+      --glass-card: rgba(255, 255, 255, 0.82);
+      --glass-card-subtle: rgba(255, 255, 255, 0.60);
+      --glass-border: rgba(0, 0, 0, 0.08);
       --glass-inner-bevel: inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
-      --card-shadow: 0 6px 22px -3px rgba(0, 0, 0, 0.05);
-      --nav-active-bg: #0f172a;
+      --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+      --nav-active-bg: #09090b;
       --nav-active-text: #ffffff;
-      --border-color: rgba(0, 0, 0, 0.06);
+      --border-color: rgba(0, 0, 0, 0.07);
       --accent-emerald: #10b981;
       --accent-amber: #f59e0b;
     }
 
     .dark {
-      --bg-gradient: linear-gradient(180deg, #090c13 0%, #0d121c 100%);
-      --text-main: #f8fafc;
-      --text-sub: #94a3b8;
-      --glass-card: rgba(20, 25, 38, 0.74);
-      --glass-card-subtle: rgba(27, 34, 51, 0.55);
-      --glass-border: rgba(255, 255, 255, 0.1);
-      --glass-inner-bevel: inset 0 1px 1px 0 rgba(255, 255, 255, 0.14);
-      --card-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.55);
-      --nav-active-bg: #f8fafc;
-      --nav-active-text: #090c13;
+      --bg-gradient: #000000;
+      --text-main: #f4f4f5;
+      --text-sub: #a1a1aa;
+      --glass-card: rgba(14, 14, 16, 0.88);
+      --glass-card-subtle: rgba(24, 24, 27, 0.68);
+      --glass-border: rgba(255, 255, 255, 0.09);
+      --glass-inner-bevel: inset 0 1px 1px 0 rgba(255, 255, 255, 0.06);
+      --card-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.95);
+      --nav-active-bg: #ffffff;
+      --nav-active-text: #000000;
       --border-color: rgba(255, 255, 255, 0.08);
       --accent-emerald: #34d399;
       --accent-amber: #fbbf24;
+    }
+
+    html.dark, html.dark body {
+      background-color: #000000 !important;
     }
 
     * {
@@ -124,7 +167,7 @@
 
     .card-glass:active {
       transform: scale(0.985);
-      border-color: rgba(99, 102, 241, 0.28);
+      border-color: rgba(255, 255, 255, 0.22);
     }
 
     .badge-subtle {
@@ -378,7 +421,7 @@
     .modal-close-btn:hover {
       background: var(--glass-card);
       color: var(--text-main);
-      border-color: rgba(99, 102, 241, 0.4);
+      border-color: rgba(255, 255, 255, 0.25);
       transform: scale(1.06);
     }
     .modal-close-btn:active {
@@ -439,7 +482,7 @@
     }
     .btn-secondary:hover {
       background: var(--glass-card);
-      border-color: rgba(99, 102, 241, 0.35);
+      border-color: rgba(255, 255, 255, 0.25);
     }
     .btn-secondary:active {
       transform: scale(0.98);
@@ -620,7 +663,7 @@
       flex-shrink: 0;
     }
     .status-dot.live { background: #10b981; box-shadow: 0 0 0 0 rgba(16,185,129,0.5); animation: statusPulse 1.8s ease-in-out infinite; }
-    .status-dot.break { background: #38bdf8; }
+    .status-dot.break { background: #f59e0b; }
     .status-dot.before { background: #f59e0b; }
     .status-dot.done { background: var(--text-sub); opacity: 0.5; }
     @keyframes statusPulse {
@@ -637,7 +680,7 @@
       flex-shrink: 0;
     }
     .status-timer.live  { color: #10b981; }
-    .status-timer.break { color: #38bdf8; }
+    .status-timer.break { color: #f59e0b; }
     .status-timer.before{ color: #f59e0b; }
 
     /* ─── Teacher Dossier & Interactive Chip ──────────────────────────────── */
@@ -659,7 +702,7 @@
     }
     .teacher-chip:hover {
       background: var(--glass-card);
-      border-color: rgba(99, 102, 241, 0.4);
+      border-color: rgba(255, 255, 255, 0.25);
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
     .teacher-chip:active {
@@ -687,8 +730,8 @@
       font-size: 20px;
       font-weight: 800;
       color: #fff;
-      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-      box-shadow: 0 6px 18px rgba(99, 102, 241, 0.35);
+      background: linear-gradient(135deg, #27272a 0%, #3f3f46 100%);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
       flex-shrink: 0;
       overflow: hidden;
     }
@@ -753,9 +796,19 @@
         </div>
       </div>
 
-      <div style="display: flex; align-items: center; gap: 6px;">
-        <button onclick="openSettingsModal()" class="tap-scale" style="padding: 7px 11px; border-radius: 12px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-main); font-size: 11.5px; font-weight: 700; display: flex; align-items: center; gap: 5.5px;" title="Параметры и настройки">
-          <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <!-- daisyUI Theme Controller -->
+        <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm border border-base-content/10 bg-base-200/50" title="Сменить тему">
+          <input type="checkbox" class="theme-controller" id="headerThemeToggle" onchange="toggleThemeFromController(this.checked)" />
+          <!-- sun icon (active when dark mode is on, clicking switches to light) -->
+          <svg class="swap-on fill-current w-4 h-4 text-amber-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM6.34,6.34a1,1,0,0,0,0-1.41L5.64,4.22a1,1,0,0,0-1.41,1.41L5.64,6.34A1,1,0,0,0,6.34,6.34ZM12,7a5,5,0,1,0,5,5A5,5,0,0,0,12,7Zm0,8a3,3,0,1,1,3-3A3,3,0,0,1,12,15Zm8-3a1,1,0,0,0-1-1H18a1,1,0,0,0,0,2h1A1,1,0,0,0,20,12Zm-1.66,5.66a1,1,0,0,0,1.41-1.41l-.71-.71a1,1,0,0,0-1.41,1.41ZM17.66,4.22l-.71.71A1,1,0,0,0,18.36,6.34l.71-.71A1,1,0,0,0,17.66,4.22ZM12,19a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19Z"/></svg>
+          <!-- moon icon (active when light mode is on, clicking switches to dark) -->
+          <svg class="swap-off fill-current w-4 h-4 text-zinc-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Z"/></svg>
+        </label>
+
+        <!-- Settings Button -->
+        <button onclick="openSettingsModal()" class="btn btn-ghost btn-circle btn-sm border border-base-content/10 bg-base-200/50" title="Параметры и настройки">
+          <svg style="width: 15px; height: 15px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
@@ -771,7 +824,7 @@
         <span style="font-size: 16px; line-height: 1;">☕</span>
         <span>Сегодня воскресенье — выходной</span>
       </div>
-      <button onclick="selectDayIndex(-1, 'medium')" class="tap-scale" style="padding: 4px 10px; border-radius: 10px; background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.35); color: var(--text-main); font-size: 11px; font-weight: 700; cursor: pointer;">
+      <button onclick="selectDayIndex(-1, 'medium')" class="btn btn-warning btn-xs rounded-lg font-bold">
         Сегодня
       </button>
     </div>
@@ -1055,7 +1108,7 @@
 
     function detectLessonType(text) {
       if (/лекц/i.test(text)) return { label: 'Лекция', color: '#10b981', bg: 'rgba(16,185,129,0.1)' };
-      if (/лаб/i.test(text)) return { label: 'Лабораторная', color: '#6366f1', bg: 'rgba(99,102,241,0.1)' };
+      if (/лаб/i.test(text)) return { label: 'Лабораторная', color: '#a855f7', bg: 'rgba(168,85,247,0.12)' };
       if (/практ/i.test(text)) return { label: 'Практика', color: '#14b8a6', bg: 'rgba(20,184,166,0.1)' };
       if (/сем/i.test(text)) return { label: 'Семинар', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' };
       return null;
@@ -1063,16 +1116,27 @@
 
     function initTheme() {
       const saved = localStorage.getItem('bsu_theme') || 'dark';
-      document.documentElement.classList.toggle('dark', saved === 'dark');
-      document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+      const isDark = (saved === 'dark');
+      document.documentElement.classList.toggle('dark', isDark);
+      document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      const headerToggle = document.getElementById('headerThemeToggle');
+      if (headerToggle) headerToggle.checked = isDark;
     }
 
     function setTheme(mode) {
-      document.documentElement.classList.toggle('dark', mode === 'dark');
-      document.documentElement.setAttribute('data-theme', mode === 'dark' ? 'dark' : 'light');
+      const isDark = (mode === 'dark');
+      document.documentElement.classList.toggle('dark', isDark);
+      document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
       localStorage.setItem('bsu_theme', mode);
+      const headerToggle = document.getElementById('headerThemeToggle');
+      if (headerToggle) headerToggle.checked = isDark;
       if (modalMode === 'wizard') renderWizardStep();
       else renderUnifiedSettings();
+    }
+
+    function toggleThemeFromController(isDark) {
+      triggerHaptic('light');
+      setTheme(isDark ? 'dark' : 'light');
     }
 
     let teachersInfo = {};
@@ -1365,34 +1429,43 @@
       if (curMin < firstLesson.startMin) {
         const minsLeft = firstLesson.startMin - curMin;
         const lessonTitle = firstLesson.items[0]?.title || '';
-        const roomBadge = firstLesson.items[0]?.room ? ` • ${firstLesson.items[0].room}` : '';
+        const roomBadge = firstLesson.items[0]?.room ? firstLesson.items[0].room : '';
         const firstStart = firstLesson.timeStr.split(/[-–—]/)[0].trim();
-        banner.className = 'status-before';
-        banner.style.display = 'flex';
+        banner.className = 'w-full block';
+        banner.style.display = 'block';
         banner.innerHTML = `
-          <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">
-            <span class="status-dot before"></span>
-            <div style="min-width:0;">
-              <div style="font-weight:700;font-size:12px;">Первая пара в ${firstStart}</div>
-              <div style="font-size:11px;color:var(--text-sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${lessonTitle}${roomBadge}</div>
+          <div class="stats shadow-sm w-full border border-base-content/10 bg-base-200/60 backdrop-blur-xl rounded-2xl">
+            <div class="stat p-3.5">
+              <div class="stat-figure text-amber-500">
+                <span class="badge badge-warning badge-sm font-bold">Скоро</span>
+              </div>
+              <div class="stat-title text-[11px] font-bold text-base-content/60">Первая пара в ${firstStart}</div>
+              <div class="stat-value text-sm font-extrabold truncate text-base-content">${lessonTitle}</div>
+              <div class="stat-desc text-[11px] text-base-content/60 flex items-center gap-1.5 mt-0.5">
+                ${roomBadge ? `<span class="badge badge-ghost badge-xs font-mono font-bold">${roomBadge}</span>` : ''}
+                <span>Начало через <b>${formatMinutesLeft(minsLeft)}</b></span>
+              </div>
             </div>
           </div>
-          <span class="status-timer before" style="flex-shrink:0;">${formatMinutesLeft(minsLeft)}</span>
         `;
         return;
       }
 
       // 2. Пары на сегодня завершены
       if (curMin >= lastLesson.endMin) {
-        banner.className = 'status-done';
-        banner.style.display = 'flex';
+        banner.className = 'w-full block';
+        banner.style.display = 'block';
         const lastEnd = (lastLesson.timeStr.split(/[-–—]/)[1] || '').trim();
         banner.innerHTML = `
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span class="status-dot done"></span>
-            <span style="font-size:12.5px;font-weight:700;">Пары на сегодня завершены</span>
+          <div class="stats shadow-sm w-full border border-base-content/10 bg-base-200/60 backdrop-blur-xl rounded-2xl">
+            <div class="stat p-3.5 flex items-center justify-between">
+              <div>
+                <div class="stat-title text-[11px] font-bold text-base-content/60">Расписание на сегодня</div>
+                <div class="stat-value text-sm font-extrabold text-base-content">Пары завершены ✨</div>
+              </div>
+              <span class="badge badge-neutral badge-sm font-bold text-xs">${lastEnd ? 'Окончание в ' + lastEnd : 'Отдых'}</span>
+            </div>
           </div>
-          <span style="font-size:11px;color:var(--text-sub);flex-shrink:0;">${lastEnd ? 'Окончание в ' + lastEnd : ''}</span>
         `;
         return;
       }
@@ -1403,22 +1476,31 @@
         const minsLeft = Math.max(0, liveLesson.endMin - curMin);
         const lessonTitle = liveLesson.items[0]?.title || '';
         const room = liveLesson.items[0]?.room || '';
-        banner.className = 'status-live';
-        banner.style.display = 'flex';
+        const liveSlotIndex = dayLessonSlots.indexOf(liveLesson);
+        const nextSlot = dayLessonSlots[liveSlotIndex + 1];
+        const nextStart = nextSlot ? nextSlot.timeStr.split(/[-–—]/)[0].trim() : null;
+
+        banner.className = 'w-full block';
+        banner.style.display = 'block';
         banner.innerHTML = `
-          <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">
-            <span class="status-dot live"></span>
-            <div style="min-width:0;">
-              <div style="font-weight:700;font-size:12px;display:flex;align-items:center;gap:5px;">
-                Идёт пара • До конца ${minsLeft} мин
-                ${room ? `<span class="badge-subtle" style="font-family:monospace;font-size:10px;padding:1.5px 5px;">${room}</span>` : ''}
+          <div class="stats shadow-sm w-full border border-emerald-500/30 bg-emerald-500/10 backdrop-blur-xl rounded-2xl">
+            <div class="stat p-3.5">
+              <div class="stat-figure text-emerald-500">
+                <span class="relative flex h-3.5 w-3.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
+                </span>
               </div>
-              <div style="font-size:11px;color:var(--text-sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${lessonTitle}</div>
+              <div class="stat-title text-[11px] font-bold text-emerald-400 flex items-center gap-1.5">
+                <span>ИДЁТ ПАРА</span>
+                <span class="badge badge-accent badge-xs font-mono font-bold">Осталось ${minsLeft} мин</span>
+              </div>
+              <div class="stat-value text-sm font-extrabold truncate text-base-content">${lessonTitle}</div>
+              <div class="stat-desc text-[11px] text-base-content/70 flex items-center gap-1.5 mt-0.5">
+                ${room ? `<span class="badge badge-ghost badge-xs font-mono font-bold">${room}</span>` : ''}
+                <span>${nextStart ? 'След. пара в ' + nextStart : 'Последняя пара на сегодня'}</span>
+              </div>
             </div>
-          </div>
-          <div style="text-align:right;flex-shrink:0;">
-            <div class="status-timer live">${minsLeft} мин</div>
-            <div style="font-size:10px;color:var(--text-sub);">до звонка</div>
           </div>
         `;
         return;
@@ -1430,22 +1512,26 @@
         const minsLeft = Math.max(0, nextLesson.startMin - curMin);
         const nextTitle = nextLesson.items[0]?.title || '';
         const nextRoom = nextLesson.items[0]?.room || '';
-        const roomText = nextRoom ? ` (${nextRoom})` : '';
-        banner.className = 'status-break';
-        banner.style.display = 'flex';
+        const nextStart = nextLesson.timeStr.split(/[-–—]/)[0].trim();
+
+        banner.className = 'w-full block';
+        banner.style.display = 'block';
         banner.innerHTML = `
-          <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">
-            <span class="status-dot break"></span>
-            <div style="min-width:0;">
-              <div style="font-weight:700;font-size:12px;">Перемена • Следующая пара через ${minsLeft} мин${roomText}</div>
-              <div style="font-size:11px;color:var(--text-sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                ${nextTitle}
+          <div class="stats shadow-sm w-full border border-amber-500/30 bg-amber-500/10 backdrop-blur-xl rounded-2xl">
+            <div class="stat p-3.5">
+              <div class="stat-figure text-amber-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>
+              </div>
+              <div class="stat-title text-[11px] font-bold text-amber-400 flex items-center gap-1.5">
+                <span>ПЕРЕМЕНА</span>
+                <span class="badge badge-warning badge-xs font-mono font-bold">${formatMinutesLeft(minsLeft)}</span>
+              </div>
+              <div class="stat-value text-sm font-extrabold truncate text-base-content">${nextTitle}</div>
+              <div class="stat-desc text-[11px] text-base-content/70 flex items-center gap-1.5 mt-0.5">
+                <span>Начало в ${nextStart}</span>
+                ${nextRoom ? `<span class="badge badge-ghost badge-xs font-mono font-bold">${nextRoom}</span>` : ''}
               </div>
             </div>
-          </div>
-          <div style="text-align:right;flex-shrink:0;">
-            <div class="status-timer break">${minsLeft} мин</div>
-            <div style="font-size:10px;color:var(--text-sub);">до пары</div>
           </div>
         `;
         return;
@@ -1496,19 +1582,25 @@
 
     // ─── «Кнопка старосты»: Копирование расписания в буфер обмена ──────────
     let _toastTimeout = null;
-    function showToast(msg) {
-      let toast = document.getElementById('toastNotice');
-      if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'toastNotice';
-        toast.className = 'toast-notification';
-        document.body.appendChild(toast);
+    function showToast(msg, type = 'info') {
+      let toastContainer = document.getElementById('daisyToast');
+      if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'daisyToast';
+        toastContainer.className = 'toast toast-bottom toast-center z-[100] pb-6 pointer-events-none transition-all duration-300';
+        document.body.appendChild(toastContainer);
       }
-      toast.textContent = msg;
-      toast.classList.add('show');
+      toastContainer.innerHTML = `
+        <div class="alert alert-${type} shadow-2xl py-2.5 px-4 text-xs font-bold rounded-2xl border border-white/10 backdrop-blur-xl bg-base-200/90 text-base-content flex items-center gap-2">
+          <span>${msg}</span>
+        </div>
+      `;
+      toastContainer.style.opacity = '1';
+      toastContainer.style.transform = 'translateY(0)';
       if (_toastTimeout) clearTimeout(_toastTimeout);
       _toastTimeout = setTimeout(() => {
-        toast.classList.remove('show');
+        toastContainer.style.opacity = '0';
+        toastContainer.style.transform = 'translateY(12px)';
       }, 2300);
     }
 
@@ -1586,7 +1678,7 @@
           </div>
           <div style="min-width: 0; flex: 1;">
             <h3 style="font-size: 16px; font-weight: 800; letter-spacing: -0.2px; line-height: 1.25;">${fullName}</h3>
-            <div style="font-size: 11.5px; font-weight: 700; color: #6366f1; margin-top: 3px;">${department}</div>
+            <div style="font-size: 11.5px; font-weight: 700; color: var(--accent-emerald); margin-top: 3px;">${department}</div>
             <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 4px; line-height: 1.4;">${bio}</div>
           </div>
         `;
@@ -1766,7 +1858,8 @@
               <line x1="14" y1="2" x2="14" y2="4"></line>
             </svg>
           </div>
-          <h2 style="font-size: 24px; font-weight: 800; letter-spacing: -0.4px; color: var(--text-main); margin: 0;">Выходной</h2>
+          <h2 style="font-size: 24px; font-weight: 800; letter-spacing: -0.4px; color: var(--text-main); margin: 0 0 6px;">Выходной</h2>
+          <span class="badge badge-warning badge-sm font-bold">Занятий нет</span>
         </div>
       `;
     }
@@ -1802,8 +1895,8 @@
       if (dayIndex === -1) {
         const sundayDate = now.getDate() + ' ' + monthsGenitive[now.getMonth()];
         dayFullTitle.textContent = `Воскресенье, ${sundayDate}`;
-        badgeBox.innerHTML = '<span class="badge-subtle" style="color: #f59e0b; border-color: rgba(245,158,11,0.3); font-weight: 700;">Выходной</span>';
-        lessonsCountBox.textContent = 'Выходной';
+        badgeBox.innerHTML = '<span class="badge badge-warning badge-sm font-bold">Выходной</span>';
+        lessonsCountBox.innerHTML = '<span class="badge badge-ghost badge-sm font-bold">Выходной</span>';
         return;
       }
 
@@ -1813,24 +1906,24 @@
       dayFullTitle.textContent = `${currentDay.full}, ${currentDay.formattedDate}`;
 
       if (currentDay.isPast) {
-        badgeBox.innerHTML = '<span class="badge-subtle" style="color: var(--text-sub); border-color: var(--border-color); font-size: 10.5px; font-weight: 600;">Архив</span>';
+        badgeBox.innerHTML = '<span class="badge badge-neutral badge-sm font-bold opacity-70">Архив</span>';
       } else if (currentDay.isToday) {
-        badgeBox.innerHTML = '<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.3); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>Сегодня</span>';
+        badgeBox.innerHTML = '<span class="badge badge-accent badge-sm font-bold gap-1 text-white shadow-sm"><span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>Сегодня</span>';
       } else if (currentDay.isTomorrow) {
-        badgeBox.innerHTML = '<span class="badge-subtle" style="color: #38bdf8; border-color: rgba(56,189,248,0.3); font-weight: 700;">Завтра</span>';
+        badgeBox.innerHTML = '<span class="badge badge-ghost badge-sm font-bold border border-base-content/20">Завтра</span>';
       } else {
         badgeBox.innerHTML = '';
       }
 
       if (!currentDay.rawKey) {
-        lessonsCountBox.textContent = 'Нет данных';
+        lessonsCountBox.innerHTML = '<span class="badge badge-ghost badge-sm font-bold">Нет данных</span>';
       } else {
         const activeSlots = getProcessedDaySlots(currentDay.rawKey, groupSchedule);
         if (!activeSlots.length) {
-          lessonsCountBox.textContent = 'Выходной';
+          lessonsCountBox.innerHTML = '<span class="badge badge-ghost badge-sm font-bold">Выходной</span>';
         } else {
           const lessonCount = activeSlots.filter(s => s.items && s.items.length > 0).length;
-          lessonsCountBox.textContent = formatLessonsCount(lessonCount);
+          lessonsCountBox.innerHTML = '<span class="badge badge-ghost badge-sm font-bold">' + formatLessonsCount(lessonCount) + '</span>';
         }
       }
     }
@@ -1856,54 +1949,86 @@
     }
 
     function renderLessonCards(activeSlots, isToday, isPast = false) {
-      const frag = document.createDocumentFragment();
+      const container = document.createElement('ul');
+      container.className = 'timeline timeline-vertical timeline-compact w-full space-y-2.5';
 
       activeSlots.forEach((slotData, index) => {
         const { timeStr, items } = slotData;
         const isLive = isToday && !isPast && isLessonLive(timeStr);
+        const isBreak = !items || !items.length;
 
-        const wrapper = document.createElement('div');
+        const li = document.createElement('li');
+        li.className = 'w-full animate-card';
+        li.style.animationDelay = `${index * 20}ms`;
 
-        if (!items || !items.length) {
-          // Аккуратная плашка форточки строго между существующими парами
-          wrapper.className = 'card-glass tap-scale animate-card break-window-card' + (isPast ? ' archive-card' : '');
-          wrapper.style.animationDelay = `${index * 20}ms`;
-          wrapper.innerHTML = `
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="badge-subtle" style="font-family: monospace; font-weight: 700;">${timeStr}</span>
-                <span style="font-size: 12.5px; font-weight: 600; color: var(--text-sub); display: inline-flex; align-items: center; gap: 6px;">
-                  <svg style="width: 14px; height: 14px; opacity: 0.75;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 16 14"></polyline>
-                  </svg>
-                  Окно между парами
+        // Timeline connector
+        const topHr = index > 0 ? '<hr class="bg-base-content/10" />' : '';
+        const bottomHr = index < activeSlots.length - 1 ? '<hr class="bg-base-content/10" />' : '';
+
+        // Timeline middle marker
+        let middleHtml = '';
+        if (isLive) {
+          middleHtml = `
+            <div class="timeline-middle">
+              <div class="indicator">
+                <span class="indicator-item flex h-2 w-2 -top-0.5 -right-0.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
+                <div class="w-3.5 h-3.5 rounded-full bg-emerald-500/20 border-2 border-emerald-500"></div>
               </div>
-              <span class="badge-subtle" style="font-size: 10px; color: var(--text-sub);">Форточка</span>
             </div>
           `;
-          frag.appendChild(wrapper);
+        } else if (isBreak) {
+          middleHtml = `
+            <div class="timeline-middle">
+              <div class="w-2.5 h-2.5 rounded-full bg-base-content/20 border border-base-content/30"></div>
+            </div>
+          `;
+        } else {
+          middleHtml = `
+            <div class="timeline-middle">
+              <div class="w-2.5 h-2.5 rounded-full ${isPast ? 'bg-base-content/20' : 'bg-base-content/40'}"></div>
+            </div>
+          `;
+        }
+
+        if (isBreak) {
+          li.innerHTML = `
+            ${topHr}
+            ${middleHtml}
+            <div class="timeline-end w-full pl-2">
+              <div class="card-glass tap-scale break-window-card flex items-center justify-between py-2.5 px-3.5 rounded-2xl ${isPast ? 'archive-card' : ''}">
+                <div class="flex items-center gap-2">
+                  <span class="badge badge-ghost badge-sm font-mono font-bold">${timeStr}</span>
+                  <span class="text-xs font-semibold text-base-content/60 flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 opacity-60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>
+                    Окно между парами
+                  </span>
+                </div>
+                <span class="badge badge-ghost badge-xs opacity-60">Форточка</span>
+              </div>
+            </div>
+            ${bottomHr}
+          `;
+          container.appendChild(li);
           return;
         }
 
-        let cardClasses = 'card-glass tap-scale animate-card';
-        if (isLive) cardClasses = 'active-lesson-card tap-scale animate-card';
+        let cardClasses = 'card-glass tap-scale rounded-2xl p-3.5';
+        if (isLive) cardClasses = 'active-lesson-card tap-scale rounded-2xl p-3.5';
         if (isPast) cardClasses += ' archive-card';
 
-        wrapper.className = cardClasses;
-        wrapper.style.animationDelay = `${index * 20}ms`;
-
         let innerContent = `
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px;">
-            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-              <span class="badge-subtle" style="font-family: monospace; font-weight: 700; ${isLive ? 'background: #10b981; color: #fff; border-color: #10b981;' : ''}">${timeStr}</span>
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="badge ${isLive ? 'badge-accent font-bold text-white shadow-sm' : 'badge-ghost font-bold font-mono'} badge-sm">${timeStr}</span>
               ${isLive ? (() => {
                 const slotMin = parseTimeSlotMinutes(timeStr);
                 const curMin = new Date().getHours() * 60 + new Date().getMinutes();
                 const leftMin = slotMin ? Math.max(0, slotMin.endMin - curMin) : 0;
-                const leftLabel = leftMin > 0 ? ` • До конца ${leftMin} мин` : '';
-                return `<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.35); background: rgba(16,185,129,0.08); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; animation: pulseAura 2s infinite;"></span>Идёт пара${leftLabel}</span>`;
+                const leftLabel = leftMin > 0 ? ` • ${leftMin} мин` : '';
+                return `<span class="badge badge-accent badge-sm font-bold gap-1 text-white"><span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>Идёт пара${leftLabel}</span>`;
               })() : ''}
             </div>
           </div>
@@ -1911,29 +2036,38 @@
 
         items.forEach((item, idx) => {
           innerContent += `
-            <div style="${idx > 0 ? 'margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-color);' : ''}">
-              <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
-                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                  <span style="font-size: 13.5px; font-weight: 700; line-height: 1.35;">${item.title}</span>
-                  ${item.type ? `<span class="badge-subtle" style="color: ${item.type.color}; background: ${item.type.bg}; font-size: 9.5px; padding: 1.5px 5.5px;">${item.type.label}</span>` : ''}
+            <div class="${idx > 0 ? 'mt-2.5 pt-2.5 border-t border-base-content/10' : ''}">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-1.5 flex-wrap min-w-0">
+                  <span class="text-[13.5px] font-bold leading-snug">${item.title}</span>
+                  ${item.type ? `<span class="badge badge-sm font-bold flex-shrink-0" style="color: ${item.type.color}; background: ${item.type.bg};">${item.type.label}</span>` : ''}
                 </div>
-                ${item.room ? `<span class="badge-subtle" style="font-family: monospace;">${item.room}</span>` : ''}
+                ${item.room ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${item.room}</span>` : ''}
               </div>
+
               ${item.subgroups ? `
-                <div class="subgroups-grid">
-                  <div class="subgroup-box">
-                    <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 800; color: var(--text-sub); text-transform: uppercase;">
-                      <span>1 подгруппа</span>
-                      ${item.subgroups[0].room ? `<span>${item.subgroups[0].room}</span>` : ''}
-                    </div>
-                    ${formatTeacherChipHTML(item.subgroups[0].teacher)}
+                <div class="collapse collapse-arrow bg-base-200/40 border border-base-content/10 rounded-xl mt-2">
+                  <input type="checkbox" checked />
+                  <div class="collapse-title text-xs font-bold py-1.5 px-3 min-h-0 flex items-center gap-1 text-base-content/70">
+                    Подгруппы
                   </div>
-                  <div class="subgroup-box">
-                    <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 800; color: var(--text-sub); text-transform: uppercase;">
-                      <span>2 подгруппа</span>
-                      ${item.subgroups[1].room ? `<span>${item.subgroups[1].room}</span>` : ''}
+                  <div class="collapse-content px-3 pb-2 pt-0">
+                    <div class="subgroups-grid mt-1">
+                      <div class="subgroup-box">
+                        <div class="flex justify-between text-[9.5px] font-extrabold text-base-content/60 uppercase">
+                          <span>1 подгруппа</span>
+                          ${item.subgroups[0].room ? `<span>${item.subgroups[0].room}</span>` : ''}
+                        </div>
+                        ${formatTeacherChipHTML(item.subgroups[0].teacher)}
+                      </div>
+                      <div class="subgroup-box">
+                        <div class="flex justify-between text-[9.5px] font-extrabold text-base-content/60 uppercase">
+                          <span>2 подгруппа</span>
+                          ${item.subgroups[1].room ? `<span>${item.subgroups[1].room}</span>` : ''}
+                        </div>
+                        ${formatTeacherChipHTML(item.subgroups[1].teacher)}
+                      </div>
                     </div>
-                    ${formatTeacherChipHTML(item.subgroups[1].teacher)}
                   </div>
                 </div>
               ` : renderLessonDetails(item.details)}
@@ -1941,10 +2075,21 @@
           `;
         });
 
-        wrapper.innerHTML = innerContent;
-        frag.appendChild(wrapper);
+        li.innerHTML = `
+          ${topHr}
+          ${middleHtml}
+          <div class="timeline-end w-full pl-2">
+            <div class="${cardClasses}">
+              ${innerContent}
+            </div>
+          </div>
+          ${bottomHr}
+        `;
+        container.appendChild(li);
       });
 
+      const frag = document.createDocumentFragment();
+      frag.appendChild(container);
       return frag;
     }
 
@@ -2162,39 +2307,46 @@
       const body = document.getElementById('modalBody');
       body.innerHTML = `
         <div>
-          <div class="section-title">Тема оформления</div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-            <button onclick="setTheme('light')" class="tap-scale" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-color); ${!isDark ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}">Светлая</button>
-            <button onclick="setTheme('dark')" class="tap-scale" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-color); ${isDark ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}">Тёмная</button>
+          <div class="section-title">Тема оформления (Theme Controller)</div>
+          <div class="tabs tabs-boxed bg-base-300/40 p-1 rounded-2xl grid grid-cols-2">
+            <a onclick="setTheme('light')" class="tab tab-sm font-bold rounded-xl transition-all ${!isDark ? 'tab-active bg-primary text-primary-content shadow-sm' : 'text-base-content/60'}">
+              ☀️ Светлая
+            </a>
+            <a onclick="setTheme('dark')" class="tab tab-sm font-bold rounded-xl transition-all ${isDark ? 'tab-active bg-primary text-primary-content shadow-sm' : 'text-base-content/60'}">
+              🌙 OLED Тёмная
+            </a>
           </div>
         </div>
 
         <div>
           <div class="section-title">Курс</div>
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+          <div class="tabs tabs-boxed bg-base-300/40 p-1 rounded-2xl grid grid-cols-4">
             ${['1','2','3','4'].map(c => `
-              <button onclick="draftProfile.course='${c}'; onCourseChangedUnified('${c}');" class="tap-scale" style="padding: 12px 6px; border-radius: 12px; font-size: 15px; font-weight: 800; border: 1px solid var(--border-color); ${draftProfile.course === c ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${c}</button>
+              <a onclick="draftProfile.course='${c}'; onCourseChangedUnified('${c}');" class="tab tab-sm font-extrabold rounded-xl transition-all ${draftProfile.course === c ? 'tab-active bg-primary text-primary-content shadow-sm' : 'text-base-content/60'}">${c} курс</a>
             `).join('')}
           </div>
         </div>
 
         <div>
           <div class="section-title">Группа (${draftProfile.course} курс)</div>
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+          <div class="grid grid-cols-4 gap-2">
             ${groups.map(g => {
               const num = g.replace(/^ГРУППА\s*/i, '');
               const sel = draftProfile.group_name === g;
-              return `<button onclick="draftProfile.group_name='${g}'; renderUnifiedSettings();" class="tap-scale" style="padding: 10px 4px; border-radius: 12px; font-size: 13px; font-weight: 700; border: 1px solid var(--border-color); ${sel ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${num}</button>`;
+              return `<button onclick="draftProfile.group_name='${g}'; renderUnifiedSettings();" class="btn btn-sm rounded-xl font-bold border border-base-content/10 ${sel ? 'btn-primary shadow-md' : 'btn-ghost bg-base-200/50'}">${num}</button>`;
             }).join('')}
           </div>
         </div>
 
         <div>
           <div class="section-title">Изучаемый иностранный язык</div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div class="grid grid-cols-2 gap-2">
             ${langs.map(l => {
               const sel = draftProfile.foreign_lang === l.id;
-              return `<button onclick="toggleLangUnified('${l.id}')" class="tap-scale" style="padding: 11px; border-radius: 12px; font-size: 13px; font-weight: 700; border: 1px solid var(--border-color); ${sel ? 'background: var(--nav-active-bg); color: var(--nav-active-text); box-shadow: 0 4px 12px rgba(0,0,0,0.14);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${l.label}${sel ? ' ✓' : ''}</button>`;
+              return `<button onclick="toggleLangUnified('${l.id}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 justify-between ${sel ? 'btn-primary shadow-md' : 'btn-ghost bg-base-200/50'}">
+                <span>${l.label}</span>
+                ${sel ? '<span class="badge badge-accent badge-xs">✓</span>' : ''}
+              </button>`;
             }).join('')}
           </div>
           <div style="font-size: 11px; color: var(--text-sub); margin-top: 6px; line-height: 1.4;">${langHint}</div>
@@ -2203,8 +2355,8 @@
 
       const footer = document.getElementById('modalFooter');
       footer.innerHTML = `
-        <button onclick="closeSettingsModal()" class="btn-secondary tap-scale" style="flex: 1;">Отмена</button>
-        <button onclick="saveUnifiedProfile()" class="btn-primary tap-scale" style="flex: 2;">Сохранить</button>
+        <button onclick="closeSettingsModal()" class="btn btn-ghost border border-base-content/10 flex-1 rounded-2xl font-bold">Отмена</button>
+        <button onclick="saveUnifiedProfile()" class="btn btn-primary flex-2 rounded-2xl font-bold shadow-lg">Сохранить</button>
       `;
     }
 
@@ -2230,22 +2382,31 @@
       const body = document.getElementById('modalBody');
       const footer = document.getElementById('modalFooter');
 
+      const stepsBar = `
+        <ul class="steps steps-horizontal w-full text-[11px] font-bold mb-3">
+          <li class="step ${wizardStep >= 1 ? 'step-primary' : ''}">Курс</li>
+          <li class="step ${wizardStep >= 2 ? 'step-primary' : ''}">Группа</li>
+          <li class="step ${wizardStep >= 3 ? 'step-primary' : ''}">Язык</li>
+        </ul>
+      `;
+
       if (wizardStep === 1) {
         document.getElementById('modalHeading').textContent = 'Курс и тема';
         const isDark = document.documentElement.classList.contains('dark');
         body.innerHTML = `
+          ${stepsBar}
           <div>
             <div class="section-title">Тема оформления</div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-              <button onclick="setTheme('light')" class="tap-scale" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-color); ${!isDark ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}">Светлая</button>
-              <button onclick="setTheme('dark')" class="tap-scale" style="padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-color); ${isDark ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-sub);'}">Тёмная</button>
+            <div class="tabs tabs-boxed bg-base-300/40 p-1 rounded-2xl grid grid-cols-2">
+              <a onclick="setTheme('light')" class="tab tab-sm font-bold rounded-xl transition-all ${!isDark ? 'tab-active bg-primary text-primary-content shadow-sm' : 'text-base-content/60'}">☀️ Светлая</a>
+              <a onclick="setTheme('dark')" class="tab tab-sm font-bold rounded-xl transition-all ${isDark ? 'tab-active bg-primary text-primary-content shadow-sm' : 'text-base-content/60'}">🌙 OLED Тёмная</a>
             </div>
           </div>
           <div>
             <div class="section-title">Курс</div>
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+            <div class="tabs tabs-boxed bg-base-300/40 p-1 rounded-2xl grid grid-cols-4">
               ${['1','2','3','4'].map(c => `
-                <button onclick="draftProfile.course='${c}'; nextWizardStep();" class="tap-scale" style="padding: 15px; border-radius: 14px; font-size: 17px; font-weight: 800; border: 1px solid var(--border-color); ${draftProfile.course === c ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${c}</button>
+                <a onclick="draftProfile.course='${c}'; nextWizardStep();" class="tab tab-md font-extrabold rounded-xl transition-all ${draftProfile.course === c ? 'tab-active bg-primary text-primary-content shadow-sm' : 'text-base-content/60'}">${c} курс</a>
               `).join('')}
             </div>
           </div>
@@ -2254,11 +2415,12 @@
         document.getElementById('modalHeading').textContent = `${draftProfile.course} курс • Группа`;
         const groups = Object.keys(facultyData?.courses?.[draftProfile.course] || {});
         body.innerHTML = `
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+          ${stepsBar}
+          <div class="grid grid-cols-4 gap-2">
             ${groups.map(g => {
               const num = g.replace(/^ГРУППА\s*/i, '');
               const sel = draftProfile.group_name === g;
-              return `<button onclick="draftProfile.group_name='${g}'; nextWizardStep();" class="tap-scale" style="padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 700; border: 1px solid var(--border-color); ${sel ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${num}</button>`;
+              return `<button onclick="draftProfile.group_name='${g}'; nextWizardStep();" class="btn btn-md rounded-2xl font-bold border border-base-content/10 ${sel ? 'btn-primary shadow-md' : 'btn-ghost bg-base-200/50'}">${num}</button>`;
             }).join('')}
           </div>
         `;
@@ -2276,10 +2438,14 @@
           : `Не выбрано • отображаться будут все языки. Нажмите на язык для фильтра или нажмите «Завершить».`;
 
         body.innerHTML = `
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          ${stepsBar}
+          <div class="grid grid-cols-2 gap-2">
             ${langs.map(l => {
               const sel = draftProfile.foreign_lang === l.id;
-              return `<button onclick="toggleLangWizard('${l.id}')" class="tap-scale" style="padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 700; border: 1px solid var(--border-color); ${sel ? 'background: var(--nav-active-bg); color: var(--nav-active-text);' : 'background: var(--glass-card-subtle); color: var(--text-main);'}">${l.label}${sel ? ' ✓' : ''}</button>`;
+              return `<button onclick="toggleLangWizard('${l.id}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 justify-between ${sel ? 'btn-primary shadow-md' : 'btn-ghost bg-base-200/50'}">
+                <span>${l.label}</span>
+                ${sel ? '<span class="badge badge-accent badge-xs">✓</span>' : ''}
+              </button>`;
             }).join('')}
           </div>
           <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 8px; line-height: 1.4;">${langHint}</div>
@@ -2287,8 +2453,8 @@
       }
 
       footer.innerHTML = `
-        <button onclick="prevWizardStep()" class="btn-secondary tap-scale" style="flex: 1; ${wizardStep === 1 ? 'display: none;' : ''}">Назад</button>
-        <button onclick="nextWizardStep()" class="btn-primary tap-scale" style="flex: 2;">${wizardStep === 3 ? 'Завершить' : 'Далее'}</button>
+        <button onclick="prevWizardStep()" class="btn btn-ghost border border-base-content/10 flex-1 rounded-2xl font-bold ${wizardStep === 1 ? 'hidden' : ''}">Назад</button>
+        <button onclick="nextWizardStep()" class="btn btn-primary flex-2 rounded-2xl font-bold shadow-lg">${wizardStep === 3 ? 'Завершить' : 'Далее'}</button>
       `;
     }
 
