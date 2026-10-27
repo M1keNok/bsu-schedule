@@ -605,6 +605,94 @@
       color: #3b82f6;
     }
 
+    .day-att-btn {
+      padding: 4px 10px;
+      border-radius: 11px;
+      background: var(--glass-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .day-att-btn:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      background: var(--glass-card);
+    }
+    .day-att-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Segmented attendance control */
+    .att-segmented-control {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr 1.1fr;
+      gap: 4px;
+      background: var(--glass-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 3px;
+    }
+    .att-segment-btn {
+      padding: 6px 4px;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-sub);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.16s ease;
+      white-space: nowrap;
+    }
+    .att-segment-btn.active-present {
+      background: #10b981;
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35);
+    }
+    .att-segment-btn.active-unexcused {
+      background: #ef4444;
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(239, 68, 68, 0.35);
+    }
+    .att-segment-btn.active-excused {
+      background: #3b82f6;
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.35);
+    }
+
+    .preset-pill-btn {
+      padding: 7px 6px;
+      border-radius: 12px;
+      background: var(--glass-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.16s ease;
+      text-align: center;
+    }
+    .preset-pill-btn:hover {
+      border-color: rgba(99, 102, 241, 0.35);
+      background: var(--glass-card);
+    }
+    .preset-pill-btn:active {
+      transform: scale(0.96);
+    }
+
     .absences-meter-bar-track {
       width: 100%;
       height: 10px;
@@ -842,7 +930,13 @@
         <h2 id="dayFullTitle" style="font-size: 15px; font-weight: 800; letter-spacing: -0.2px;">...</h2>
         <div id="dayStatusBadge"></div>
       </div>
-      <div id="dayLessonsCount" style="font-size: 11.5px; font-weight: 700; color: var(--text-sub); flex-shrink: 0;"></div>
+      <div style="display: flex; align-items: center; gap: 7px; flex-shrink: 0;">
+        <div id="dayLessonsCount" style="font-size: 11.5px; font-weight: 700; color: var(--text-sub);"></div>
+        <button id="openDayAttendanceBtn" onclick="openDayAttendanceModal()" class="day-att-btn tap-scale" title="Отметить посещение пар на этот день">
+          <span style="font-size: 12px;">✍️</span>
+          <span>Отметить день</span>
+        </button>
+      </div>
     </div>
 
     <div id="scheduleViewport" class="schedule-viewport">
@@ -927,6 +1021,57 @@
 
       <!-- Anonymous Reviews Section -->
       <div id="teacherReviewsSection" style="display: flex; flex-direction: column; gap: 10px; margin-top: 4px;"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Отметка пар за день -->
+  <div id="dayAttendanceModal" class="modal-overlay" onclick="if(event.target===this)closeDayAttendanceModal()">
+    <div class="modal-sheet" style="max-height: 86vh; overflow-y: auto;">
+      <div class="modal-grabber"></div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 20px;">✍️</span>
+          <div>
+            <h3 id="dayAttModalTitle" style="font-size: 16px; font-weight: 800; letter-spacing: -0.2px;">Посещение пар</h3>
+            <div id="dayAttModalSubtitle" style="font-size: 11px; color: var(--text-sub); font-weight: 600;">...</div>
+          </div>
+        </div>
+        <button onclick="closeDayAttendanceModal()" class="tap-scale" style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); color: var(--text-sub); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+          <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <!-- Quick 1-tap Batch Presets for the Day -->
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <span class="section-title" style="margin-bottom: 0;">Быстро для всего дня:</span>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;">
+          <button type="button" class="preset-pill-btn tap-scale" onclick="setDayAttendancePreset('present')" title="Отметить все пары дня как посещенные">
+            <span style="color: #10b981;">✓</span> Был на всех
+          </button>
+          <button type="button" class="preset-pill-btn tap-scale" onclick="setDayAttendancePreset('unexcused')" title="Отметить все пары дня как неуважительный пропуск">
+            <span style="color: #ef4444;">✕</span> Пропуск всех
+          </button>
+          <button type="button" class="preset-pill-btn tap-scale" onclick="setDayAttendancePreset('excused')" title="Отметить все пары дня как пропуск по справке">
+            <span style="color: #3b82f6;">📄</span> Все по справке
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Day Summary & Limit preview -->
+      <div id="dayAttSummaryBox" class="card-glass" style="padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px;"></div>
+
+      <!-- List of all real lessons of the day with Segmented Control -->
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <span class="section-title" style="margin-bottom: 0;">Пары этого дня:</span>
+        <div id="dayAttLessonsList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-top: 4px;">
+        <button type="button" onclick="closeDayAttendanceModal()" class="btn-primary tap-scale" style="width: 100%; justify-content: center; padding: 12px;">
+          Готово
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1729,6 +1874,255 @@
       }
 
       updateHeaderAbsencesBadge();
+    }
+
+    function setLessonAttendanceStatus(dateISO, timeStr, title, nextStatus) {
+      const recs = getAttendanceRecords();
+      const key = getAttendanceKey(dateISO, timeStr);
+      const monthKey = dateISO.slice(0, 7);
+
+      if (nextStatus === 'present') {
+        delete recs[key];
+        triggerHaptic('light');
+      } else {
+        recs[key] = {
+          key,
+          dateISO,
+          month: monthKey,
+          timeStr,
+          title: title || 'Пара',
+          status: nextStatus,
+          hours: nextStatus === 'unexcused' ? 2 : 0,
+          updatedAt: Date.now()
+        };
+        triggerHaptic('medium');
+      }
+
+      saveAttendanceRecords(recs);
+      updateHeaderAbsencesBadge();
+
+      // Update segment controls in modal
+      const segId = `att-seg-${timeStr.replace(/[^a-zA-Z0-9]/g, '_')}`;
+      const segControl = document.getElementById(segId);
+      if (segControl) {
+        segControl.querySelectorAll('.att-segment-btn').forEach(btn => {
+          const btnSt = btn.dataset.status;
+          btn.className = 'att-segment-btn' + (btnSt === nextStatus ? ' active-' + nextStatus : '');
+        });
+      }
+
+      // Update live summary in modal
+      updateDayAttendanceSummary();
+
+      // Re-render schedule cards in background
+      renderCurrentPageOnly();
+    }
+
+    function setDayAttendancePreset(targetStatus) {
+      if (selectedDayIndex === -1 || !currentDaysList[selectedDayIndex]) return;
+      const currentDay = currentDaysList[selectedDayIndex];
+      if (!currentDay.rawKey || !facultyData) return;
+
+      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
+      const activeSlots = getProcessedDaySlots(currentDay.rawKey, groupSchedule);
+      const realSlots = activeSlots.filter(s => s.items && s.items.length > 0);
+      if (!realSlots.length) return;
+
+      const dateISO = getISODateString(currentDay.date);
+      const monthKey = dateISO.slice(0, 7);
+      const recs = getAttendanceRecords();
+
+      realSlots.forEach(slot => {
+        const key = getAttendanceKey(dateISO, slot.timeStr);
+        if (targetStatus === 'present') {
+          delete recs[key];
+        } else {
+          const mainTitle = slot.items[0]?.title || 'Пара';
+          recs[key] = {
+            key,
+            dateISO,
+            month: monthKey,
+            timeStr: slot.timeStr,
+            title: mainTitle,
+            status: targetStatus,
+            hours: targetStatus === 'unexcused' ? 2 : 0,
+            updatedAt: Date.now()
+          };
+        }
+      });
+
+      saveAttendanceRecords(recs);
+      triggerHaptic('medium');
+
+      if (targetStatus === 'present') {
+        showToast('✓ Все пары: «Был на паре»');
+      } else if (targetStatus === 'unexcused') {
+        showToast(`⚠️ Все пары: «Пропуск» (+${realSlots.length * 2} ч)`);
+      } else {
+        showToast('📄 Все пары: «По справке» (0 ч)');
+      }
+
+      updateHeaderAbsencesBadge();
+      renderDayAttendanceModal();
+      renderCurrentPageOnly();
+    }
+
+    function openDayAttendanceModal(focusTime = null) {
+      if (selectedDayIndex === -1) {
+        showToast('В воскресенье пар нет');
+        return;
+      }
+      const currentDay = currentDaysList[selectedDayIndex];
+      if (!currentDay || !currentDay.rawKey) {
+        showToast('На этот день нет расписания');
+        return;
+      }
+
+      triggerHaptic('selection');
+      renderDayAttendanceModal(focusTime);
+      document.getElementById('dayAttendanceModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      if (focusTime) {
+        setTimeout(() => {
+          const targetEl = document.getElementById(`att-row-${focusTime.replace(/[^a-zA-Z0-9]/g, '_')}`);
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targetEl.style.transition = 'box-shadow 0.3s ease, border-color 0.3s ease';
+            targetEl.style.borderColor = 'rgba(99, 102, 241, 0.6)';
+            targetEl.style.boxShadow = '0 0 16px rgba(99, 102, 241, 0.25)';
+            setTimeout(() => {
+              targetEl.style.borderColor = '';
+              targetEl.style.boxShadow = '';
+            }, 1200);
+          }
+        }, 150);
+      }
+    }
+
+    function closeDayAttendanceModal() {
+      const modal = document.getElementById('dayAttendanceModal');
+      if (modal) modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function updateDayAttendanceSummary() {
+      const summaryBox = document.getElementById('dayAttSummaryBox');
+      if (!summaryBox || selectedDayIndex === -1 || !currentDaysList[selectedDayIndex]) return;
+
+      const currentDay = currentDaysList[selectedDayIndex];
+      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
+      if (!currentDay.rawKey) return;
+
+      const activeSlots = getProcessedDaySlots(currentDay.rawKey, groupSchedule);
+      const realSlots = activeSlots.filter(s => s.items && s.items.length > 0);
+      const dateISO = getISODateString(currentDay.date);
+
+      let presentCount = 0;
+      let unexcusedCount = 0;
+      let excusedCount = 0;
+
+      realSlots.forEach(slot => {
+        const st = getLessonAttendance(dateISO, slot.timeStr);
+        if (st === 'unexcused') unexcusedCount++;
+        else if (st === 'excused') excusedCount++;
+        else presentCount++;
+      });
+
+      const monthStats = getMonthAttendanceStats();
+
+      summaryBox.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <div style="font-size: 10px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.3px;">Статистика за день</div>
+          <div style="display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; flex-wrap: wrap;">
+            <span style="color: #10b981;">✓ ${presentCount} был</span>
+            <span style="color: var(--text-sub); opacity: 0.4;">•</span>
+            <span style="color: #ef4444;">✕ ${unexcusedCount} пропуск (${unexcusedCount * 2} ч)</span>
+            ${excusedCount > 0 ? `
+              <span style="color: var(--text-sub); opacity: 0.4;">•</span>
+              <span style="color: #3b82f6;">📄 ${excusedCount} справка</span>
+            ` : ''}
+          </div>
+        </div>
+        <div style="text-align: right; flex-shrink: 0;">
+          <div style="font-size: 10px; font-weight: 800; color: var(--text-sub); text-transform: uppercase;">Лимит БГУ</div>
+          <div style="font-size: 13px; font-weight: 800; font-family: -apple-system-monospaced-numbers, monospace; color: ${monthStats.unexcusedHours <= 4 ? '#10b981' : monthStats.unexcusedHours <= 8 ? '#f59e0b' : '#ef4444'};">
+            ${monthStats.unexcusedHours}/10 ч
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDayAttendanceModal(focusTime = null) {
+      if (selectedDayIndex === -1 || !currentDaysList[selectedDayIndex]) return;
+      const currentDay = currentDaysList[selectedDayIndex];
+      const titleEl = document.getElementById('dayAttModalTitle');
+      const subtitleEl = document.getElementById('dayAttModalSubtitle');
+      const listContainer = document.getElementById('dayAttLessonsList');
+      if (!listContainer) return;
+
+      if (titleEl) titleEl.textContent = 'Отметка пар за день';
+      if (subtitleEl) subtitleEl.textContent = `${currentDay.full}, ${currentDay.formattedDate}`;
+
+      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
+      if (!currentDay.rawKey) {
+        listContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-sub);">Нет расписания на этот день</div>';
+        return;
+      }
+
+      const activeSlots = getProcessedDaySlots(currentDay.rawKey, groupSchedule);
+      const realSlots = activeSlots.filter(s => s.items && s.items.length > 0);
+
+      if (!realSlots.length) {
+        listContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-sub);">В этот день занятий нет</div>';
+        return;
+      }
+
+      const dateISO = getISODateString(currentDay.date);
+
+      listContainer.innerHTML = realSlots.map(slot => {
+        const { timeStr, items } = slot;
+        const mainItem = items[0] || {};
+        const safeTitle = (mainItem.title || 'Пара').replace(/'/g, "\\'");
+        const currentStatus = getLessonAttendance(dateISO, timeStr);
+        const rowId = `att-row-${timeStr.replace(/[^a-zA-Z0-9]/g, '_')}`;
+        const segId = `att-seg-${timeStr.replace(/[^a-zA-Z0-9]/g, '_')}`;
+
+        let roomLabel = mainItem.room || '';
+        if (!roomLabel && mainItem.subgroups) {
+          const rooms = mainItem.subgroups.map(sg => sg.room).filter(Boolean);
+          if (rooms.length) roomLabel = rooms.join(' / ');
+        }
+
+        return `
+          <div id="${rowId}" class="card-glass" style="padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
+              <div style="min-width: 0;">
+                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                  <span class="badge-subtle" style="font-family: monospace; font-weight: 700;">${timeStr}</span>
+                  ${mainItem.type ? `<span class="badge-subtle" style="color: ${mainItem.type.color}; background: ${mainItem.type.bg}; font-size: 9.5px; padding: 1.5px 5.5px;">${mainItem.type.label}</span>` : ''}
+                  ${roomLabel ? `<span class="badge-subtle" style="font-family: monospace; font-size: 9.5px;">${roomLabel}</span>` : ''}
+                </div>
+                <div style="font-size: 13px; font-weight: 700; margin-top: 3px; line-height: 1.3;">${mainItem.title}</div>
+              </div>
+            </div>
+
+            <div id="${segId}" class="att-segmented-control">
+              <button type="button" data-status="present" class="att-segment-btn ${currentStatus === 'present' ? 'active-present' : ''}" onclick="setLessonAttendanceStatus('${dateISO}', '${timeStr}', '${safeTitle}', 'present')">
+                <span style="font-size: 11px;">✓</span> Был
+              </button>
+              <button type="button" data-status="unexcused" class="att-segment-btn ${currentStatus === 'unexcused' ? 'active-unexcused' : ''}" onclick="setLessonAttendanceStatus('${dateISO}', '${timeStr}', '${safeTitle}', 'unexcused')">
+                <span style="font-size: 11px;">✕</span> Пропуск (2ч)
+              </button>
+              <button type="button" data-status="excused" class="att-segment-btn ${currentStatus === 'excused' ? 'active-excused' : ''}" onclick="setLessonAttendanceStatus('${dateISO}', '${timeStr}', '${safeTitle}', 'excused')">
+                <span style="font-size: 11px;">📄</span> Справка
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateDayAttendanceSummary();
     }
 
     function getMonthAttendanceStats(targetMonth = getCurrentMonthKey()) {
@@ -2676,11 +3070,14 @@
         dayHeaderRow.style.animation = 'fadeSettle 0.22s cubic-bezier(0.16, 1, 0.3, 1) both';
       }
 
+      const dayAttBtn = document.getElementById('openDayAttendanceBtn');
+
       if (dayIndex === -1) {
         const sundayDate = now.getDate() + ' ' + monthsGenitive[now.getMonth()];
         dayFullTitle.textContent = `Воскресенье, ${sundayDate}`;
         badgeBox.innerHTML = '<span class="badge-subtle" style="color: #f59e0b; border-color: rgba(245,158,11,0.3); font-weight: 700;">Выходной</span>';
         lessonsCountBox.textContent = 'Выходной';
+        if (dayAttBtn) dayAttBtn.style.display = 'none';
         return;
       }
 
@@ -2701,13 +3098,16 @@
 
       if (!currentDay.rawKey) {
         lessonsCountBox.textContent = 'Нет данных';
+        if (dayAttBtn) dayAttBtn.style.display = 'none';
       } else {
         const activeSlots = getProcessedDaySlots(currentDay.rawKey, groupSchedule);
         if (!activeSlots.length) {
           lessonsCountBox.textContent = 'Выходной';
+          if (dayAttBtn) dayAttBtn.style.display = 'none';
         } else {
           const lessonCount = activeSlots.filter(s => s.items && s.items.length > 0).length;
           lessonsCountBox.textContent = formatLessonsCount(lessonCount);
+          if (dayAttBtn) dayAttBtn.style.display = lessonCount > 0 ? 'inline-flex' : 'none';
         }
       }
     }
@@ -2796,7 +3196,7 @@
                 return `<span class="badge-subtle" style="color: #10b981; border-color: rgba(16,185,129,0.35); background: rgba(16,185,129,0.08); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; animation: pulseAura 2s infinite;"></span>Идёт пара${leftLabel}</span>`;
               })() : ''}
             </div>
-            <button type="button" class="att-status-btn ${attClass} tap-scale" onclick="event.stopPropagation(); cycleLessonAttendance('${effDateISO}', '${timeStr}', '${mainTitle.replace(/'/g, "\\'")}', this)" title="Отметить посещение: Был / Пропуск 2 ч / По справке">
+            <button type="button" class="att-status-btn ${attClass} tap-scale" onclick="event.stopPropagation(); openDayAttendanceModal('${timeStr}')" title="Отметить посещение пар на этот день">
               ${attText}
             </button>
           </div>
@@ -3275,6 +3675,7 @@
           closeSettingsModal();
           closeAbsencesModal();
           closeTeacherModal();
+          closeDayAttendanceModal();
           return;
         }
 
