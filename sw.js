@@ -2,7 +2,7 @@
 // Стратегия: Network-First для данных и html-оболочки (всегда свежий интерфейс при наличии сети, мгновенный откат на кэш в офлайне),
 //             Cache-First для внешних CDN библиотек (Tailwind CSS, daisyUI, Telegram SDK).
 
-const CACHE_NAME = 'bsu-schedule-v9';
+const CACHE_NAME = 'bsu-schedule-v10';
 const SHELL_ASSETS = [
   './',
   './index.html',
@@ -19,6 +19,7 @@ const CDN_ASSETS = [
 
 // ─── Install: предзагрузка оболочки приложения ──────────────────────────────
 self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(async cache => {
       await cache.addAll(SHELL_ASSETS.map(url => new Request(url, { cache: 'reload' })));
@@ -34,7 +35,7 @@ self.addEventListener('install', event => {
             .catch(() => null)
         )
       );
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
@@ -121,7 +122,7 @@ self.addEventListener('fetch', event => {
   // 3. index.html и корень: Network-First с быстрым откатом на кэш для 100% офлайна
   if (path.endsWith('.html') || path === '/' || path.endsWith('/')) {
     event.respondWith(
-      fetch(event.request)
+      fetch(new Request(event.request, { cache: 'reload' }))
         .then(response => {
           if (response.ok) {
             const clone = response.clone();
