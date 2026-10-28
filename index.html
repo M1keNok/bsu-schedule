@@ -419,65 +419,73 @@
       z-index: 2;
     }
 
-    /* ─── Аппаратно ускоренные переходы дней (60-120 FPS, GPU-only Full-Width Slide) ─── */
-    @keyframes pageDeckSlideOutLeft {
+    /* ─── Лаконичный переход с мягким размытием и растворением (Liquid Glass Blur & Dissolve) ─── */
+    @keyframes pageLiquidFadeOutLeft {
       0% {
         opacity: 1;
+        filter: blur(0px);
         transform: translate3d(0, 0, 0) scale(1);
       }
       100% {
         opacity: 0;
-        transform: translate3d(-100%, 0, 0) scale(0.92);
+        filter: blur(8px);
+        transform: translate3d(-14px, 0, 0) scale(0.985);
       }
     }
 
-    @keyframes pageDeckSlideInRight {
+    @keyframes pageLiquidFadeInRight {
       0% {
         opacity: 0;
-        transform: translate3d(100%, 0, 0) scale(0.94);
+        filter: blur(8px);
+        transform: translate3d(14px, 0, 0) scale(0.985);
       }
       100% {
         opacity: 1;
+        filter: blur(0px);
         transform: translate3d(0, 0, 0) scale(1);
       }
     }
 
-    @keyframes pageDeckSlideOutRight {
+    @keyframes pageLiquidFadeOutRight {
       0% {
         opacity: 1;
+        filter: blur(0px);
         transform: translate3d(0, 0, 0) scale(1);
       }
       100% {
         opacity: 0;
-        transform: translate3d(100%, 0, 0) scale(0.92);
+        filter: blur(8px);
+        transform: translate3d(14px, 0, 0) scale(0.985);
       }
     }
 
-    @keyframes pageDeckSlideInLeft {
+    @keyframes pageLiquidFadeInLeft {
       0% {
         opacity: 0;
-        transform: translate3d(-100%, 0, 0) scale(0.94);
+        filter: blur(8px);
+        transform: translate3d(-14px, 0, 0) scale(0.985);
       }
       100% {
         opacity: 1;
+        filter: blur(0px);
         transform: translate3d(0, 0, 0) scale(1);
       }
     }
 
     .page-deck-out-left {
-      animation: pageDeckSlideOutLeft 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+      animation: pageLiquidFadeOutLeft 0.38s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
     }
 
     .page-deck-in-right {
-      animation: pageDeckSlideInRight 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+      animation: pageLiquidFadeInRight 0.44s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
     }
 
     .page-deck-out-right {
-      animation: pageDeckSlideOutRight 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+      animation: pageLiquidFadeOutRight 0.38s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
     }
 
     .page-deck-in-left {
-      animation: pageDeckSlideInLeft 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+      animation: pageLiquidFadeInLeft 0.44s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
     }
 
     .subgroups-grid {
@@ -2207,9 +2215,10 @@
           if (window.Motion?.animate) {
             Motion.animate(schedView, {
               opacity: [0, 1],
-              transform: ['translate3d(0, 10px, 0) scale(0.985)', 'translate3d(0, 0, 0) scale(1)']
+              filter: ['blur(6px)', 'blur(0px)'],
+              transform: ['translate3d(0, 6px, 0)', 'translate3d(0, 0, 0)']
             }, {
-              duration: 0.25,
+              duration: 0.38,
               ease: [0.16, 1, 0.3, 1]
             });
           } else {
@@ -2234,9 +2243,10 @@
           if (window.Motion?.animate) {
             Motion.animate(teachView, {
               opacity: [0, 1],
-              transform: ['translate3d(0, 10px, 0) scale(0.985)', 'translate3d(0, 0, 0) scale(1)']
+              filter: ['blur(6px)', 'blur(0px)'],
+              transform: ['translate3d(0, 6px, 0)', 'translate3d(0, 0, 0)']
             }, {
-              duration: 0.25,
+              duration: 0.38,
               ease: [0.16, 1, 0.3, 1]
             });
           } else {
@@ -2623,10 +2633,10 @@
         if (cards.length > 0) {
           Motion.animate(cards.slice(0, 16), {
             opacity: [0, 1],
-            transform: ['translate3d(0, 10px, 0)', 'translate3d(0, 0, 0)']
+            transform: ['translate3d(0, 6px, 0)', 'translate3d(0, 0, 0)']
           }, {
-            delay: Motion.stagger(0.018, { startDelay: 0.02 }),
-            duration: 0.22,
+            delay: Motion.stagger(0.025, { startDelay: 0.02 }),
+            duration: 0.42,
             ease: [0.16, 1, 0.3, 1]
           });
         }
@@ -3053,10 +3063,10 @@
       selectedDayIndex = index;
       triggerHaptic(hapticType);
 
-      // Tactile spring bounce on active timeline day button
+      // Tactile soft feedback on active timeline day button
       const selectorBox = document.getElementById('calendarSelector');
       if (selectorBox && selectorBox.children && selectorBox.children[index] && window.Motion?.animate) {
-        Motion.animate(selectorBox.children[index], { transform: ['scale(0.92)', 'scale(1.08)', 'scale(1)'] }, { duration: 0.28, ease: [0.16, 1, 0.3, 1] });
+        Motion.animate(selectorBox.children[index], { transform: ['scale(0.96)', 'scale(1)'] }, { duration: 0.32, ease: [0.16, 1, 0.3, 1] });
       }
 
       renderView();
@@ -3445,12 +3455,12 @@
           const cards = Array.from(newPage.querySelectorAll('.card-glass'));
           if (cards.length > 0) {
             Motion.animate(cards, {
-              transform: ['translate3d(0, 24px, 0)', 'translate3d(0, 0, 0)'],
+              transform: ['translate3d(0, 8px, 0)', 'translate3d(0, 0, 0)'],
               opacity: [0, 1]
             }, {
-              delay: Motion.stagger(0.04),
-              duration: 0.32,
-              ease: [0.22, 1, 0.36, 1]
+              delay: Motion.stagger(0.035),
+              duration: 0.45,
+              ease: [0.16, 1, 0.3, 1]
             });
           }
         }
@@ -3474,29 +3484,31 @@
       const newHeight = newPage.offsetHeight || 0;
       if (oldHeight > 0 && newHeight > 0 && oldHeight !== newHeight) {
         viewport.style.height = oldHeight + 'px';
-        viewport.style.transition = 'height 0.34s cubic-bezier(0.22, 1, 0.36, 1)';
+        viewport.style.transition = 'height 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
         requestAnimationFrame(() => {
           viewport.style.height = newHeight + 'px';
         });
       }
 
       const isNext = currentSlideDirection === 'next';
+      const drift = isNext ? -14 : 14;
 
       if (window.Motion?.animate) {
         if (oldPage._motionAnim) {
           try { oldPage._motionAnim.stop(); } catch(e) {}
         }
 
-        // Полноэкранный выезд предыдущего дня (Full-Width Swipe)
+        // Мягкое растворение уходящего дня с плавным размытием (Apple Liquid Blur Out)
         oldPage._motionAnim = Motion.animate(oldPage, {
+          opacity: [1, 0],
+          filter: ['blur(0px)', 'blur(8px)'],
           transform: [
-            'translate3d(0%, 0, 0) scale(1)',
-            isNext ? 'translate3d(-100%, 0, 0) scale(0.92)' : 'translate3d(100%, 0, 0) scale(0.92)'
-          ],
-          opacity: [1, 0]
+            'translate3d(0, 0, 0) scale(1)',
+            `translate3d(${drift}px, 0, 0) scale(0.985)`
+          ]
         }, {
-          duration: 0.34,
-          ease: [0.22, 1, 0.36, 1]
+          duration: 0.38,
+          ease: [0.25, 1, 0.5, 1]
         });
 
         oldPage._motionAnim.then(() => {
@@ -3505,28 +3517,29 @@
           viewport.style.transition = '';
         });
 
-        // Полноэкранный въезд нового дня (Full-Width Swipe)
+        // Мягкое проявление нового дня из размытия (Apple Liquid Blur In)
         newPage._motionAnim = Motion.animate(newPage, {
+          opacity: [0, 1],
+          filter: ['blur(8px)', 'blur(0px)'],
           transform: [
-            isNext ? 'translate3d(100%, 0, 0) scale(0.94)' : 'translate3d(-100%, 0, 0) scale(0.94)',
-            'translate3d(0%, 0, 0) scale(1)'
-          ],
-          opacity: [0, 1]
+            `translate3d(${-drift}px, 0, 0) scale(0.985)`,
+            'translate3d(0, 0, 0) scale(1)'
+          ]
         }, {
-          duration: 0.34,
-          ease: [0.22, 1, 0.36, 1]
+          duration: 0.44,
+          ease: [0.16, 1, 0.3, 1]
         });
 
-        // Заметный каскадный stagger карточек пар
+        // Спокойное, плавное и мягкое появление плашек пар (без раздражающих резких прыжков)
         const cards = Array.from(newPage.querySelectorAll('.card-glass'));
         if (cards.length > 0) {
           Motion.animate(cards, {
-            transform: ['translate3d(0, 24px, 0)', 'translate3d(0, 0, 0)'],
+            transform: ['translate3d(0, 10px, 0)', 'translate3d(0, 0, 0)'],
             opacity: [0, 1]
           }, {
-            delay: Motion.stagger(0.045, { startDelay: 0.06 }),
-            duration: 0.32,
-            ease: [0.22, 1, 0.36, 1]
+            delay: Motion.stagger(0.04, { startDelay: 0.05 }),
+            duration: 0.48,
+            ease: [0.16, 1, 0.3, 1]
           });
         }
       } else {
@@ -3543,7 +3556,7 @@
           newPage.classList.remove('page-deck-in-right', 'page-deck-in-left');
           viewport.style.height = 'auto';
           viewport.style.transition = '';
-        }, 340);
+        }, 440);
       }
     }
 
@@ -3889,7 +3902,7 @@
     // ─── Service Worker (Offline PWA + Auto Update) ───────────────────────────
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=10')
+        navigator.serviceWorker.register('./sw.js?v=11')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
