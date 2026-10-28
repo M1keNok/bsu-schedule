@@ -2,7 +2,7 @@
 // Стратегия: Network-First для данных и html-оболочки (всегда свежий интерфейс при наличии сети, мгновенный откат на кэш в офлайне),
 //             Cache-First для внешних CDN библиотек (Tailwind CSS, daisyUI, Telegram SDK).
 
-const CACHE_NAME = 'bsu-schedule-v8';
+const CACHE_NAME = 'bsu-schedule-v9';
 const SHELL_ASSETS = [
   './',
   './index.html',
@@ -13,7 +13,8 @@ const SHELL_ASSETS = [
 const CDN_ASSETS = [
   'https://cdn.tailwindcss.com',
   'https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css',
-  'https://telegram.org/js/telegram-web-app.js'
+  'https://telegram.org/js/telegram-web-app.js',
+  'https://cdn.jsdelivr.net/npm/motion@latest/dist/motion.js'
 ];
 
 // ─── Install: предзагрузка оболочки приложения ──────────────────────────────
