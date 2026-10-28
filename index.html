@@ -11,8 +11,8 @@
   <!-- Tailwind CSS & daisyUI (Component Library) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
-  <!-- Motion (motion.dev) - WAAPI & Physics Animation Engine -->
-  <script src="https://cdn.jsdelivr.net/npm/motion@latest/dist/motion.js"></script>
+  <!-- Motion (motion.dev) - WAAPI & Physics Animation Engine (Local Static Asset) -->
+  <script src="./motion.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -419,73 +419,65 @@
       z-index: 2;
     }
 
-    /* ─── Лаконичный переход с мягким размытием и растворением (Liquid Glass Blur & Dissolve) ─── */
-    @keyframes pageLiquidFadeOutLeft {
+    /* ─── Лаконичный, мягкий переход дней (Apple Parallax Deck Slide, 60-120 FPS GPU) ─── */
+    @keyframes pageDeckOutLeft {
       0% {
         opacity: 1;
-        filter: blur(0px);
-        transform: translate3d(0, 0, 0) scale(1);
+        transform: translate3d(0%, 0, 0) scale(1);
       }
       100% {
         opacity: 0;
-        filter: blur(8px);
-        transform: translate3d(-14px, 0, 0) scale(0.985);
+        transform: translate3d(-35%, 0, 0) scale(0.94);
       }
     }
 
-    @keyframes pageLiquidFadeInRight {
+    @keyframes pageDeckInRight {
       0% {
         opacity: 0;
-        filter: blur(8px);
-        transform: translate3d(14px, 0, 0) scale(0.985);
+        transform: translate3d(35%, 0, 0) scale(0.94);
       }
       100% {
         opacity: 1;
-        filter: blur(0px);
-        transform: translate3d(0, 0, 0) scale(1);
+        transform: translate3d(0%, 0, 0) scale(1);
       }
     }
 
-    @keyframes pageLiquidFadeOutRight {
+    @keyframes pageDeckOutRight {
       0% {
         opacity: 1;
-        filter: blur(0px);
-        transform: translate3d(0, 0, 0) scale(1);
+        transform: translate3d(0%, 0, 0) scale(1);
       }
       100% {
         opacity: 0;
-        filter: blur(8px);
-        transform: translate3d(14px, 0, 0) scale(0.985);
+        transform: translate3d(35%, 0, 0) scale(0.94);
       }
     }
 
-    @keyframes pageLiquidFadeInLeft {
+    @keyframes pageDeckInLeft {
       0% {
         opacity: 0;
-        filter: blur(8px);
-        transform: translate3d(-14px, 0, 0) scale(0.985);
+        transform: translate3d(-35%, 0, 0) scale(0.94);
       }
       100% {
         opacity: 1;
-        filter: blur(0px);
-        transform: translate3d(0, 0, 0) scale(1);
+        transform: translate3d(0%, 0, 0) scale(1);
       }
     }
 
     .page-deck-out-left {
-      animation: pageLiquidFadeOutLeft 0.38s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+      animation: pageDeckOutLeft 0.40s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
     }
 
     .page-deck-in-right {
-      animation: pageLiquidFadeInRight 0.44s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+      animation: pageDeckInRight 0.44s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
     }
 
     .page-deck-out-right {
-      animation: pageLiquidFadeOutRight 0.38s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+      animation: pageDeckOutRight 0.40s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
     }
 
     .page-deck-in-left {
-      animation: pageLiquidFadeInLeft 0.44s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+      animation: pageDeckInLeft 0.44s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
     }
 
     .subgroups-grid {
@@ -3455,11 +3447,11 @@
           const cards = Array.from(newPage.querySelectorAll('.card-glass'));
           if (cards.length > 0) {
             Motion.animate(cards, {
-              transform: ['translate3d(0, 8px, 0)', 'translate3d(0, 0, 0)'],
+              transform: ['translate3d(0, 12px, 0)', 'translate3d(0, 0, 0)'],
               opacity: [0, 1]
             }, {
-              delay: Motion.stagger(0.035),
-              duration: 0.45,
+              delay: Motion.stagger(0.04, { startDelay: 0.05 }),
+              duration: 0.48,
               ease: [0.16, 1, 0.3, 1]
             });
           }
@@ -3484,30 +3476,28 @@
       const newHeight = newPage.offsetHeight || 0;
       if (oldHeight > 0 && newHeight > 0 && oldHeight !== newHeight) {
         viewport.style.height = oldHeight + 'px';
-        viewport.style.transition = 'height 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+        viewport.style.transition = 'height 0.42s cubic-bezier(0.16, 1, 0.3, 1)';
         requestAnimationFrame(() => {
           viewport.style.height = newHeight + 'px';
         });
       }
 
       const isNext = currentSlideDirection === 'next';
-      const drift = isNext ? -14 : 14;
 
       if (window.Motion?.animate) {
         if (oldPage._motionAnim) {
           try { oldPage._motionAnim.stop(); } catch(e) {}
         }
 
-        // Мягкое растворение уходящего дня с плавным размытием (Apple Liquid Blur Out)
+        // Уходящая страница: мягкий параллакс и растворение
         oldPage._motionAnim = Motion.animate(oldPage, {
-          opacity: [1, 0],
-          filter: ['blur(0px)', 'blur(8px)'],
           transform: [
-            'translate3d(0, 0, 0) scale(1)',
-            `translate3d(${drift}px, 0, 0) scale(0.985)`
-          ]
+            'translate3d(0%, 0, 0) scale(1)',
+            isNext ? 'translate3d(-35%, 0, 0) scale(0.94)' : 'translate3d(35%, 0, 0) scale(0.94)'
+          ],
+          opacity: [1, 0]
         }, {
-          duration: 0.38,
+          duration: 0.40,
           ease: [0.25, 1, 0.5, 1]
         });
 
@@ -3517,27 +3507,26 @@
           viewport.style.transition = '';
         });
 
-        // Мягкое проявление нового дня из размытия (Apple Liquid Blur In)
+        // Новая страница: плавный въезд с легким масштабированием
         newPage._motionAnim = Motion.animate(newPage, {
-          opacity: [0, 1],
-          filter: ['blur(8px)', 'blur(0px)'],
           transform: [
-            `translate3d(${-drift}px, 0, 0) scale(0.985)`,
-            'translate3d(0, 0, 0) scale(1)'
-          ]
+            isNext ? 'translate3d(35%, 0, 0) scale(0.94)' : 'translate3d(-35%, 0, 0) scale(0.94)',
+            'translate3d(0%, 0, 0) scale(1)'
+          ],
+          opacity: [0, 1]
         }, {
           duration: 0.44,
           ease: [0.16, 1, 0.3, 1]
         });
 
-        // Спокойное, плавное и мягкое появление плашек пар (без раздражающих резких прыжков)
+        // Спокойное, медленное и комфортное для глаз всплытие плашек пар
         const cards = Array.from(newPage.querySelectorAll('.card-glass'));
         if (cards.length > 0) {
           Motion.animate(cards, {
-            transform: ['translate3d(0, 10px, 0)', 'translate3d(0, 0, 0)'],
+            transform: ['translate3d(0, 12px, 0)', 'translate3d(0, 0, 0)'],
             opacity: [0, 1]
           }, {
-            delay: Motion.stagger(0.04, { startDelay: 0.05 }),
+            delay: Motion.stagger(0.04, { startDelay: 0.06 }),
             duration: 0.48,
             ease: [0.16, 1, 0.3, 1]
           });
@@ -3900,9 +3889,17 @@
     init();
 
     // ─── Service Worker (Offline PWA + Auto Update) ───────────────────────────
+    if ('caches' in window) {
+      caches.keys().then(keys => {
+        keys.forEach(k => {
+          if (k !== 'bsu-schedule-v12') caches.delete(k);
+        });
+      });
+    }
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=11')
+        navigator.serviceWorker.register('./sw.js?v=12')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
