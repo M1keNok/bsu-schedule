@@ -189,16 +189,18 @@
     .active-lesson-card {
       position: relative;
       background: var(--glass-card);
-      border: 1.5px solid rgba(16, 185, 129, 0.7);
       border-radius: 20px;
       padding: 14px 16px;
       transform: translateZ(0);
-      contain: content;
       box-sizing: border-box;
       width: 100%;
       max-width: 100%;
-      animation: activeLessonAura 3s ease-in-out infinite;
-      transition: background 0.25s ease, border-color 0.25s ease, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+      box-shadow: 0 0 16px -2px rgba(16, 185, 129, 0.35),
+                  0 6px 20px -3px rgba(16, 185, 129, 0.25),
+                  var(--glass-inner-bevel);
+      animation: activeLessonPulseGlow 3s ease-in-out infinite;
+      transition: background 0.25s ease, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
@@ -207,19 +209,66 @@
       transform: scale(0.985);
     }
 
-    @keyframes activeLessonAura {
+    /* Вращающийся луч света, бегущий точно по контуру карточки активной пары */
+    .active-lesson-card::before {
+      content: '';
+      position: absolute;
+      top: -60%;
+      left: -60%;
+      width: 220%;
+      height: 220%;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        transparent 80deg,
+        rgba(16, 185, 129, 0.15) 125deg,
+        #10b981 155deg,
+        #34d399 172deg,
+        #ffffff 180deg,
+        #34d399 188deg,
+        #10b981 205deg,
+        rgba(16, 185, 129, 0.15) 235deg,
+        transparent 280deg,
+        transparent 360deg
+      );
+      animation: borderBeamRotate 4s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Внутренняя подложка стекла, оставляющая кант шириной 1.5px для луча */
+    .active-lesson-card::after {
+      content: '';
+      position: absolute;
+      inset: 1.5px;
+      border-radius: 18.5px;
+      background: var(--glass-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Контент карточки располагается поверх бегущего луча */
+    .active-lesson-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes borderBeamRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes activeLessonPulseGlow {
       0%, 100% {
-        border-color: rgba(16, 185, 129, 0.60);
-        box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.25),
-                    0 8px 24px -4px rgba(16, 185, 129, 0.30),
-                    0 0 25px -3px rgba(16, 185, 129, 0.20),
+        box-shadow: 0 0 14px -2px rgba(16, 185, 129, 0.30),
+                    0 6px 18px -3px rgba(16, 185, 129, 0.20),
                     var(--glass-inner-bevel);
       }
       50% {
-        border-color: rgba(16, 185, 129, 0.95);
-        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.50),
-                    0 10px 32px -2px rgba(16, 185, 129, 0.55),
-                    0 0 45px 4px rgba(16, 185, 129, 0.38),
+        box-shadow: 0 0 24px 2px rgba(16, 185, 129, 0.50),
+                    0 8px 26px 0px rgba(16, 185, 129, 0.30),
                     var(--glass-inner-bevel);
       }
     }
@@ -256,6 +305,7 @@
       min-height: 240px;
       overflow: hidden;
       contain: layout style;
+      padding: 4px 6px;
     }
 
     .schedule-page {
@@ -769,7 +819,7 @@
 
     ::view-transition-new(root) {
       z-index: 999999;
-      animation: themeCircleReveal 0.48s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation: themeCircleReveal 0.75s cubic-bezier(0.25, 1, 0.35, 1) forwards;
     }
 
     .no-theme-transition,
@@ -1174,8 +1224,8 @@
                 ]
               },
               {
-                duration: 480,
-                easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+                duration: 750,
+                easing: 'cubic-bezier(0.25, 1, 0.35, 1)',
                 pseudoElement: '::view-transition-new(root)'
               }
             );
@@ -1199,7 +1249,7 @@
         pointer-events: none;
         background: ${isDark ? '#000000' : '#f8fafc'};
         clip-path: circle(0px at ${x}px ${y}px);
-        transition: clip-path 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease 0.35s;
+        transition: clip-path 0.75s cubic-bezier(0.25, 1, 0.35, 1), opacity 0.25s ease 0.65s;
         will-change: clip-path, opacity;
       `;
       document.body.appendChild(ripple);
@@ -1209,8 +1259,8 @@
       setTimeout(() => {
         setTheme(targetTheme);
         ripple.style.opacity = '0';
-        setTimeout(() => ripple.remove(), 250);
-      }, 300);
+        setTimeout(() => ripple.remove(), 300);
+      }, 550);
     }
 
     function toggleThemeFromController(isDark, event) {
@@ -1294,8 +1344,87 @@
         room = m[0].trim();
         s = s.replace(m[0], '').trim();
       }
-      s = s.replace(/^[-–—•,\s]+|[-–—•,\s]+$/g, '').trim();
-      return { teacher: s, room };
+      const lines = s.split('\n').map(l => l.trim()).filter(Boolean);
+      const cleanLines = [];
+      let rank = '';
+      for (let i = 0; i < lines.length; i++) {
+        const l = lines[i];
+        if (/^\(?(?:практ|лекц|лаб|сем|доп\.зан)[^)]*\)?$/i.test(l)) continue;
+        if (/^(?:ст\.?\s*препод(?:аватель|\.)?|доцент|профессор|старший\s+преподаватель|преподаватель|препод\.?-стаж[её]р)$/i.test(l)) {
+          rank = l;
+          continue;
+        }
+        if (/([А-ЯЁ][а-яё]+)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/.test(l)) {
+          cleanLines.push(rank ? rank + ' ' + l : l);
+          rank = '';
+        }
+      }
+      let teacher = cleanLines.join(' • ') || lines.join(' ');
+      teacher = teacher.replace(/^[-–—•,\s]+|[-–—•,\s]+$/g, '').trim();
+      return { teacher, room };
+    }
+
+    function extractSubgroupsFromLesson(raw) {
+      if (!raw) return null;
+
+      // 1. Проверяем явное наличие 1 п/г и 2 п/г
+      const rawLines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+      const l1 = rawLines.find(l => /1\s*(?:п\/г|подгр|подгруппа)/i.test(l));
+      const l2 = rawLines.find(l => /2\s*(?:п\/г|подгр|подгруппа)/i.test(l));
+      if (l1 && l2) {
+        return [cleanTeacherAndRoom(l1), cleanTeacherAndRoom(l2)];
+      }
+
+      // 2. Ищем сдвоенную аудиторию через слэш (ауд.203/316, ауд.222/221, ауд.316/121, 121/224)
+      const slashMatch = raw.match(/(?:ауд\.?|каб\.?)\s*([0-9а-яА-Яa-zA-Z]+)\s*[\/\\–—]\s*([0-9а-яА-Яa-zA-Z]+)/i);
+      const slashRooms = slashMatch ? [`ауд.${slashMatch[1]}`, `ауд.${slashMatch[2]}`] : null;
+
+      // Объединяем строки, где звание преподавателя стоит на отдельной строке перед ФИО
+      const combined = [];
+      let i = 0;
+      while (i < rawLines.length) {
+        const line = rawLines[i];
+        if (/^(?:ст\.?\s*препод(?:аватель|\.)?|доцент|профессор|старший\s+преподаватель|преподаватель|препод\.?-стаж[её]р)$/i.test(line) && i + 1 < rawLines.length) {
+          combined.push(line + ' ' + rawLines[i + 1]);
+          i += 2;
+        } else {
+          combined.push(line);
+          i += 1;
+        }
+      }
+
+      // Ищем преподавателей (ФИО с инициалами)
+      const teachersFound = [];
+      for (const line of combined) {
+        const tm = line.match(/([А-ЯЁ][а-яё]+)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/);
+        if (tm) {
+          let tText = line.replace(/(?:ауд\.?|каб\.?|спорткомплекс).*/i, '').trim();
+          tText = tText.replace(/^[12]\s*(?:п\/г|подгр\.?|подгруппа)\s*/i, '').trim();
+          tText = tText.replace(/^[-–—•,\s]+|[-–—•,\s]+$/g, '').trim();
+
+          const rMatch = line.match(/(?:ауд\.?|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
+          const room = rMatch ? (rMatch[0].startsWith('ауд') || rMatch[0].startsWith('каб') ? rMatch[0] : 'ауд.' + rMatch[1]) : null;
+
+          teachersFound.push({ teacher: tText, room });
+        }
+      }
+
+      if (teachersFound.length >= 2) {
+        if (slashRooms && teachersFound.length === 2) {
+          teachersFound[0].room = slashRooms[0];
+          teachersFound[1].room = slashRooms[1];
+        } else {
+          const allRoomsMatches = raw.match(/(?:ауд\.?|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/gi) || [];
+          for (let tIdx = 0; tIdx < teachersFound.length; tIdx++) {
+            if (!teachersFound[tIdx].room && tIdx < allRoomsMatches.length) {
+              teachersFound[tIdx].room = allRoomsMatches[tIdx];
+            }
+          }
+        }
+        return teachersFound;
+      }
+
+      return null;
     }
 
     function formatDetailsLines(lines, roomText) {
@@ -1389,28 +1518,30 @@
 
       const parsedItems = kept.map(parseLessonRaw);
 
-      if (parsedItems.length === 2 && parsedItems[0].title.toLowerCase() === parsedItems[1].title.toLowerCase()) {
+      // Если в ячейке 2 записи с одинаковым предметом или обе записи относятся к английскому/иностранному языку
+      const isBothLang = parsedItems.length === 2 &&
+        detectLessonLanguage(parsedItems[0].raw) === 'EN' &&
+        detectLessonLanguage(parsedItems[1].raw) === 'EN';
+
+      if (parsedItems.length === 2 && (parsedItems[0].title.toLowerCase() === parsedItems[1].title.toLowerCase() || isBothLang)) {
         const lType = parsedItems[0].type || parsedItems[1].type;
+        const sg1 = cleanTeacherAndRoom(parsedItems[0].raw);
+        const sg2 = cleanTeacherAndRoom(parsedItems[1].raw);
         return [{
           title: parsedItems[0].title,
           type: lType,
-          subgroups: [
-            cleanTeacherAndRoom(parsedItems[0].lines.join(' ')),
-            cleanTeacherAndRoom(parsedItems[1].lines.join(' '))
-          ]
+          subgroups: [sg1, sg2]
         }];
       }
 
       return parsedItems.map(p => {
-        const lines = p.lines;
-        const l1 = lines.find(l => /1\s*(?:п\/г|подгр)/i.test(l));
-        const l2 = lines.find(l => /2\s*(?:п\/г|подгр)/i.test(l));
-
-        if (l1 && l2) {
+        // Проверяем, разделена ли пара на подгруппы (разные преподаватели/аудитории)
+        const detectedSubgroups = extractSubgroupsFromLesson(p.raw);
+        if (detectedSubgroups) {
           return {
             title: p.title,
             type: p.type,
-            subgroups: [cleanTeacherAndRoom(l1), cleanTeacherAndRoom(l2)]
+            subgroups: detectedSubgroups
           };
         }
 
@@ -1420,7 +1551,7 @@
           title: p.title,
           type: p.type,
           room: room,
-          details: formatDetailsLines(lines, room)
+          details: formatDetailsLines(p.lines, room)
         };
       });
     }
@@ -1491,6 +1622,26 @@
       return `${mins} мин`;
     }
 
+    function formatCountdownDigits(totalMins) {
+      const mins = Math.max(0, totalMins);
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      if (h > 0) {
+        return `<span class="countdown font-mono"><span style="--value:${Math.min(99, h)};"></span></span>ч <span class="countdown font-mono"><span style="--value:${m};"></span></span>м`;
+      }
+      return `<span class="countdown font-mono"><span style="--value:${m};"></span></span>м`;
+    }
+
+    function formatLiveCardCountdown(totalMins) {
+      const mins = Math.max(0, totalMins);
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      if (h > 0) {
+        return `<span class="countdown font-mono"><span style="--value:${Math.min(99, h)};"></span></span>ч <span class="countdown font-mono"><span style="--value:${m};"></span></span> мин`;
+      }
+      return `<span class="countdown font-mono"><span style="--value:${m};"></span></span> мин`;
+    }
+
     function updateLiveStatusBanner(todayActiveSlots) {
       const liveTimerBox = document.getElementById('dayLiveTimer');
       if (!liveTimerBox) return;
@@ -1531,11 +1682,11 @@
 
       // 1. Пары ещё не начались
       if (curMin < firstLesson.startMin) {
-        const minsLeft = Math.min(99, Math.max(0, firstLesson.startMin - curMin));
+        const minsLeft = Math.max(0, firstLesson.startMin - curMin);
         liveTimerBox.innerHTML = `
           <span class="badge badge-ghost badge-sm font-bold border border-base-content/20 gap-1" title="До начала первой пары">
             <span>До пары</span>
-            <span class="countdown font-mono"><span style="--value:${minsLeft};"></span></span>м
+            ${formatCountdownDigits(minsLeft)}
           </span>
         `;
         return;
@@ -1550,12 +1701,12 @@
       // 3. Идёт пара прямо сейчас
       const liveLesson = dayLessonSlots.find(s => curMin >= s.startMin && curMin < s.endMin);
       if (liveLesson) {
-        const minsLeft = Math.min(99, Math.max(0, liveLesson.endMin - curMin));
+        const minsLeft = Math.max(0, liveLesson.endMin - curMin);
         liveTimerBox.innerHTML = `
           <span class="badge badge-accent badge-sm font-bold gap-1 text-white shadow-sm" title="Идёт пара">
             <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
             <span>Пара</span>
-            <span class="countdown font-mono"><span style="--value:${minsLeft};"></span></span>м
+            ${formatCountdownDigits(minsLeft)}
           </span>
         `;
         return;
@@ -1564,12 +1715,12 @@
       // 4. Перемена между парами
       const nextLesson = dayLessonSlots.find(s => s.startMin > curMin);
       if (nextLesson) {
-        const minsLeft = Math.min(99, Math.max(0, nextLesson.startMin - curMin));
+        const minsLeft = Math.max(0, nextLesson.startMin - curMin);
         liveTimerBox.innerHTML = `
           <span class="badge badge-warning badge-sm font-bold gap-1 shadow-sm" title="Перемена">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>
             <span>Перемена</span>
-            <span class="countdown font-mono"><span style="--value:${minsLeft};"></span></span>м
+            ${formatCountdownDigits(minsLeft)}
           </span>
         `;
         return;
@@ -1754,8 +1905,16 @@
                 const rawLower = rawItem.toLowerCase().replace(/ё/g, 'е');
                 if (rawLower.includes(lastName)) {
                   const slotMin = parseTimeSlotMinutes(timeStr);
-                  const roomMatch = rawItem.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
-                  const room = roomMatch ? roomMatch[0].trim() : '';
+                  let room = '';
+                  const sg = extractSubgroupsFromLesson(rawItem);
+                  if (sg && sg.length) {
+                    const matchedSg = sg.find(s => s.teacher && s.teacher.toLowerCase().replace(/ё/g, 'е').includes(lastName));
+                    if (matchedSg && matchedSg.room) room = matchedSg.room;
+                  }
+                  if (!room) {
+                    const roomMatch = rawItem.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
+                    room = roomMatch ? roomMatch[0].trim() : '';
+                  }
                   const title = rawItem.split('\n')[0].replace(/\((?:лекц|практ|лаб|сем)[^)]*\)/i, '').trim();
 
                   matches.push({
@@ -2194,22 +2353,23 @@
         if (isPast) cardClasses += ' archive-card';
         card.className = cardClasses;
 
-        // Countdown inside active pair card
+        // Countdown inside active pair card (unlimited > 100 mins supported)
         let liveCountdownHTML = '';
         if (isLive) {
           const slotMin = parseTimeSlotMinutes(timeStr);
           const curMin = new Date().getHours() * 60 + new Date().getMinutes();
-          const leftMin = slotMin ? Math.min(99, Math.max(0, slotMin.endMin - curMin)) : 0;
+          const leftMin = slotMin ? Math.max(0, slotMin.endMin - curMin) : 0;
           liveCountdownHTML = `
             <span class="badge badge-accent badge-sm font-bold gap-1 text-white shadow-sm flex-shrink-0">
               <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-              <span>Идёт пара • <span class="countdown font-mono"><span style="--value:${leftMin};"></span></span> мин</span>
+              <span>Идёт пара • ${formatLiveCardCountdown(leftMin)}</span>
             </span>
           `;
         }
 
-        // Room badge from first item if present
-        const roomBadge = items[0]?.room ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${items[0].room}</span>` : '';
+        // Room badge at the top-right ONLY if there is exactly 1 item and it has no subgroups
+        const showTopRoom = items.length === 1 && !items[0].subgroups && items[0].room;
+        const topRoomBadge = showTopRoom ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${items[0].room}</span>` : '';
 
         let innerContent = `
           <div class="flex items-center justify-between gap-2 mb-2">
@@ -2217,11 +2377,16 @@
               <span class="badge ${isLive ? 'badge-accent font-bold text-white shadow-sm' : 'badge-ghost font-bold font-mono'} badge-sm flex-shrink-0">${timeStr}</span>
               ${liveCountdownHTML}
             </div>
-            ${roomBadge}
+            ${topRoomBadge}
           </div>
         `;
 
         items.forEach((item, idx) => {
+          // If multiple items, show each item's room badge directly on its row
+          const itemRoomBadge = (!showTopRoom && !item.subgroups && item.room)
+            ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${item.room}</span>`
+            : '';
+
           innerContent += `
             <div class="${idx > 0 ? 'mt-2.5 pt-2.5 border-t border-base-content/10' : ''}">
               <div class="flex items-start justify-between gap-2">
@@ -2229,28 +2394,22 @@
                   <span class="text-[14px] font-bold leading-snug">${item.title}</span>
                   ${item.type ? `<span class="badge badge-sm font-bold flex-shrink-0" style="color: ${item.type.color}; background: ${item.type.bg};">${item.type.label}</span>` : ''}
                 </div>
+                ${itemRoomBadge}
               </div>
 
               ${item.subgroups ? `
-                <div class="grid grid-cols-2 gap-2 mt-2.5 pt-2.5 border-t border-base-content/10 w-full box-border">
-                  <div class="subgroup-box min-w-0 overflow-hidden">
-                    <div class="flex items-center justify-between text-[10px] font-extrabold text-base-content/60 uppercase">
-                      <span>1 подгруппа</span>
-                      ${item.subgroups[0].room ? `<span class="font-mono text-base-content/80 font-bold">${item.subgroups[0].room}</span>` : ''}
+                <div class="grid ${item.subgroups.length === 2 ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'} gap-2 mt-2.5 pt-2.5 border-t border-base-content/10 w-full box-border">
+                  ${item.subgroups.map((sg, sgIdx) => `
+                    <div class="subgroup-box min-w-0 overflow-hidden">
+                      <div class="flex items-center justify-between text-[10px] font-extrabold text-base-content/60 uppercase">
+                        <span>${sgIdx + 1} подгруппа</span>
+                        ${sg.room ? `<span class="font-mono text-base-content/80 font-bold">${sg.room}</span>` : ''}
+                      </div>
+                      <div class="mt-0.5 min-w-0">
+                        ${formatTeacherChipHTML(sg.teacher)}
+                      </div>
                     </div>
-                    <div class="mt-0.5 min-w-0">
-                      ${formatTeacherChipHTML(item.subgroups[0].teacher)}
-                    </div>
-                  </div>
-                  <div class="subgroup-box min-w-0 overflow-hidden">
-                    <div class="flex items-center justify-between text-[10px] font-extrabold text-base-content/60 uppercase">
-                      <span>2 подгруппа</span>
-                      ${item.subgroups[1].room ? `<span class="font-mono text-base-content/80 font-bold">${item.subgroups[1].room}</span>` : ''}
-                    </div>
-                    <div class="mt-0.5 min-w-0">
-                      ${formatTeacherChipHTML(item.subgroups[1].teacher)}
-                    </div>
-                  </div>
+                  `).join('')}
                 </div>
               ` : renderLessonDetails(item.details)}
             </div>
