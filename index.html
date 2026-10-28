@@ -1326,14 +1326,46 @@
       }
     }
 
-    function cleanTeacherAndRoom(str) {
+    function extractSplitRooms(raw) {
+      if (!raw) return null;
+      // 1. ауд.121./316, ауд. 111/316, ауд.316/121, Ауд.417, 413, ауд.111 / ауд.316, ауд. 121/224
+      const m1 = raw.match(/(?:ауд\.?|каб\.?)\s*([0-9а-яА-Яa-zA-Z]+)[.\s]*[\/\\–—,][.\s]*(?:(?:ауд\.?|каб\.?)\s*)?([0-9а-яА-Яa-zA-Z]+)/i);
+      if (m1) {
+        return [`ауд. ${m1[1]}`, `ауд. ${m1[2]}`];
+      }
+      // 2. Без префикса ауд.: 121/316, 203/317
+      const m2 = raw.match(/\b([0-9]{3})[.\s]*[\/\\–—,][.\s]*([0-9]{3})\b/);
+      if (m2) {
+        return [`ауд. ${m2[1]}`, `ауд. ${m2[2]}`];
+      }
+      // 3. Несколько раздельных упоминаний ауд.
+      const allAuds = [];
+      const audRegex = /(?:ауд\.?|каб\.?)\s*([0-9а-яА-Яa-zA-Z]+)/gi;
+      let match;
+      while ((match = audRegex.exec(raw)) !== null) {
+        allAuds.push(`ауд. ${match[1]}`);
+      }
+      if (allAuds.length >= 2) {
+        return allAuds;
+      }
+      return null;
+    }
+
+    function cleanTeacherAndRoom(str, subgroupIndex = null) {
       if (!str) return { teacher: '', room: null };
       let s = str.replace(/^[12]\s*(?:п\/г|подгр\.?|подгруппа)\s*/i, '').trim();
-      const m = s.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
+      const splitRooms = extractSplitRooms(s);
       let room = null;
-      if (m) {
-        room = m[0].trim();
-        s = s.replace(m[0], '').trim();
+      if (splitRooms && subgroupIndex !== null && subgroupIndex < splitRooms.length) {
+        room = splitRooms[subgroupIndex];
+      } else {
+        const m = s.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
+        if (m) {
+          room = m[0].trim();
+          s = s.replace(m[0], '').trim();
+        } else if (/https?:\/\/|edugeo|edueng|онлайн/i.test(s)) {
+          room = 'Онлайн';
+        }
       }
       const lines = s.split('\n').map(l => l.trim()).filter(Boolean);
       const cleanLines = [];
@@ -1363,12 +1395,11 @@
       const l1 = rawLines.find(l => /1\s*(?:п\/г|подгр|подгруппа)/i.test(l));
       const l2 = rawLines.find(l => /2\s*(?:п\/г|подгр|подгруппа)/i.test(l));
       if (l1 && l2) {
-        return [cleanTeacherAndRoom(l1), cleanTeacherAndRoom(l2)];
+        return [cleanTeacherAndRoom(l1, 0), cleanTeacherAndRoom(l2, 1)];
       }
 
-      // 2. Ищем сдвоенную аудиторию через слэш (ауд.203/316, ауд.222/221, ауд.316/121, 121/224)
-      const slashMatch = raw.match(/(?:ауд\.?|каб\.?)\s*([0-9а-яА-Яa-zA-Z]+)\s*[\/\\–—]\s*([0-9а-яА-Яa-zA-Z]+)/i);
-      const slashRooms = slashMatch ? [`ауд.${slashMatch[1]}`, `ауд.${slashMatch[2]}`] : null;
+      // 2. Ищем сдвоенную аудиторию через слэш или запятую
+      const splitRooms = extractSplitRooms(raw);
 
       // Объединяем строки, где звание преподавателя стоит на отдельной строке перед ФИО
       const combined = [];
@@ -1390,25 +1421,49 @@
         const tm = line.match(/([А-ЯЁ][а-яё]+)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/);
         if (tm) {
           let tText = line.replace(/(?:ауд\.?|каб\.?|спорткомплекс).*/i, '').trim();
+          tText = tText.replace(/https?:\/\/\S+|edugeo\S*|edueng\S*/gi, '').trim();
           tText = tText.replace(/^[12]\s*(?:п\/г|подгр\.?|подгруппа)\s*/i, '').trim();
           tText = tText.replace(/^[-–—•,\s]+|[-–—•,\s]+$/g, '').trim();
 
           const rMatch = line.match(/(?:ауд\.?|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
-          const room = rMatch ? (rMatch[0].startsWith('ауд') || rMatch[0].startsWith('каб') ? rMatch[0] : 'ауд.' + rMatch[1]) : null;
+          let room = rMatch ? (rMatch[0].startsWith('ауд') || rMatch[0].startsWith('каб') ? rMatch[0] : 'ауд. ' + rMatch[1]) : null;
+          if (/https?:\/\/|edugeo|edueng|онлайн/i.test(line)) {
+            room = 'Онлайн';
+          }
 
           teachersFound.push({ teacher: tText, room });
         }
       }
 
       if (teachersFound.length >= 2) {
-        if (slashRooms && teachersFound.length === 2) {
-          teachersFound[0].room = slashRooms[0];
-          teachersFound[1].room = slashRooms[1];
+        if (splitRooms && splitRooms.length >= 2) {
+          teachersFound[0].room = splitRooms[0];
+          teachersFound[1].room = splitRooms[1];
         } else {
-          const allRoomsMatches = raw.match(/(?:ауд\.?|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/gi) || [];
+          // Проверяем онлайн-ссылки и раздельные аудитории
+          const lines = raw.split('\n');
           for (let tIdx = 0; tIdx < teachersFound.length; tIdx++) {
-            if (!teachersFound[tIdx].room && tIdx < allRoomsMatches.length) {
-              teachersFound[tIdx].room = allRoomsMatches[tIdx];
+            if (!teachersFound[tIdx].room) {
+              const tSur = teachersFound[tIdx].teacher.split(' ')[0];
+              const lineIdx = lines.findIndex(l => l.includes(tSur));
+              if (lineIdx !== -1) {
+                const nearby = lines.slice(lineIdx, lineIdx + 3).join(' ');
+                if (/https?:\/\/|edugeo|edueng|онлайн/i.test(nearby)) {
+                  teachersFound[tIdx].room = 'Онлайн';
+                }
+              }
+            }
+          }
+          // Если у одного онлайн, а у второго остался пустой кабинет при наличии ауд. в тексте
+          const singleAud = raw.match(/(?:ауд\.?|каб\.?)\s*([0-9а-яА-Яa-zA-Z]+)/i);
+          if (singleAud) {
+            const rStr = `ауд. ${singleAud[1]}`;
+            if (!teachersFound[0].room && teachersFound[1].room === 'Онлайн') {
+              teachersFound[0].room = rStr;
+            } else if (!teachersFound[1].room && teachersFound[0].room === 'Онлайн') {
+              teachersFound[1].room = rStr;
+            } else if (!teachersFound[0].room && !teachersFound[1].room) {
+              teachersFound[0].room = rStr;
             }
           }
         }
@@ -1516,8 +1571,8 @@
 
       if (parsedItems.length === 2 && (parsedItems[0].title.toLowerCase() === parsedItems[1].title.toLowerCase() || isBothLang)) {
         const lType = parsedItems[0].type || parsedItems[1].type;
-        const sg1 = cleanTeacherAndRoom(parsedItems[0].raw);
-        const sg2 = cleanTeacherAndRoom(parsedItems[1].raw);
+        const sg1 = cleanTeacherAndRoom(parsedItems[0].raw, 0);
+        const sg2 = cleanTeacherAndRoom(parsedItems[1].raw, 1);
         return [{
           title: parsedItems[0].title,
           type: lType,
@@ -1536,13 +1591,25 @@
           };
         }
 
-        const roomMatch = p.raw.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
-        const room = roomMatch ? roomMatch[0] : null;
+        const isPE = /физическ.*культ|спорт\s*комплекс/i.test(p.raw || p.title);
+        let room = null;
+        let details = '';
+
+        if (isPE) {
+          room = 'Спорткомплекс';
+          details = 'Октябрьская, 8а • СУО: Одоевского, 75А';
+          if (/зач[её]т/i.test(p.raw)) details += ' • Зачет';
+        } else {
+          const roomMatch = p.raw.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
+          room = roomMatch ? roomMatch[0] : null;
+          details = formatDetailsLines(p.lines, room);
+        }
+
         return {
           title: p.title,
           type: p.type,
           room: room,
-          details: formatDetailsLines(p.lines, room)
+          details: details
         };
       });
     }
@@ -1887,8 +1954,7 @@
     }
 
     function getTeacherRoomAndOnline(raw, lastName) {
-      // Поддержка точки перед или после слэша: ауд.121./316 или ауд.203/316
-      const slashMatch = raw.match(/(?:ауд\.?|каб\.?)\s*([0-9а-яА-Яa-zA-Z]+)[.\s]*[\/\\–—][.\s]*([0-9а-яА-Яa-zA-Z]+)/i);
+      const splitRooms = extractSplitRooms(raw);
       const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
       const teachers = [];
       let curT = null;
@@ -1898,24 +1964,28 @@
         if (tm) {
           curT = { name: tm[1].toLowerCase().replace(/ё/g, 'е'), room: null, isOnline: false };
           teachers.push(curT);
+          const rm = l.match(/(?:ауд\.?|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z.]+)/i);
+          if (rm) curT.room = rm[0];
+          if (/https?:\/\/|edugeo|edueng|онлайн/i.test(l)) curT.isOnline = true;
         } else if (curT) {
-          const rm = l.match(/(?:ауд\.?|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
+          const rm = l.match(/(?:ауд\.?|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z.]+)/i);
           if (rm && !curT.room) curT.room = rm[0];
-          if (/https?:\/\/|edugeo|edueng/i.test(l)) curT.isOnline = true;
+          if (/https?:\/\/|edugeo|edueng|онлайн/i.test(l)) curT.isOnline = true;
         }
       }
 
-      if (slashMatch && teachers.length === 2) {
-        teachers[0].room = 'ауд.' + slashMatch[1];
-        teachers[1].room = 'ауд.' + slashMatch[2];
+      if (splitRooms && splitRooms.length >= 2 && teachers.length >= 2) {
+        teachers[0].room = splitRooms[0];
+        teachers[1].room = splitRooms[1];
       }
 
       const myT = teachers.find(t => t.name.includes(lastName));
       if (myT) {
-        return { room: myT.room, isOnline: myT.isOnline };
+        if (myT.isOnline && !myT.room) return { room: 'Онлайн', isOnline: true };
+        return { room: myT.room || '', isOnline: myT.isOnline };
       }
 
-      const defMatch = raw.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
+      const defMatch = raw.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z.]+)/i);
       return { room: defMatch ? defMatch[0].trim() : '', isOnline: /https?:\/\/|edugeo|edueng/i.test(raw) };
     }
 
@@ -2407,6 +2477,21 @@
       }
     }
 
+    function getLessonActualTime(rawTimeStr, items) {
+      if (items && items.some(it => /физическ|физкультур|физ-р|физвоспитан/i.test(it.title || it.raw || ''))) {
+        const parsed = parseTimeSlotMinutes(rawTimeStr);
+        if (parsed) {
+          // 14:20 -> 14:40–16:00 (1 курс)
+          if (parsed.startMin >= 14 * 60 + 10 && parsed.startMin <= 14 * 60 + 35) return '14:40–16:00';
+          // 12:50 -> 13:10–14:30 (2 курс)
+          if (parsed.startMin >= 12 * 60 + 40 && parsed.startMin <= 13 * 60) return '13:10–14:30';
+          // 11:20 -> 10:50–12:10 (3 курс)
+          if (parsed.startMin >= 11 * 60 + 10 && parsed.startMin <= 11 * 60 + 35) return '10:50–12:10';
+        }
+      }
+      return rawTimeStr;
+    }
+
     function getProcessedDaySlots(dayKey, groupSchedule) {
       if (!dayKey || !groupSchedule || !groupSchedule[dayKey]) return [];
       const rawSlots = groupSchedule[dayKey];
@@ -2415,7 +2500,15 @@
 
       const slotsWithItems = times.map(timeStr => {
         const items = getLessonsForSlot(timeStr, dayKey, groupSchedule, currentProfile);
-        return { timeStr, items };
+        const actualTimeStr = getLessonActualTime(timeStr, items);
+        return { timeStr: actualTimeStr, items };
+      });
+
+      // Хронологическая сортировка слотов по времени начала
+      slotsWithItems.sort((a, b) => {
+        const ma = parseTimeSlotMinutes(a.timeStr)?.startMin || 0;
+        const mb = parseTimeSlotMinutes(b.timeStr)?.startMin || 0;
+        return ma - mb;
       });
 
       const firstIdx = slotsWithItems.findIndex(s => s.items.length > 0);

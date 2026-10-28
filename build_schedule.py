@@ -76,6 +76,25 @@ def format_time(t):
     m = re.match(r"(\d{2})[:.]?(\d{2})[-–](\d{2})[:.]?(\d{2})", digits)
     return f"{m.group(1)}:{m.group(2)}–{m.group(3)}:{m.group(4)}" if m else digits
 
+def extract_pe_time(raw_text, cur_time=None):
+    if not raw_text or not re.search(r"физическ.*культ|спорт\s*комплекс", raw_text, re.I):
+        return None
+    # 1. Ищем явное время в тексте ячейки для спорткомплекса на Октябрьской (основная группа)
+    m_okt = re.search(r"(\d{1,2})[.:](\d{2})\s*[-–—]\s*(\d{1,2})[.:](\d{2})[^\n]*октябрьск", raw_text, re.I)
+    if m_okt:
+        return f"{int(m_okt.group(1)):02d}:{m_okt.group(2)}–{int(m_okt.group(3)):02d}:{m_okt.group(4)}"
+    m_any = re.search(r"(\d{1,2})[.:](\d{2})\s*[-–—]\s*(\d{1,2})[.:](\d{2})", raw_text)
+    if m_any:
+        return f"{int(m_any.group(1)):02d}:{m_any.group(2)}–{int(m_any.group(3)):02d}:{m_any.group(4)}"
+    # 2. Стандартные официальные сдвиги расписания спорткомплекса геофака БГУ
+    if cur_time and ("14:20" in cur_time or "14:10" in cur_time):
+        return "14:40–16:00"
+    if cur_time and "12:50" in cur_time:
+        return "13:10–14:30"
+    if cur_time and "11:20" in cur_time:
+        return "10:50–12:10"
+    return None
+
 def clean_cell_text(text):
     if not text:
         return ""
@@ -167,17 +186,24 @@ def parse_docx(path):
             for col_idx, g_name in group_cols.items():
                 if col_idx >= len(cells):
                     continue
-                lesson = clean_cell_text(cells[col_idx].text)
+                raw_cell = cells[col_idx].text
+                lesson = clean_cell_text(raw_cell)
                 if "СПЕЦИАЛЬНОСТЬ" in lesson.upper() or "НАПРАВЛЕНИЕ" in lesson.upper():
                     continue
-                res.setdefault(g_name, {}).setdefault(cur_day, {}).setdefault(cur_time, [])
+
+                slot_time = cur_time
+                pe_time = extract_pe_time(raw_cell, cur_time)
+                if pe_time:
+                    slot_time = pe_time
+
+                res.setdefault(g_name, {}).setdefault(cur_day, {}).setdefault(slot_time, [])
                 if lesson:
                     # Separate multiple subjects crammed into a single cell by Decanat
                     sub_lessons = re.split(r"\n(?=(?:Немецкий язык|Русский язык как иностранный|ИНОСТРАННЫЙ ЯЗЫК|Французский язык))", lesson, flags=re.I)
                     for sub in sub_lessons:
                         sub = sub.strip()
-                        if sub and sub not in res[g_name][cur_day][cur_time]:
-                            res[g_name][cur_day][cur_time].append(sub)
+                        if sub and sub not in res[g_name][cur_day][slot_time]:
+                            res[g_name][cur_day][slot_time].append(sub)
     return res
 
 def detect_lesson_language(text):
@@ -281,6 +307,24 @@ def merge_schedule_history(new_data, existing_path="schedule_data.json", max_his
     merged_courses = {}
     all_courses = set(old_data.get("courses", {}).keys()) | set(new_data.get("courses", {}).keys())
 
+    def normalize_day_slots(slots_dict):
+        normalized = {}
+        for slot, lessons in slots_dict.items():
+            is_pe = any(re.search(r"физическ.*культ|спорт\s*комплекс", l, re.I) for l in lessons)
+            actual_slot = slot
+            if is_pe:
+                combined_pe = " ".join(lessons)
+                pe_time = extract_pe_time(combined_pe, slot)
+                if pe_time:
+                    actual_slot = pe_time
+            normalized.setdefault(actual_slot, []).extend([l for l in lessons if l not in normalized.get(actual_slot, [])])
+
+        def sort_slot_key(slot_str):
+            m = re.match(r"(\d{1,2})[:.](\d{2})", slot_str)
+            return int(m.group(1)) * 60 + int(m.group(2)) if m else 9999
+
+        return {k: normalized[k] for k in sorted(normalized.keys(), key=sort_slot_key)}
+
     for cid in sorted(all_courses):
         merged_courses[cid] = {}
         old_groups = old_data.get("courses", {}).get(cid, {})
@@ -295,14 +339,14 @@ def merge_schedule_history(new_data, existing_path="schedule_data.json", max_his
                 dt = parse_day_date(day_key, today)
                 if dt and (today - dt).days > max_history_days:
                     continue  # Prune days older than 14 days
-                merged_days[day_key] = slots
+                merged_days[day_key] = normalize_day_slots(slots)
 
             # 2. Overwrite / append newly parsed days
             for day_key, slots in new_groups.get(g_name, {}).items():
                 dt = parse_day_date(day_key, today)
                 if dt and (today - dt).days > max_history_days:
                     continue
-                merged_days[day_key] = slots
+                merged_days[day_key] = normalize_day_slots(slots)
 
             # Chronological sort of days
             def sort_key(k):
