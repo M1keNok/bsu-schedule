@@ -196,10 +196,9 @@
       width: 100%;
       max-width: 100%;
       overflow: hidden;
-      box-shadow: 0 0 16px -2px rgba(16, 185, 129, 0.35),
-                  0 6px 20px -3px rgba(16, 185, 129, 0.25),
+      border: 1px solid rgba(16, 185, 129, 0.30);
+      box-shadow: 0 4px 16px -2px rgba(16, 185, 129, 0.18),
                   var(--glass-inner-bevel);
-      animation: activeLessonPulseGlow 3s ease-in-out infinite;
       transition: background 0.25s ease, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
       -webkit-tap-highlight-color: transparent;
       user-select: none;
@@ -209,68 +208,49 @@
       transform: scale(0.985);
     }
 
-    /* Вращающийся луч света, бегущий точно по контуру карточки активной пары */
+    /* Аккуратная анимация Aura без блеска, идущая строго по контуру по часовой стрелке */
     .active-lesson-card::before {
       content: '';
       position: absolute;
-      top: -60%;
-      left: -60%;
-      width: 220%;
-      height: 220%;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
       background: conic-gradient(
         from 0deg,
         transparent 0deg,
-        transparent 80deg,
-        rgba(16, 185, 129, 0.15) 125deg,
-        #10b981 155deg,
-        #34d399 172deg,
-        #ffffff 180deg,
-        #34d399 188deg,
-        #10b981 205deg,
-        rgba(16, 185, 129, 0.15) 235deg,
-        transparent 280deg,
-        transparent 360deg
+        transparent 270deg,
+        rgba(16, 185, 129, 0.05) 290deg,
+        rgba(16, 185, 129, 0.35) 330deg,
+        #10b981 360deg
       );
-      animation: borderBeamRotate 4s linear infinite;
+      animation: auraClockwiseTrace 4s linear infinite;
       pointer-events: none;
       z-index: 0;
     }
 
-    /* Внутренняя подложка стекла, оставляющая кант шириной 1.5px для луча */
+    /* Внутренняя подложка стекла, оставляющая аккуратный кант шириной 1.5px для контура */
     .active-lesson-card::after {
       content: '';
       position: absolute;
       inset: 1.5px;
       border-radius: 18.5px;
       background: var(--glass-card);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       pointer-events: none;
       z-index: 0;
     }
 
-    /* Контент карточки располагается поверх бегущего луча */
+    /* Контент карточки располагается поверх контура */
     .active-lesson-card > * {
       position: relative;
       z-index: 1;
     }
 
-    @keyframes borderBeamRotate {
+    @keyframes auraClockwiseTrace {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
-    }
-
-    @keyframes activeLessonPulseGlow {
-      0%, 100% {
-        box-shadow: 0 0 14px -2px rgba(16, 185, 129, 0.30),
-                    0 6px 18px -3px rgba(16, 185, 129, 0.20),
-                    var(--glass-inner-bevel);
-      }
-      50% {
-        box-shadow: 0 0 24px 2px rgba(16, 185, 129, 0.50),
-                    0 8px 26px 0px rgba(16, 185, 129, 0.30),
-                    var(--glass-inner-bevel);
-      }
     }
 
     @keyframes pulseAura {
@@ -333,65 +313,73 @@
       z-index: 2;
     }
 
-    /* Silky-smooth iOS-style Navigation transitions (60-120 FPS) */
-    @keyframes pageSlideOutLeft {
+    /* Невероятно плавное растворение с микро-сдвигом (Liquid Parallax Dissolve) */
+    @keyframes pageDayFadeOutLeft {
       0% {
         opacity: 1;
-        transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(0px);
       }
       100% {
         opacity: 0;
-        transform: translate3d(-24%, 0, 0);
+        transform: translate3d(-14px, 0, 0) scale(0.985);
+        filter: blur(1px);
       }
     }
 
-    @keyframes pageSlideInRight {
+    @keyframes pageDayFadeInRight {
       0% {
         opacity: 0;
-        transform: translate3d(24%, 0, 0);
+        transform: translate3d(18px, 0, 0) scale(0.985);
+        filter: blur(1px);
       }
       100% {
         opacity: 1;
-        transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(0px);
       }
     }
 
-    @keyframes pageSlideOutRight {
+    @keyframes pageDayFadeOutRight {
       0% {
         opacity: 1;
-        transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(0px);
       }
       100% {
         opacity: 0;
-        transform: translate3d(24%, 0, 0);
+        transform: translate3d(14px, 0, 0) scale(0.985);
+        filter: blur(1px);
       }
     }
 
-    @keyframes pageSlideInLeft {
+    @keyframes pageDayFadeInLeft {
       0% {
         opacity: 0;
-        transform: translate3d(-24%, 0, 0);
+        transform: translate3d(-18px, 0, 0) scale(0.985);
+        filter: blur(1px);
       }
       100% {
         opacity: 1;
-        transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(0px);
       }
     }
 
-    .page-slide-out-left {
-      animation: pageSlideOutLeft 0.24s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+    .page-day-fade-out-left {
+      animation: pageDayFadeOutLeft 0.16s cubic-bezier(0.2, 0, 0, 1) forwards;
     }
 
-    .page-slide-in-right {
-      animation: pageSlideInRight 0.24s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+    .page-day-fade-in-right {
+      animation: pageDayFadeInRight 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    .page-slide-out-right {
-      animation: pageSlideOutRight 0.24s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+    .page-day-fade-out-right {
+      animation: pageDayFadeOutRight 0.16s cubic-bezier(0.2, 0, 0, 1) forwards;
     }
 
-    .page-slide-in-left {
-      animation: pageSlideInLeft 0.24s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+    .page-day-fade-in-left {
+      animation: pageDayFadeInLeft 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     .subgroups-grid {
@@ -404,17 +392,19 @@
       min-width: 0;
       width: 100%;
       box-sizing: border-box;
+      align-items: stretch;
     }
 
     .subgroup-box {
       background: var(--glass-card-subtle);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 8px 10px;
+      border-radius: 14px;
+      padding: 9px 10px;
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      justify-content: space-between;
       min-width: 0;
+      height: 100%;
       overflow: hidden;
       box-sizing: border-box;
     }
@@ -1843,8 +1833,19 @@
       `;
     }
 
+    let _activeTeacherTab = 'today';
+
+    function switchTeacherTab(tab) {
+      triggerHaptic('light');
+      _activeTeacherTab = tab;
+      if (_activeTeacherName) {
+        renderTeacherLocator(_activeTeacherName);
+      }
+    }
+
     function openTeacherModal(teacherName) {
       _activeTeacherName = teacherName;
+      _activeTeacherTab = 'today';
       triggerHaptic('selection');
 
       const info = teachersInfo[teacherName] || {};
@@ -1884,11 +1885,40 @@
       document.body.style.overflow = '';
     }
 
-    function findTeacherScheduleToday(teacherName) {
-      const todayIdx = currentDaysList.findIndex(d => d.isToday);
-      const todayDate = (todayIdx !== -1 && currentDaysList[todayIdx]) ? currentDaysList[todayIdx].date : new Date();
-      const todayDDMM = formatDDMM(todayDate);
+    function getTeacherRoomAndOnline(raw, lastName) {
+      // Поддержка точки перед или после слэша: ауд.121./316 или ауд.203/316
+      const slashMatch = raw.match(/(?:ауд\.?|каб\.?)\s*([0-9а-яА-Яa-zA-Z]+)[.\s]*[\/\\–—][.\s]*([0-9а-яА-Яa-zA-Z]+)/i);
+      const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+      const teachers = [];
+      let curT = null;
+      for (let i = 0; i < lines.length; i++) {
+        const l = lines[i];
+        const tm = l.match(/([А-ЯЁ][а-яё]+)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/);
+        if (tm) {
+          curT = { name: tm[1].toLowerCase().replace(/ё/g, 'е'), room: null, isOnline: false };
+          teachers.push(curT);
+        } else if (curT) {
+          const rm = l.match(/(?:ауд\.?|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
+          if (rm && !curT.room) curT.room = rm[0];
+          if (/https?:\/\/|edugeo|edueng/i.test(l)) curT.isOnline = true;
+        }
+      }
 
+      if (slashMatch && teachers.length === 2) {
+        teachers[0].room = 'ауд.' + slashMatch[1];
+        teachers[1].room = 'ауд.' + slashMatch[2];
+      }
+
+      const myT = teachers.find(t => t.name.includes(lastName));
+      if (myT) {
+        return { room: myT.room, isOnline: myT.isOnline };
+      }
+
+      const defMatch = raw.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
+      return { room: defMatch ? defMatch[0].trim() : '', isOnline: /https?:\/\/|edugeo|edueng/i.test(raw) };
+    }
+
+    function findTeacherSchedule(teacherName, targetDDMM = null) {
       const matches = [];
       if (!facultyData?.courses) return matches;
 
@@ -1897,7 +1927,7 @@
       Object.entries(facultyData.courses).forEach(([course, groups]) => {
         Object.entries(groups).forEach(([groupName, days]) => {
           Object.entries(days).forEach(([dayKey, times]) => {
-            if (!dayKey.includes(todayDDMM)) return;
+            if (targetDDMM && !dayKey.includes(targetDDMM)) return;
 
             Object.entries(times).forEach(([timeStr, items]) => {
               const itemList = Array.isArray(items) ? items : [items];
@@ -1905,26 +1935,22 @@
                 const rawLower = rawItem.toLowerCase().replace(/ё/g, 'е');
                 if (rawLower.includes(lastName)) {
                   const slotMin = parseTimeSlotMinutes(timeStr);
-                  let room = '';
-                  const sg = extractSubgroupsFromLesson(rawItem);
-                  if (sg && sg.length) {
-                    const matchedSg = sg.find(s => s.teacher && s.teacher.toLowerCase().replace(/ё/g, 'е').includes(lastName));
-                    if (matchedSg && matchedSg.room) room = matchedSg.room;
-                  }
-                  if (!room) {
-                    const roomMatch = rawItem.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
-                    room = roomMatch ? roomMatch[0].trim() : '';
-                  }
-                  const title = rawItem.split('\n')[0].replace(/\((?:лекц|практ|лаб|сем)[^)]*\)/i, '').trim();
+                  const roomInfo = getTeacherRoomAndOnline(rawItem, lastName);
+                  const parsed = parseLessonRaw(rawItem);
+                  const title = parsed.title;
+                  const type = parsed.type || detectLessonType(rawItem);
 
                   matches.push({
+                    dayKey,
                     timeStr,
                     startMin: slotMin ? slotMin.startMin : 0,
                     endMin: slotMin ? slotMin.endMin : 0,
                     course,
                     groupName,
-                    room,
-                    title
+                    room: roomInfo.room,
+                    isOnline: roomInfo.isOnline,
+                    title,
+                    type
                   });
                 }
               });
@@ -1936,18 +1962,32 @@
       const grouped = [];
       matches.forEach(m => {
         const cleanGroup = m.groupName.replace(/^ГРУППА\s*/i, 'Гр. ');
-        const existing = grouped.find(g => g.timeStr === m.timeStr && g.title === m.title && g.course === m.course);
+        const existing = grouped.find(g =>
+          g.dayKey === m.dayKey && g.timeStr === m.timeStr && g.title === m.title && g.course === m.course
+        );
         if (existing) {
           if (!existing.groups.includes(cleanGroup)) existing.groups.push(cleanGroup);
         } else {
           grouped.push({
-            ...m,
+            dayKey: m.dayKey,
+            timeStr: m.timeStr,
+            startMin: m.startMin,
+            endMin: m.endMin,
+            course: m.course,
+            room: m.room,
+            isOnline: m.isOnline,
+            title: m.title,
+            type: m.type,
             groups: [cleanGroup]
           });
         }
       });
 
-      grouped.sort((a, b) => a.startMin - b.startMin);
+      grouped.sort((a, b) => {
+        if (a.dayKey !== b.dayKey) return a.dayKey.localeCompare(b.dayKey);
+        return a.startMin - b.startMin;
+      });
+
       return grouped;
     }
 
@@ -1956,112 +1996,176 @@
       const schedSection = document.getElementById('teacherTodayScheduleSection');
       if (!container) return;
 
+      const todayIdx = currentDaysList.findIndex(d => d.isToday);
+      const todayDate = (todayIdx !== -1 && currentDaysList[todayIdx]) ? currentDaysList[todayIdx].date : new Date();
+      const todayDDMM = formatDDMM(todayDate);
+
       const now = new Date();
       const curMin = now.getHours() * 60 + now.getMinutes();
-      const lessonsToday = findTeacherScheduleToday(teacherName);
+      const lessonsToday = findTeacherSchedule(teacherName, todayDDMM);
+      const lessonsAll = findTeacherSchedule(teacherName, null);
 
+      // ─── 1. Live status banner ──────────────────────────────────────────
       if (!lessonsToday.length) {
         container.innerHTML = `
           <div class="card-glass" style="padding: 12px 14px; display: flex; align-items: center; gap: 10px;">
             <span style="font-size: 20px;">☕</span>
             <div>
               <div style="font-size: 13px; font-weight: 800;">Сегодня пар в расписании нет</div>
-              <div style="font-size: 11px; color: var(--text-sub); margin-top: 1px;">Преподаватель сегодня не ведёт занятий по расписанию факультета.</div>
+              <div style="font-size: 11px; color: var(--text-sub); margin-top: 1px;">У преподавателя сегодня нет аудиторных занятий.</div>
             </div>
           </div>
         `;
-        if (schedSection) schedSection.innerHTML = '';
-        return;
+      } else {
+        const liveLesson = lessonsToday.find(l => curMin >= l.startMin && curMin < l.endMin);
+        const nextLesson = lessonsToday.find(l => l.startMin > curMin);
+        const lastLesson = lessonsToday[lessonsToday.length - 1];
+
+        if (liveLesson) {
+          const minsLeft = Math.max(0, liveLesson.endMin - curMin);
+          const endStr = (liveLesson.timeStr.split(/[-–—]/)[1] || '').trim();
+          container.innerHTML = `
+            <div class="card-glass" style="padding: 13px 15px; border-color: rgba(16, 185, 129, 0.6); background: rgba(16, 185, 129, 0.08);">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);" class="animate-pulse"></span>
+                  <span style="font-size: 12px; font-weight: 800; color: #10b981;">Прямо сейчас идёт пара</span>
+                </div>
+                <span class="badge badge-accent badge-sm font-bold text-white shadow-sm">до ${endStr} (${minsLeft} мин)</span>
+              </div>
+              <div style="font-size: 14.5px; font-weight: 800; margin-top: 6px;">
+                ${liveLesson.room ? `Аудитория: <span style="font-family: monospace; color: var(--text-main); font-weight: 800;">${liveLesson.room}</span>` : (liveLesson.isOnline ? `<span class="badge badge-info badge-sm font-bold text-white">Дистанционный формат (edugeo)</span>` : 'Аудитория не указана')}
+              </div>
+              <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 3px;">
+                ${liveLesson.title} • ${liveLesson.course} курс (${liveLesson.groups.join(', ')})
+              </div>
+            </div>
+          `;
+        } else if (nextLesson) {
+          const minsTo = Math.max(0, nextLesson.startMin - curMin);
+          const startStr = (nextLesson.timeStr.split(/[-–—]/)[0] || '').trim();
+          container.innerHTML = `
+            <div class="card-glass" style="padding: 13px 15px; border-color: rgba(56, 189, 248, 0.45); background: rgba(56, 189, 248, 0.08);">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="width: 8px; height: 8px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);"></span>
+                  <span style="font-size: 12px; font-weight: 800; color: #38bdf8;">Следующая пара через ${formatMinutesLeft(minsTo)}</span>
+                </div>
+                <span class="badge badge-info badge-sm font-bold text-white shadow-sm">в ${startStr}</span>
+              </div>
+              <div style="font-size: 14.5px; font-weight: 800; margin-top: 6px;">
+                ${nextLesson.room ? `Аудитория: <span style="font-family: monospace; color: var(--text-main); font-weight: 800;">${nextLesson.room}</span>` : (nextLesson.isOnline ? `<span class="badge badge-info badge-sm font-bold text-white">Дистанционный формат (edugeo)</span>` : 'Аудитория не указана')}
+              </div>
+              <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 3px;">
+                ${nextLesson.title} • ${nextLesson.course} курс (${nextLesson.groups.join(', ')})
+              </div>
+            </div>
+          `;
+        } else if (curMin >= lastLesson.endMin) {
+          const endStr = (lastLesson.timeStr.split(/[-–—]/)[1] || '').trim();
+          container.innerHTML = `
+            <div class="card-glass" style="padding: 12px 14px; opacity: 0.85;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--text-sub); opacity: 0.6;"></span>
+                <span style="font-size: 12px; font-weight: 800; color: var(--text-sub);">Пары на сегодня завершены</span>
+              </div>
+              <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px;">
+                Последнее занятие преподавателя закончилось в ${endStr}
+              </div>
+            </div>
+          `;
+        }
       }
 
-      const liveLesson = lessonsToday.find(l => curMin >= l.startMin && curMin < l.endMin);
-      const nextLesson = lessonsToday.find(l => l.startMin > curMin);
-      const lastLesson = lessonsToday[lessonsToday.length - 1];
+      // ─── 2. Schedule Tabs & List Section ───────────────────────────────
+      if (!schedSection) return;
 
-      let locatorHTML = '';
-      if (liveLesson) {
-        const minsLeft = Math.max(0, liveLesson.endMin - curMin);
-        const endStr = (liveLesson.timeStr.split(/[-–—]/)[1] || '').trim();
-        locatorHTML = `
-          <div class="card-glass" style="padding: 13px 15px; border-color: rgba(16, 185, 129, 0.6); background: rgba(16, 185, 129, 0.08);">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-              <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);" class="animate-pulse"></span>
-                <span style="font-size: 12px; font-weight: 800; color: #10b981;">Прямо сейчас идёт пара</span>
-              </div>
-              <span class="badge badge-accent badge-sm font-bold text-white shadow-sm">до ${endStr} (${minsLeft} мин)</span>
-            </div>
-            <div style="font-size: 14.5px; font-weight: 800; margin-top: 6px;">
-              Аудитория: <span style="font-family: monospace; color: var(--text-main); font-weight: 800;">${liveLesson.room || 'не указана'}</span>
-            </div>
-            <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px;">
-              ${liveLesson.title} • ${liveLesson.course} курс (${liveLesson.groups.join(', ')})
-            </div>
-          </div>
-        `;
-      } else if (nextLesson) {
-        const minsTo = Math.max(0, nextLesson.startMin - curMin);
-        const startStr = (nextLesson.timeStr.split(/[-–—]/)[0] || '').trim();
-        locatorHTML = `
-          <div class="card-glass" style="padding: 13px 15px; border-color: rgba(56, 189, 248, 0.45); background: rgba(56, 189, 248, 0.08);">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-              <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="width: 8px; height: 8px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);"></span>
-                <span style="font-size: 12px; font-weight: 800; color: #38bdf8;">Следующая пара через ${formatMinutesLeft(minsTo)}</span>
-              </div>
-              <span class="badge badge-info badge-sm font-bold text-white shadow-sm">в ${startStr}</span>
-            </div>
-            <div style="font-size: 14.5px; font-weight: 800; margin-top: 6px;">
-              Аудитория: <span style="font-family: monospace; color: var(--text-main); font-weight: 800;">${nextLesson.room || 'не указана'}</span>
-            </div>
-            <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px;">
-              ${nextLesson.title} • ${nextLesson.course} курс (${nextLesson.groups.join(', ')})
-            </div>
-          </div>
-        `;
-      } else if (curMin >= lastLesson.endMin) {
-        const endStr = (lastLesson.timeStr.split(/[-–—]/)[1] || '').trim();
-        locatorHTML = `
-          <div class="card-glass" style="padding: 12px 14px; opacity: 0.85;">
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--text-sub); opacity: 0.6;"></span>
-              <span style="font-size: 12px; font-weight: 800; color: var(--text-sub);">Пары на сегодня завершены</span>
-            </div>
-            <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px;">
-              Последнее занятие преподавателя закончилось в ${endStr}
-            </div>
-          </div>
-        `;
-      }
+      let scheduleHTML = `
+        <div class="tabs tabs-boxed bg-base-200/50 p-1 rounded-xl flex w-full mt-2">
+          <button type="button" class="tab tab-sm flex-1 font-bold ${_activeTeacherTab === 'today' ? 'tab-active !bg-base-100 !text-base-content shadow-sm' : 'text-base-content/60'}" onclick="switchTeacherTab('today')">
+            Сегодня (${lessonsToday.length})
+          </button>
+          <button type="button" class="tab tab-sm flex-1 font-bold ${_activeTeacherTab === 'all' ? 'tab-active !bg-base-100 !text-base-content shadow-sm' : 'text-base-content/60'}" onclick="switchTeacherTab('all')">
+            Все дни (${lessonsAll.length})
+          </button>
+        </div>
+      `;
 
-      container.innerHTML = locatorHTML;
-
-      if (schedSection) {
-        schedSection.innerHTML = `
-          <div style="font-size: 10.5px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">
-            Расписание на сегодня (${lessonsToday.length} ${lessonsToday.length === 1 ? 'пара' : lessonsToday.length < 5 ? 'пары' : 'пар'})
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 6px;">
-            ${lessonsToday.map(l => {
-              const isCur = liveLesson && liveLesson.timeStr === l.timeStr && liveLesson.title === l.title;
-              return `
-                <div class="card-glass" style="padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; ${isCur ? 'border-color: rgba(16,185,129,0.5); background: rgba(16,185,129,0.07);' : ''}">
-                  <div style="min-width: 0;">
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                      <span class="badge ${isCur ? 'badge-accent font-bold text-white shadow-sm' : 'badge-ghost font-bold font-mono'} badge-sm">${l.timeStr}</span>
-                      <span style="font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${l.title}</span>
+      if (_activeTeacherTab === 'today') {
+        if (!lessonsToday.length) {
+          scheduleHTML += `
+            <div style="padding: 14px 4px; text-align: center; font-size: 12px; color: var(--text-sub);">
+              Нажмите «Все дни», чтобы посмотреть расписание преподавателя на всю неделю.
+            </div>
+          `;
+        } else {
+          scheduleHTML += `
+            <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px;">
+              ${lessonsToday.map(l => {
+                const isCur = curMin >= l.startMin && curMin < l.endMin;
+                return `
+                  <div class="card-glass" style="padding: 10px 12px; display: flex; flex-direction: column; gap: 5px; ${isCur ? 'border-color: rgba(16,185,129,0.5); background: rgba(16,185,129,0.07);' : ''}">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                      <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                        <span class="badge ${isCur ? 'badge-accent font-bold text-white shadow-sm' : 'badge-ghost font-bold font-mono'} badge-sm">${l.timeStr}</span>
+                        ${l.type ? `<span class="badge badge-xs font-semibold" style="color: ${l.type.color}; background: ${l.type.bg};">${l.type.label}</span>` : ''}
+                      </div>
+                      ${l.room ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${l.room}</span>` : (l.isOnline ? `<span class="badge badge-info badge-outline badge-xs font-semibold flex-shrink-0">Онлайн</span>` : '<span class="badge badge-ghost badge-xs opacity-60">Ауд. уточняется</span>')}
                     </div>
-                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">
-                      ${l.course} курс • ${l.groups.join(', ')}
+                    <div style="font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--text-main);">
+                      ${l.title}
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-sub); display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                      <span class="badge badge-ghost badge-xs font-semibold">${l.course} курс</span>
+                      <span style="word-break: break-word;">${l.groups.join(', ')}</span>
                     </div>
                   </div>
-                  ${l.room ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${l.room}</span>` : ''}
+                `;
+              }).join('')}
+            </div>
+          `;
+        }
+      } else {
+        const dayGroups = {};
+        lessonsAll.forEach(l => {
+          if (!dayGroups[l.dayKey]) dayGroups[l.dayKey] = [];
+          dayGroups[l.dayKey].push(l);
+        });
+
+        scheduleHTML += `
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 6px;">
+            ${Object.entries(dayGroups).map(([dayTitle, list]) => `
+              <div>
+                <div style="font-size: 10.5px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; padding-left: 2px;">
+                  ${dayTitle}
                 </div>
-              `;
-            }).join('')}
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                  ${list.map(l => `
+                    <div class="card-glass" style="padding: 10px 12px; display: flex; flex-direction: column; gap: 5px;">
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                          <span class="badge badge-ghost font-bold font-mono badge-sm">${l.timeStr}</span>
+                          ${l.type ? `<span class="badge badge-xs font-semibold" style="color: ${l.type.color}; background: ${l.type.bg};">${l.type.label}</span>` : ''}
+                        </div>
+                        ${l.room ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${l.room}</span>` : (l.isOnline ? `<span class="badge badge-info badge-outline badge-xs font-semibold flex-shrink-0">Онлайн</span>` : '<span class="badge badge-ghost badge-xs opacity-60">Ауд. уточняется</span>')}
+                      </div>
+                      <div style="font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--text-main);">
+                        ${l.title}
+                      </div>
+                      <div style="font-size: 11px; color: var(--text-sub); display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                        <span class="badge badge-ghost badge-xs font-semibold">${l.course} курс</span>
+                        <span style="word-break: break-word;">${l.groups.join(', ')}</span>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `).join('')}
           </div>
         `;
       }
+
+      schedSection.innerHTML = scheduleHTML;
     }
 
     function parseDayKeyDate(rawKey, refDate = new Date()) {
@@ -2398,18 +2502,39 @@
               </div>
 
               ${item.subgroups ? `
-                <div class="grid ${item.subgroups.length === 2 ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'} gap-2 mt-2.5 pt-2.5 border-t border-base-content/10 w-full box-border">
-                  ${item.subgroups.map((sg, sgIdx) => `
-                    <div class="subgroup-box min-w-0 overflow-hidden">
-                      <div class="flex items-center justify-between text-[10px] font-extrabold text-base-content/60 uppercase">
-                        <span>${sgIdx + 1} подгруппа</span>
-                        ${sg.room ? `<span class="font-mono text-base-content/80 font-bold">${sg.room}</span>` : ''}
+                <div class="grid grid-cols-2 gap-2 mt-2.5 pt-2.5 border-t border-base-content/10 w-full box-border items-stretch">
+                  ${item.subgroups.map((sg, sgIdx) => {
+                    const m = sg.teacher ? sg.teacher.match(/([А-ЯЁ][а-яё]+)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/) : null;
+                    let teacherName = sg.teacher || '—';
+                    let rank = '';
+                    if (m) {
+                      let initials = m[2].replace(/\s+/g, '');
+                      if (!initials.endsWith('.')) initials += '.';
+                      teacherName = `${m[1]} ${initials}`;
+                      rank = sg.teacher.replace(m[0], '').replace(/^[-–—•,\s]+|[-–—•,\s]+$/g, '').trim();
+                    }
+
+                    return `
+                      <div class="subgroup-box min-w-0 h-full flex flex-col justify-between">
+                        <div>
+                          <div class="flex items-center justify-between text-[10px] font-extrabold text-base-content/60 uppercase pb-1 border-b border-base-content/5">
+                            <span class="truncate">${sgIdx + 1} подгруппа</span>
+                            ${sg.room ? `<span class="badge badge-ghost badge-xs font-mono font-bold flex-shrink-0">${sg.room}</span>` : ''}
+                          </div>
+                          <div class="text-[10px] text-base-content/55 truncate h-4 leading-4 font-medium mt-1">
+                            ${rank || '&nbsp;'}
+                          </div>
+                        </div>
+                        <div class="mt-1 min-w-0">
+                          <button type="button" class="teacher-chip tap-scale w-full" onclick="event.stopPropagation(); openTeacherModal('${teacherName.replace(/'/g, "\\'")}')" title="Открыть досье преподавателя">
+                            <span class="teacher-chip-icon">👤</span>
+                            <span class="teacher-chip-name truncate flex-1 text-left" style="max-width: none;">${teacherName}</span>
+                            <span class="teacher-chip-arrow flex-shrink-0">›</span>
+                          </button>
+                        </div>
                       </div>
-                      <div class="mt-0.5 min-w-0">
-                        ${formatTeacherChipHTML(sg.teacher)}
-                      </div>
-                    </div>
-                  `).join('')}
+                    `;
+                  }).join('')}
                 </div>
               ` : renderLessonDetails(item.details)}
             </div>
@@ -2541,7 +2666,7 @@
         return;
       }
 
-      // Smooth slide transition (60-120 FPS, GPU-accelerated)
+      // Мягкое плавное растворение с микро-сдвигом (Liquid Parallax Dissolve)
       viewport.querySelectorAll('.schedule-page.leaving-page').forEach(p => p.remove());
 
       const newPage = buildDayPage(selectedDayIndex, groupSchedule);
@@ -2550,17 +2675,17 @@
       viewport.appendChild(newPage);
 
       if (currentSlideDirection === 'next') {
-        oldPage.classList.add('page-slide-out-left');
-        newPage.classList.add('page-slide-in-right');
+        oldPage.classList.add('page-day-fade-out-left');
+        newPage.classList.add('page-day-fade-in-right');
       } else {
-        oldPage.classList.add('page-slide-out-right');
-        newPage.classList.add('page-slide-in-left');
+        oldPage.classList.add('page-day-fade-out-right');
+        newPage.classList.add('page-day-fade-in-left');
       }
 
       setTimeout(() => {
         if (oldPage.parentNode) oldPage.remove();
-        newPage.classList.remove('page-slide-in-right', 'page-slide-in-left');
-      }, 250);
+        newPage.classList.remove('page-day-fade-in-right', 'page-day-fade-in-left');
+      }, 240);
     }
 
     function openSettingsModal() {
