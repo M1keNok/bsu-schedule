@@ -1,9 +1,8 @@
 // BSU Schedule - Service Worker
-// Стратегия: Network-First для schedule_data.json и teachers_info.json,
-//             Stale-While-Revalidate для index.html (мгновенная загрузка офлайн),
+// Стратегия: Network-First для данных и html-оболочки (всегда свежий интерфейс при наличии сети, мгновенный откат на кэш в офлайне),
 //             Cache-First для внешних CDN библиотек (Tailwind CSS, daisyUI, Telegram SDK).
 
-const CACHE_NAME = 'bsu-schedule-v4';
+const CACHE_NAME = 'bsu-schedule-v5';
 const SHELL_ASSETS = [
   './',
   './index.html',
@@ -47,6 +46,13 @@ self.addEventListener('activate', event => {
       )
     ).then(() => self.clients.claim())
   );
+});
+
+// Мгновенная активация по команде от страницы
+self.addEventListener('message', event => {
+  if (event.data && event.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
 });
 
 // ─── Fetch ────────────────────────────────────────────────────────────────────
@@ -111,24 +117,27 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // 3. index.html и корень: Stale-While-Revalidate (мгновенный старт из кэша, обновление в фоне)
+  // 3. index.html и корень: Network-First с быстрым откатом на кэш для 100% офлайна
   if (path.endsWith('.html') || path === '/' || path.endsWith('/')) {
     event.respondWith(
-      caches.open(CACHE_NAME).then(async cache => {
-        const cached = (await cache.match(event.request)) ||
-                       (await cache.match('./index.html')) ||
-                       (await cache.match('./'));
-
-        const networkFetch = fetch(event.request).then(response => {
+      fetch(event.request)
+        .then(response => {
           if (response.ok) {
-            cache.put(event.request, response.clone());
-            cache.put('./index.html', response.clone());
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, clone.clone());
+              cache.put('./index.html', clone);
+            });
           }
           return response;
-        }).catch(() => null);
-
-        return cached || networkFetch;
-      })
+        })
+        .catch(async () => {
+          const cache = await caches.open(CACHE_NAME);
+          return (await cache.match(event.request)) ||
+                 (await cache.match('./index.html')) ||
+                 (await cache.match('./')) ||
+                 (await cache.match('/'));
+        })
     );
     return;
   }

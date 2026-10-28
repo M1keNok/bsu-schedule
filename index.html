@@ -196,8 +196,9 @@
       width: 100%;
       max-width: 100%;
       overflow: hidden;
-      border: 1px solid rgba(16, 185, 129, 0.30);
-      box-shadow: 0 4px 16px -2px rgba(16, 185, 129, 0.18),
+      border: 1px solid rgba(16, 185, 129, 0.42);
+      box-shadow: 0 0 28px -2px rgba(16, 185, 129, 0.35),
+                  0 8px 22px -4px rgba(16, 185, 129, 0.22),
                   var(--glass-inner-bevel);
       transition: background 0.25s ease, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
       -webkit-tap-highlight-color: transparent;
@@ -208,36 +209,39 @@
       transform: scale(0.985);
     }
 
-    /* Аккуратная анимация Aura без блеска, идущая строго по контуру по часовой стрелке */
+    /* Аккуратная, но выразительная анимация Aura: чистый изумрудный луч бежит строго по контуру по часовой стрелке */
     .active-lesson-card::before {
       content: '';
       position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
+      top: 50%;
+      left: 50%;
+      width: 260%;
+      padding-bottom: 260%;
+      transform: translate(-50%, -50%) rotate(0deg);
       background: conic-gradient(
         from 0deg,
         transparent 0deg,
-        transparent 270deg,
-        rgba(16, 185, 129, 0.05) 290deg,
-        rgba(16, 185, 129, 0.35) 330deg,
-        #10b981 360deg
+        transparent 160deg,
+        rgba(16, 185, 129, 0.10) 200deg,
+        rgba(16, 185, 129, 0.45) 260deg,
+        rgba(52, 211, 153, 0.85) 320deg,
+        #10b981 352deg,
+        #34d399 360deg
       );
-      animation: auraClockwiseTrace 4s linear infinite;
+      animation: auraClockwiseTrace 3.2s linear infinite;
       pointer-events: none;
       z-index: 0;
     }
 
-    /* Внутренняя подложка стекла, оставляющая аккуратный кант шириной 1.5px для контура */
+    /* Внутренняя подложка стекла оставляет четкий кант 2px для бегущего луча */
     .active-lesson-card::after {
       content: '';
       position: absolute;
-      inset: 1.5px;
-      border-radius: 18.5px;
+      inset: 2px;
+      border-radius: 18px;
       background: var(--glass-card);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       pointer-events: none;
       z-index: 0;
     }
@@ -249,8 +253,12 @@
     }
 
     @keyframes auraClockwiseTrace {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
     }
 
     @keyframes pulseAura {
@@ -313,8 +321,8 @@
       z-index: 2;
     }
 
-    /* Невероятно плавное растворение с микро-сдвигом (Liquid Parallax Dissolve) */
-    @keyframes pageDayFadeOutLeft {
+    /* ─── 3D Liquid Card Deck Transition (Плавное перелистывание дней) ─── */
+    @keyframes pageDeckSlideOutLeft {
       0% {
         opacity: 1;
         transform: translate3d(0, 0, 0) scale(1);
@@ -322,42 +330,16 @@
       }
       100% {
         opacity: 0;
-        transform: translate3d(-14px, 0, 0) scale(0.985);
-        filter: blur(1px);
+        transform: translate3d(-64px, 0, 0) scale(0.93);
+        filter: blur(2px);
       }
     }
 
-    @keyframes pageDayFadeInRight {
+    @keyframes pageDeckSlideInRight {
       0% {
         opacity: 0;
-        transform: translate3d(18px, 0, 0) scale(0.985);
-        filter: blur(1px);
-      }
-      100% {
-        opacity: 1;
-        transform: translate3d(0, 0, 0) scale(1);
-        filter: blur(0px);
-      }
-    }
-
-    @keyframes pageDayFadeOutRight {
-      0% {
-        opacity: 1;
-        transform: translate3d(0, 0, 0) scale(1);
-        filter: blur(0px);
-      }
-      100% {
-        opacity: 0;
-        transform: translate3d(14px, 0, 0) scale(0.985);
-        filter: blur(1px);
-      }
-    }
-
-    @keyframes pageDayFadeInLeft {
-      0% {
-        opacity: 0;
-        transform: translate3d(-18px, 0, 0) scale(0.985);
-        filter: blur(1px);
+        transform: translate3d(72px, 0, 0) scale(0.94);
+        filter: blur(2px);
       }
       100% {
         opacity: 1;
@@ -366,20 +348,62 @@
       }
     }
 
-    .page-day-fade-out-left {
-      animation: pageDayFadeOutLeft 0.16s cubic-bezier(0.2, 0, 0, 1) forwards;
+    @keyframes pageDeckSlideOutRight {
+      0% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(0px);
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(64px, 0, 0) scale(0.93);
+        filter: blur(2px);
+      }
     }
 
-    .page-day-fade-in-right {
-      animation: pageDayFadeInRight 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    @keyframes pageDeckSlideInLeft {
+      0% {
+        opacity: 0;
+        transform: translate3d(-72px, 0, 0) scale(0.94);
+        filter: blur(2px);
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(0px);
+      }
     }
 
-    .page-day-fade-out-right {
-      animation: pageDayFadeOutRight 0.16s cubic-bezier(0.2, 0, 0, 1) forwards;
+    .page-deck-out-left {
+      animation: pageDeckSlideOutLeft 0.30s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
     }
 
-    .page-day-fade-in-left {
-      animation: pageDayFadeInLeft 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    .page-deck-in-right {
+      animation: pageDeckSlideInRight 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    }
+
+    .page-deck-out-right {
+      animation: pageDeckSlideOutRight 0.30s cubic-bezier(0.2, 0, 0.2, 1) forwards !important;
+    }
+
+    .page-deck-in-left {
+      animation: pageDeckSlideInLeft 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    }
+
+    /* Каскадное появление карточек внутри нового дня */
+    @keyframes cardStaggerCascade {
+      0% {
+        opacity: 0;
+        transform: translateY(14px) scale(0.98);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .card-cascade-in {
+      animation: cardStaggerCascade 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
     .subgroups-grid {
@@ -2426,7 +2450,7 @@
       return slotsWithItems.slice(firstIdx, lastIdx + 1);
     }
 
-    function renderLessonCards(activeSlots, isToday, isPast = false) {
+    function renderLessonCards(activeSlots, isToday, isPast = false, isAnimated = false) {
       const frag = document.createDocumentFragment();
 
       activeSlots.forEach((slotData, index) => {
@@ -2436,7 +2460,12 @@
 
         if (isBreak) {
           const breakDiv = document.createElement('div');
-          breakDiv.className = `card-glass break-window-card flex items-center justify-between py-2.5 px-3.5 rounded-2xl w-full box-border ${isPast ? 'archive-card' : ''}`;
+          let breakClasses = `card-glass break-window-card flex items-center justify-between py-2.5 px-3.5 rounded-2xl w-full box-border ${isPast ? 'archive-card' : ''}`;
+          if (isAnimated) {
+            breakClasses += ' card-cascade-in';
+            breakDiv.style.animationDelay = `${index * 35}ms`;
+          }
+          breakDiv.className = breakClasses;
           breakDiv.innerHTML = `
             <div class="flex items-center gap-2 min-w-0">
               <span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${timeStr}</span>
@@ -2455,6 +2484,10 @@
         let cardClasses = 'card-glass rounded-2xl p-3.5 w-full box-border';
         if (isLive) cardClasses = 'active-lesson-card rounded-2xl p-3.5 w-full box-border';
         if (isPast) cardClasses += ' archive-card';
+        if (isAnimated) {
+          cardClasses += ' card-cascade-in';
+          card.style.animationDelay = `${index * 35}ms`;
+        }
         card.className = cardClasses;
 
         // Countdown inside active pair card (unlimited > 100 mins supported)
@@ -2548,7 +2581,7 @@
       return frag;
     }
 
-    function buildDayPage(dayIndex, groupSchedule) {
+    function buildDayPage(dayIndex, groupSchedule, isAnimated = false) {
       const page = document.createElement('div');
       page.className = 'schedule-page active-page';
 
@@ -2583,7 +2616,7 @@
         return page;
       }
 
-      const frag = renderLessonCards(activeSlots, currentDay.isToday, currentDay.isPast);
+      const frag = renderLessonCards(activeSlots, currentDay.isToday, currentDay.isPast, isAnimated);
       page.appendChild(frag);
       return page;
     }
@@ -2661,31 +2694,48 @@
 
       if (!oldPage || currentSlideDirection === 'none') {
         viewport.innerHTML = '';
-        const newPage = buildDayPage(selectedDayIndex, groupSchedule);
+        const newPage = buildDayPage(selectedDayIndex, groupSchedule, false);
         viewport.appendChild(newPage);
+        viewport.style.height = '';
         return;
       }
 
-      // Мягкое плавное растворение с микро-сдвигом (Liquid Parallax Dissolve)
+      // Плавная анимация высоты контейнера при смене дней (Fluid Liquid Container)
+      const oldHeight = oldPage.offsetHeight;
+      if (oldHeight > 0) {
+        viewport.style.height = `${oldHeight}px`;
+        viewport.style.transition = 'height 0.32s cubic-bezier(0.16, 1, 0.3, 1)';
+      }
+
       viewport.querySelectorAll('.schedule-page.leaving-page').forEach(p => p.remove());
 
-      const newPage = buildDayPage(selectedDayIndex, groupSchedule);
+      const newPage = buildDayPage(selectedDayIndex, groupSchedule, true);
       oldPage.classList.remove('active-page');
       oldPage.classList.add('leaving-page');
       viewport.appendChild(newPage);
 
+      // Плавно подстраиваем высоту контейнера под новую страницу
+      requestAnimationFrame(() => {
+        const newHeight = newPage.offsetHeight;
+        if (newHeight > 0) {
+          viewport.style.height = `${newHeight}px`;
+        }
+      });
+
       if (currentSlideDirection === 'next') {
-        oldPage.classList.add('page-day-fade-out-left');
-        newPage.classList.add('page-day-fade-in-right');
+        oldPage.classList.add('page-deck-out-left');
+        newPage.classList.add('page-deck-in-right');
       } else {
-        oldPage.classList.add('page-day-fade-out-right');
-        newPage.classList.add('page-day-fade-in-left');
+        oldPage.classList.add('page-deck-out-right');
+        newPage.classList.add('page-deck-in-left');
       }
 
       setTimeout(() => {
         if (oldPage.parentNode) oldPage.remove();
-        newPage.classList.remove('page-day-fade-in-right', 'page-day-fade-in-left');
-      }, 240);
+        newPage.classList.remove('page-deck-in-right', 'page-deck-in-left');
+        viewport.style.height = '';
+        viewport.style.transition = '';
+      }, 330);
     }
 
     function openSettingsModal() {
@@ -3025,16 +3075,34 @@
 
     init();
 
-    // ─── Service Worker (Offline PWA) ───────────────────────────────────────
+    // ─── Service Worker (Offline PWA + Auto Update) ───────────────────────────
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
           .then(reg => {
             reg.update();
+            reg.addEventListener('updatefound', () => {
+              const newWorker = reg.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    newWorker.postMessage({ action: 'skipWaiting' });
+                  }
+                });
+              }
+            });
           })
           .catch(err => {
             console.warn('SW registration failed:', err);
           });
+
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+          }
+        });
       });
     }
 
