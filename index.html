@@ -161,42 +161,55 @@
 
     /* ─── DaisyUI Dock & Top Navigation Liquid Glass ─────────────────────── */
     .dock {
+      position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-      padding: 3px 5px;
+      gap: 3px;
+      padding: 3px 4px;
       border-radius: 9999px;
       background: var(--glass-card-subtle);
       border: 1px solid var(--border-color);
       box-shadow: 0 2px 10px -2px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
       flex-shrink: 0;
+      isolation: isolate;
+    }
+
+    /* Физический скользящий тумблер по трем вкладкам Dock (Motion Tumbler) */
+    .dock-indicator {
+      position: absolute;
+      top: 3px;
+      left: 0;
+      height: calc(100% - 6px);
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      box-shadow: 0 3px 14px rgba(16, 185, 129, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      pointer-events: none;
+      z-index: 1;
+      will-change: transform, width;
     }
 
     .dock-btn {
       position: relative;
+      z-index: 2;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       width: 34px;
       height: 34px;
       border-radius: 9999px;
-      border: 1px solid transparent;
+      border: none;
       background: transparent;
       color: var(--text-sub);
       cursor: pointer;
-      transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1),
-                  color 0.16s ease,
-                  background-color 0.16s ease,
-                  box-shadow 0.16s ease;
+      transition: color 0.22s ease, transform 0.16s ease;
       -webkit-tap-highlight-color: transparent;
       padding: 0;
     }
 
     .dock-btn:hover {
       color: var(--text-main);
-      background: rgba(255, 255, 255, 0.06);
     }
 
     .dock-btn:active {
@@ -207,30 +220,15 @@
     .dock-btn-main {
       width: 38px;
       height: 38px;
-      background: var(--glass-card);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.16);
     }
 
-    /* Active state for Dock buttons */
+    /* Active state for Dock buttons (White icon on glowing emerald tumbler) */
     .dock-btn.dock-active {
-      color: #10b981;
-      background: rgba(16, 185, 129, 0.12);
-      border-color: rgba(16, 185, 129, 0.32);
-      box-shadow: 0 0 10px rgba(16, 185, 129, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    }
-
-    /* Active state for Main Schedule button (emerald accent gradient) */
-    .dock-btn-main.dock-active {
       color: #ffffff !important;
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-      border-color: rgba(255, 255, 255, 0.3) !important;
-      box-shadow: 0 3px 14px rgba(16, 185, 129, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
     }
 
-    .dock-btn-main.dock-active svg {
-      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
+    .dock-btn.dock-active svg {
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.32));
     }
 
     /* Views */
@@ -897,7 +895,7 @@
 
   <header class="header-bar">
     <div class="header-glass">
-      <div style="display: flex; align-items: center; gap: 8px; min-width: 0; max-width: 120px;">
+      <div style="display: flex; align-items: center; gap: 8px; min-width: 0; max-width: 120px;" class="cursor-pointer tap-scale" onclick="switchMainTab('settings')" title="Настройки профиля">
         <div style="width: 32px; height: 32px; border-radius: 10px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
           <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10"></circle>
@@ -915,6 +913,9 @@
 
       <!-- daisyUI Dock Component (Settings, Schedule [Main], Teacher Search) -->
       <nav class="dock header-dock" role="tablist" aria-label="Основное меню">
+        <!-- Физический плавающий тумблер (Motion Indicator Pill) -->
+        <div id="dockIndicator" class="dock-indicator" aria-hidden="true"></div>
+
         <!-- Settings -->
         <button
           type="button"
@@ -980,6 +981,42 @@
 
   <main id="mainContent" style="flex: 1; padding: 6px 16px 24px; max-width: 480px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; touch-action: pan-y; perspective: 1400px; -webkit-perspective: 1400px;">
     
+    <!-- Tab 0: SETTINGS VIEW -->
+    <div id="settingsView" class="tab-view" style="display: none; flex-direction: column; gap: 14px; width: 100%;">
+      <div class="card-glass rounded-3xl p-5 flex flex-col gap-5 box-border">
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+          <div>
+            <span style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-sub); letter-spacing: 0.5px;">Параметры профиля</span>
+            <h3 style="font-size: 17px; font-weight: 800; margin-top: 1px;">Настройки расписания</h3>
+          </div>
+          <span class="badge badge-accent badge-sm font-bold text-white shadow-sm">БГУ Геофак</span>
+        </div>
+
+        <div id="settingsViewBody" class="flex flex-col gap-5"></div>
+
+        <div style="display: flex; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 14px; margin-top: 4px;">
+          <button type="button" onclick="saveSettingsTabAndOpenSchedule()" class="btn btn-primary w-full rounded-2xl font-bold shadow-lg gap-2 text-[14px]">
+            <svg style="width: 17px; height: 17px;" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
+            <span>Применить и открыть расписание</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- App & Faculty Info Card -->
+      <div class="card-glass rounded-2xl p-4 flex items-center justify-between text-xs text-base-content/60">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-black text-sm">
+            🌍
+          </div>
+          <div>
+            <div class="font-bold text-base-content text-[12.5px]">Факультет географии и геоинформатики</div>
+            <div class="text-[11px] opacity-70">Белорусский государственный университет</div>
+          </div>
+        </div>
+        <span class="badge badge-ghost badge-sm font-bold opacity-70">2026</span>
+      </div>
+    </div>
+
     <!-- Tab 1: SCHEDULE VIEW -->
     <div id="scheduleView" class="tab-view" style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
       <div id="sundayBanner" style="display: none; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 16px; background: rgba(245, 158, 11, 0.09); border: 1px solid rgba(245, 158, 11, 0.25); color: var(--text-main); font-size: 11.5px; font-weight: 600; line-height: 1.35;" class="animate-card">
@@ -2133,113 +2170,322 @@
 
       renderTeacherLocator(teacherName);
 
-      document.getElementById('teacherModal').classList.add('open');
-      document.body.style.overflow = 'hidden';
+      const modal = document.getElementById('teacherModal');
+      const sheet = modal ? modal.querySelector('.modal-sheet') : null;
+
+      if (modal) {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+
+        if (window.Motion?.animate && sheet) {
+          Motion.animate(modal, {
+            opacity: [0, 1]
+          }, { duration: 0.35, ease: [0.16, 1, 0.3, 1] });
+
+          Motion.animate(sheet, {
+            transform: ['translate3d(0, 100%, 0)', 'translate3d(0, 0, 0)']
+          }, { duration: 0.44, ease: [0.16, 1, 0.3, 1] });
+
+          const innerItems = [
+            headerContainer,
+            document.getElementById('teacherLiveLocator'),
+            document.getElementById('teacherTodayScheduleSection'),
+            modal.querySelector('.btn-primary')
+          ].filter(Boolean);
+
+          Motion.animate(innerItems, {
+            opacity: [0, 1],
+            transform: ['translate3d(0, 16px, 0)', 'translate3d(0, 0, 0)']
+          }, {
+            delay: Motion.stagger(0.05, { startDelay: 0.10 }),
+            duration: 0.46,
+            ease: [0.16, 1, 0.3, 1]
+          });
+        }
+      }
     }
 
     function closeTeacherModal() {
       _activeTeacherName = null;
-      document.getElementById('teacherModal').classList.remove('open');
-      document.body.style.overflow = '';
+      const modal = document.getElementById('teacherModal');
+      const sheet = modal ? modal.querySelector('.modal-sheet') : null;
+
+      if (modal && sheet && window.Motion?.animate && modal.classList.contains('open')) {
+        Promise.all([
+          Motion.animate(sheet, {
+            transform: ['translate3d(0, 0, 0)', 'translate3d(0, 100%, 0)']
+          }, { duration: 0.28, ease: [0.35, 0, 0.25, 1] }),
+          Motion.animate(modal, {
+            opacity: [1, 0]
+          }, { duration: 0.28, ease: [0.35, 0, 0.25, 1] })
+        ]).then(() => {
+          modal.classList.remove('open');
+          document.body.style.overflow = '';
+        });
+      } else if (modal) {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+      }
     }
 
-    // ─── Main Tab Navigation (Schedule vs Teacher Search) ────────────────────
-    let currentMainTab = 'schedule'; // 'schedule' | 'teachers'
+    // ─── Main Tab Navigation (Settings vs Schedule vs Teachers) ───────────────
+    let currentMainTab = 'schedule'; // 'settings' | 'schedule' | 'teachers'
+    const MAIN_TABS = ['settings', 'schedule', 'teachers'];
     let allTeachersCatalog = [];
     let teacherSearchFilter = 'all'; // 'all' | 'live' | 'today'
     let teacherSearchQuery = '';
 
-    function handleDockAction(action) {
-      if (action === 'settings') {
-        triggerHaptic('light');
-        openSettingsModal();
-      } else if (action === 'schedule') {
-        switchMainTab('schedule');
-      } else if (action === 'teachers') {
-        switchMainTab('teachers');
+    function updateDockPill(tab, animate = true) {
+      const dock = document.querySelector('.header-dock');
+      const indicator = document.getElementById('dockIndicator');
+      const btnSettings = document.getElementById('dockBtnSettings');
+      const btnSchedule = document.getElementById('dockBtnSchedule');
+      const btnTeachers = document.getElementById('dockBtnTeachers');
+
+      const targetBtn = tab === 'settings' ? btnSettings : (tab === 'teachers' ? btnTeachers : btnSchedule);
+      if (!dock || !indicator || !targetBtn) return;
+
+      [btnSettings, btnSchedule, btnTeachers].forEach(b => {
+        if (b) b.classList.toggle('dock-active', b === targetBtn);
+      });
+
+      const targetLeft = targetBtn.offsetLeft;
+      const targetWidth = targetBtn.offsetWidth;
+      const prevLeft = indicator._currentX !== undefined ? indicator._currentX : targetLeft;
+      const prevWidth = indicator._currentWidth !== undefined ? indicator._currentWidth : targetWidth;
+
+      indicator._currentX = targetLeft;
+      indicator._currentWidth = targetWidth;
+
+      if (animate && window.Motion?.animate && (prevLeft !== targetLeft || prevWidth !== targetWidth)) {
+        Motion.animate(indicator, {
+          transform: [`translate3d(${prevLeft}px, 0, 0)`, `translate3d(${targetLeft}px, 0, 0)`],
+          width: [`${prevWidth}px`, `${targetWidth}px`]
+        }, {
+          duration: 0.38,
+          ease: [0.16, 1, 0.3, 1]
+        });
+
+        Motion.animate(targetBtn, {
+          transform: ['scale(0.88)', 'scale(1)']
+        }, {
+          duration: 0.32,
+          ease: [0.16, 1, 0.3, 1]
+        });
+      } else {
+        indicator.style.transform = `translate3d(${targetLeft}px, 0, 0)`;
+        indicator.style.width = `${targetWidth}px`;
       }
     }
 
-    function switchMainTab(tab) {
-      if (currentMainTab === tab) return;
-      currentMainTab = tab;
+    function handleDockAction(action) {
+      switchMainTab(action);
+    }
+
+    function switchMainTab(targetTab) {
+      if (currentMainTab === targetTab) return;
+      const prevTab = currentMainTab;
+      currentMainTab = targetTab;
       triggerHaptic('selection');
 
-      const schedView = document.getElementById('scheduleView');
-      const teachView = document.getElementById('teacherSearchView');
-      const btnSched = document.getElementById('dockBtnSchedule');
-      const btnTeach = document.getElementById('dockBtnTeachers');
+      updateDockPill(targetTab, true);
+
+      const tabViews = {
+        settings: document.getElementById('settingsView'),
+        schedule: document.getElementById('scheduleView'),
+        teachers: document.getElementById('teacherSearchView')
+      };
+
+      const prevView = tabViews[prevTab];
+      const nextView = tabViews[targetTab];
+
+      const prevIdx = MAIN_TABS.indexOf(prevTab);
+      const nextIdx = MAIN_TABS.indexOf(targetTab);
+      const isRight = nextIdx > prevIdx;
+
       const headerTitle = document.getElementById('headerTitle');
       const headerSync = document.getElementById('headerSync');
 
-      if (tab === 'schedule') {
-        if (btnSched) btnSched.classList.add('dock-active');
-        if (btnTeach) btnTeach.classList.remove('dock-active');
-
-        if (teachView) teachView.style.display = 'none';
-        if (schedView) {
-          schedView.style.display = 'flex';
-          if (window.Motion?.animate) {
-            Motion.animate(schedView, {
-              opacity: [0, 1],
-              filter: ['blur(6px)', 'blur(0px)'],
-              transform: ['translate3d(0, 6px, 0)', 'translate3d(0, 0, 0)']
-            }, {
-              duration: 0.38,
-              ease: [0.16, 1, 0.3, 1]
-            });
-          } else {
-            schedView.classList.remove('tab-fade-in');
-            void schedView.offsetWidth;
-            schedView.classList.add('tab-fade-in');
-          }
-        }
-
+      if (targetTab === 'schedule') {
         updateHeaderGroupTitle();
-
+        if (headerSync) headerSync.textContent = 'Синхронизировано';
+        if (window.Telegram?.WebApp?.BackButton) Telegram.WebApp.BackButton.hide();
+      } else if (targetTab === 'settings') {
+        if (headerTitle) headerTitle.textContent = 'Настройки';
+        if (headerSync) headerSync.textContent = 'Параметры профиля';
+        renderSettingsTab();
         if (window.Telegram?.WebApp?.BackButton) {
-          Telegram.WebApp.BackButton.hide();
+          Telegram.WebApp.BackButton.show();
+          Telegram.WebApp.BackButton.onClick(onTelegramBackClick);
         }
-      } else if (tab === 'teachers') {
-        if (btnSched) btnSched.classList.remove('dock-active');
-        if (btnTeach) btnTeach.classList.add('dock-active');
-
-        if (schedView) schedView.style.display = 'none';
-        if (teachView) {
-          teachView.style.display = 'flex';
-          if (window.Motion?.animate) {
-            Motion.animate(teachView, {
-              opacity: [0, 1],
-              filter: ['blur(6px)', 'blur(0px)'],
-              transform: ['translate3d(0, 6px, 0)', 'translate3d(0, 0, 0)']
-            }, {
-              duration: 0.38,
-              ease: [0.16, 1, 0.3, 1]
-            });
-          } else {
-            teachView.classList.remove('tab-fade-in');
-            void teachView.offsetWidth;
-            teachView.classList.add('tab-fade-in');
-          }
-        }
-
+      } else if (targetTab === 'teachers') {
         if (headerTitle) headerTitle.textContent = 'Преподаватели';
         if (headerSync) headerSync.textContent = `${allTeachersCatalog.length || 0} в каталоге`;
-
         updateTeacherFilterCounts();
         renderTeacherSearchResults();
-
         if (window.Telegram?.WebApp?.BackButton) {
           Telegram.WebApp.BackButton.show();
           Telegram.WebApp.BackButton.onClick(onTelegramBackClick);
         }
       }
+
+      // ─── Красивая анимация переключения разделов меню (Motion Lateral Parallax & Stagger) ───
+      if (window.Motion?.animate && prevView && nextView) {
+        Motion.animate(prevView, {
+          opacity: [1, 0],
+          transform: [
+            'translate3d(0, 0, 0) scale(1)',
+            isRight ? 'translate3d(-28px, 0, 0) scale(0.97)' : 'translate3d(28px, 0, 0) scale(0.97)'
+          ]
+        }, {
+          duration: 0.28,
+          ease: [0.35, 0, 0.25, 1]
+        }).then(() => {
+          prevView.style.display = 'none';
+        });
+
+        nextView.style.display = 'flex';
+        Motion.animate(nextView, {
+          opacity: [0, 1],
+          transform: [
+            isRight ? 'translate3d(28px, 0, 0) scale(0.98)' : 'translate3d(-28px, 0, 0) scale(0.98)',
+            'translate3d(0, 0, 0) scale(1)'
+          ]
+        }, {
+          duration: 0.38,
+          ease: [0.16, 1, 0.3, 1]
+        });
+
+        if (targetTab === 'settings') {
+          const blocks = Array.from(nextView.querySelectorAll('.setting-group-card'));
+          if (blocks.length > 0) {
+            Motion.animate(blocks, {
+              opacity: [0, 1],
+              transform: ['translate3d(0, 14px, 0)', 'translate3d(0, 0, 0)']
+            }, {
+              delay: Motion.stagger(0.045, { startDelay: 0.08 }),
+              duration: 0.44,
+              ease: [0.16, 1, 0.3, 1]
+            });
+          }
+        } else if (targetTab === 'teachers') {
+          const cards = Array.from(nextView.querySelectorAll('.card-glass'));
+          if (cards.length > 0) {
+            Motion.animate(cards.slice(0, 15), {
+              opacity: [0, 1],
+              transform: ['translate3d(0, 14px, 0)', 'translate3d(0, 0, 0)']
+            }, {
+              delay: Motion.stagger(0.035, { startDelay: 0.08 }),
+              duration: 0.44,
+              ease: [0.16, 1, 0.3, 1]
+            });
+          }
+        }
+      } else {
+        if (prevView) prevView.style.display = 'none';
+        if (nextView) nextView.style.display = 'flex';
+      }
     }
 
     function onTelegramBackClick() {
-      if (currentMainTab === 'teachers') {
+      if (currentMainTab !== 'schedule') {
         switchMainTab('schedule');
       }
+    }
+
+    // ─── Settings Tab Logic ───────────────────────────────────────────────────
+    function renderSettingsTab() {
+      const body = document.getElementById('settingsViewBody');
+      if (!body) return;
+
+      const groups = Object.keys(facultyData?.courses?.[currentProfile.course] || {});
+      const langs = [
+        { id: 'EN', label: 'Английский' },
+        { id: 'DE', label: 'Немецкий' },
+        { id: 'FR', label: 'Французский' },
+        { id: 'RKI', label: 'Русский (РКИ)' }
+      ];
+
+      const activeLangObj = langs.find(l => l.id === currentProfile.foreign_lang);
+      const langHint = activeLangObj
+        ? `Выбран <b>${activeLangObj.label}</b>. Нажмите повторно для сброса (будут показаны все языки).`
+        : `Язык не выбран • в расписании показываются все языки. Нажмите на язык, чтобы скрыть остальные.`;
+
+      body.innerHTML = `
+        <div class="setting-group-card flex flex-col gap-2">
+          <div class="section-title">Курс</div>
+          <div class="grid grid-cols-4 gap-2">
+            ${['1','2','3','4'].map(c => {
+              const sel = currentProfile.course === c;
+              return `<button type="button" onclick="selectCourseSettingsTab('${c}')" class="btn btn-md rounded-2xl font-black text-lg border border-base-content/10 transition-all ${sel ? 'btn-primary shadow-md scale-[1.02]' : 'btn-ghost bg-base-200/50'}">${c}</button>`;
+            }).join('')}
+          </div>
+        </div>
+
+        <div class="setting-group-card flex flex-col gap-2">
+          <div class="section-title">Группа (${currentProfile.course} курс)</div>
+          <div class="grid grid-cols-4 gap-2">
+            ${groups.map(g => {
+              const num = g.replace(/^ГРУППА\s*/i, '');
+              const sel = currentProfile.group_name === g;
+              return `<button type="button" onclick="selectGroupSettingsTab('${g}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-all ${sel ? 'btn-primary shadow-md scale-[1.02]' : 'btn-ghost bg-base-200/50'}">${num}</button>`;
+            }).join('')}
+          </div>
+        </div>
+
+        <div class="setting-group-card flex flex-col gap-2">
+          <div class="section-title">Изучаемый иностранный язык</div>
+          <div class="grid grid-cols-2 gap-2">
+            ${langs.map(l => {
+              const sel = currentProfile.foreign_lang === l.id;
+              return `<button type="button" onclick="toggleLangSettingsTab('${l.id}')" class="btn h-11 min-h-[44px] px-2 py-2 rounded-xl font-bold text-[13px] border border-base-content/10 flex items-center justify-center gap-1.5 transition-all ${sel ? 'btn-primary shadow-md scale-[1.02]' : 'btn-ghost bg-base-200/50'}">
+                <span>${l.label}</span>
+                ${sel ? '<span class="text-xs font-bold">✓</span>' : ''}
+              </button>`;
+            }).join('')}
+          </div>
+          <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px; line-height: 1.4;">${langHint}</div>
+        </div>
+      `;
+    }
+
+    function selectCourseSettingsTab(course) {
+      triggerHaptic('light');
+      currentProfile.course = course;
+      const availGroups = Object.keys(facultyData?.courses?.[course] || {});
+      if (!availGroups.includes(currentProfile.group_name)) {
+        currentProfile.group_name = availGroups[0] || '';
+      }
+      localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
+      renderSettingsTab();
+    }
+
+    function selectGroupSettingsTab(group) {
+      triggerHaptic('light');
+      currentProfile.group_name = group;
+      localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
+      renderSettingsTab();
+    }
+
+    function toggleLangSettingsTab(langId) {
+      triggerHaptic('light');
+      if (currentProfile.foreign_lang === langId) {
+        currentProfile.foreign_lang = null;
+      } else {
+        currentProfile.foreign_lang = langId;
+      }
+      localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
+      renderSettingsTab();
+    }
+
+    function saveSettingsTabAndOpenSchedule() {
+      triggerHaptic('medium');
+      localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
+      localStorage.setItem('bsu_setup_completed', 'true');
+      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
+      selectedDayIndex = findInitialDayIndex(groupSchedule);
+      renderView();
+      switchMainTab('schedule');
     }
 
     function updateHeaderGroupTitle() {
@@ -3525,14 +3771,7 @@
     }
 
     function openSettingsModal() {
-      draftProfile = {
-        course: currentProfile.course,
-        group_name: currentProfile.group_name,
-        foreign_lang: currentProfile.foreign_lang
-      };
-      modalMode = 'unified';
-      document.getElementById('settingsModal').classList.add('open');
-      renderUnifiedSettings();
+      switchMainTab('settings');
     }
 
     function openFirstLaunchWizard() {
@@ -3773,6 +4012,9 @@
         if (!e.changedTouches || e.changedTouches.length !== 1) return;
         const modal = document.getElementById('settingsModal');
         if (modal && modal.classList.contains('open')) return;
+        const teachModal = document.getElementById('teacherModal');
+        if (teachModal && teachModal.classList.contains('open')) return;
+        if (currentMainTab !== 'schedule') return;
 
         const deltaX = e.changedTouches[0].clientX - touchStartX;
         const deltaY = e.changedTouches[0].clientY - touchStartY;
@@ -3859,6 +4101,9 @@
       } else {
         renderView();
       }
+
+      updateDockPill('schedule', false);
+      window.addEventListener('resize', () => updateDockPill(currentMainTab, false));
     }
 
     init();
@@ -3867,14 +4112,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'bsu-schedule-v13') caches.delete(k);
+          if (k !== 'bsu-schedule-v14') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=13')
+        navigator.serviceWorker.register('./sw.js?v=14')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
