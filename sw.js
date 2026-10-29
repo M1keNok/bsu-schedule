@@ -2,7 +2,7 @@
 // Стратегия: Network-First для данных и html-оболочки (всегда свежий интерфейс при наличии сети, мгновенный откат на кэш в офлайне),
 //             Cache-First для внешних CDN библиотек (Tailwind CSS, daisyUI, Telegram SDK).
 
-const CACHE_NAME = 'bsu-schedule-v21';
+const CACHE_NAME = 'bsu-schedule-v22';
 const SHELL_ASSETS = [
   './',
   './index.html',

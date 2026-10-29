@@ -86,7 +86,11 @@ def format_time(t):
 def is_cell_valid_for_slot(cell_text, cur_time):
     if not cell_text or not cur_time:
         return True
-    m = re.search(r"(\d{1,2})[.:](\d{2})\s*[-–—]\s*(\d{1,2})[.:](\d{2})", cell_text)
+    # Strip calendar date ranges (e.g. 05.10-09.11) so they don't get misparsed as time of day
+    cleaned = re.sub(r"\b\d{1,2}\.(?:0[1-9]|1[0-2])\s*[-–—]\s*\d{1,2}\.(?:0[1-9]|1[0-2])\b", "", cell_text)
+    m = re.search(r"(\d{1,2})[.:](\d{2})\s*[-–—]\s*(\d{1,2})[.:](\d{2})", cleaned)
+    if not m:
+        m = re.search(r"\b(\d{2})(\d{2})\s*[-–—]\s*(\d{2})(\d{2})\b", cleaned)
     if not m:
         return True
     sh, sm = int(m.group(1)), int(m.group(2))
@@ -358,6 +362,9 @@ def propagate_stream_languages(courses_data):
             for g_name, days in groups.items():
                 if not isinstance(days, dict) or day_key not in days:
                     continue
+                # Group 9 Course 1 studies English at ул. Курчатова, 5 on Mon/Thu and has no classes at ChemFac/GeoFac
+                if cid == "1" and g_name == "ГРУППА 9" and any(k in day_key.upper() for k in ["ПОНЕДЕЛЬНИК", "ЧЕТВЕРГ"]):
+                    continue
                 slots = days[day_key]
                 current_lessons = slots.get(time_str, [])
                 has_lang = any(detect_lesson_language(l) == lang for l in current_lessons)
@@ -410,6 +417,139 @@ def is_valid_day_dow(day_key, ref_date=None):
             if dt.weekday() != dow_idx:
                 return False
     return True
+
+def parse_thursday_kurchatova_block(lessons_list, default_sg1_type):
+    # default_sg1_type is 'ПРАКТИКУМ' for morning, 'ПРАКТИКА' for afternoon
+    novikova_item = None
+    davydova_item = None
+
+    for l in lessons_list:
+        clean = re.sub(r'^\d{1,2}[.:]\d{2}\s*[-–]\s*\d{1,2}[.:]\d{2}\s*\n?', '', l).strip()
+        clean = re.sub(r'^[12]\s*подгруппа\s*\n?', '', clean).strip()
+
+        # Check if this item is a combined double-lesson cell
+        parts = [p.strip() for p in re.split(r'\n(?=ПРАКТИКА|ПРАКТИКУМ)', clean) if p.strip()]
+        parts = [p for p in parts if p.startswith('ПРАКТИКА') or p.startswith('ПРАКТИКУМ')]
+        if len(parts) >= 2:
+            for p in parts:
+                if 'Новикова' in p or '716' in p:
+                    novikova_item = p
+                elif 'Давыдова' in p or '719' in p:
+                    davydova_item = p
+            if novikova_item and davydova_item:
+                break
+        else:
+            if 'Новикова' in clean or '716' in clean:
+                novikova_item = clean
+            elif 'Давыдова' in clean or '719' in clean:
+                davydova_item = clean
+
+    if not novikova_item or not davydova_item:
+        return []
+
+    novikova_clean = re.sub(r'^[12]\s*подгруппа\s*\n?', '', novikova_item).strip()
+    davydova_clean = re.sub(r'^[12]\s*подгруппа\s*\n?', '', davydova_item).strip()
+
+    if default_sg1_type == 'ПРАКТИКУМ':
+        sg1 = '1 подгруппа\n' + novikova_clean
+        sg2 = '2 подгруппа\n' + davydova_clean
+    else:
+        sg1 = '1 подгруппа\n' + davydova_clean
+        sg2 = '2 подгруппа\n' + novikova_clean
+
+    return [sg1, sg2]
+
+def normalize_course1_group9_days(days_dict):
+    """
+    Course 1 Group 9 travels to ул. Курчатова, 5 (BSU Grove campus) on Mondays and Thursdays.
+    They have a dedicated campus bell schedule:
+    - Monday (3 pairs):
+      Pair 1: 08:30–09:55
+      Pair 2: 10:05–11:30
+      Pair 3: 11:50–13:15
+    - Thursday (4 pairs across 2 subgroups):
+      Pair 1: 08:30–09:55
+      Pair 2: 10:05–11:30
+      Pair 3: 11:50–13:15
+      Pair 4: 13:25–14:50
+    """
+    for day_key in list(days_dict.keys()):
+        up = day_key.upper()
+        slots = days_dict[day_key]
+
+        if 'ПОНЕДЕЛЬНИК' in up:
+            new_slots = {}
+            # Slot 1: 08:30–09:55
+            s1_items = slots.get('08:30–09:55') or slots.get('08:10–09:30') or []
+            s1_clean = []
+            for item in s1_items:
+                if 'немецк' in item.lower():
+                    continue
+                c = re.sub(r'^\d{1,2}[.:]\d{2}\s*[-–]\s*\d{1,2}[.:]\d{2}\s*\n?', '', item).strip()
+                if 'ул. Курчатова' not in c:
+                    c += '\nул. Курчатова, 5'
+                if 'ауд.' not in c:
+                    c += '\nауд. 718'
+                if c not in s1_clean:
+                    s1_clean.append(c)
+            if s1_clean:
+                new_slots['08:30–09:55'] = s1_clean
+
+            # Slot 2: 10:05–11:30
+            s2_items = slots.get('10:05–11:30') or slots.get('09:40–11:00') or []
+            s2_clean = []
+            for item in s2_items:
+                if 'немецк' in item.lower():
+                    continue
+                c = re.sub(r'^\d{1,2}[.:]\d{2}\s*[-–]\s*\d{1,2}[.:]\d{2}\s*\n?', '', item).strip()
+                if 'ул. Курчатова' not in c:
+                    c += '\nул. Курчатова, 5'
+                if 'ауд.' not in c:
+                    c += '\nауд. 718'
+                if c not in s2_clean:
+                    s2_clean.append(c)
+            if s2_clean:
+                new_slots['10:05–11:30'] = s2_clean
+
+            # Slot 3: 11:50–13:15
+            s3_items = slots.get('11:50–13:15') or slots.get('11:20–12:40') or slots.get('12:50–14:10') or []
+            s3_clean = []
+            for item in s3_items:
+                if 'немецк' in item.lower():
+                    continue
+                c = re.sub(r'^\d{1,2}[.:]\d{2}\s*[-–]\s*\d{1,2}[.:]\d{2}\s*\n?', '', item).strip()
+                if 'ул. Курчатова' not in c:
+                    c += '\nул. Курчатова, 5'
+                if c not in s3_clean:
+                    s3_clean.append(c)
+            if s3_clean:
+                new_slots['11:50–13:15'] = s3_clean
+
+            days_dict[day_key] = new_slots
+
+        elif 'ЧЕТВЕРГ' in up:
+            new_slots = {}
+            # Morning block (8.30-11.30) -> Pair 1 (08:30–09:55) and Pair 2 (10:05–11:30)
+            all_am = []
+            for s in ['08:30–09:55', '08:10–09:30', '09:40–11:00', '10:05–11:30']:
+                all_am.extend(slots.get(s, []))
+
+            morning_items = parse_thursday_kurchatova_block(all_am, 'ПРАКТИКУМ')
+            if morning_items:
+                new_slots['08:30–09:55'] = list(morning_items)
+                new_slots['10:05–11:30'] = list(morning_items)
+
+            # Afternoon block (11.50-14.50) -> Pair 3 (11:50–13:15) and Pair 4 (13:25–14:50)
+            all_pm = []
+            for s in ['11:50–13:15', '11:20–12:40', '12:50–14:10', '13:25–14:50', '14:20–15:40']:
+                all_pm.extend(slots.get(s, []))
+
+            afternoon_items = parse_thursday_kurchatova_block(all_pm, 'ПРАКТИКА')
+            if afternoon_items:
+                new_slots['11:50–13:15'] = list(afternoon_items)
+                new_slots['13:25–14:50'] = list(afternoon_items)
+
+            days_dict[day_key] = new_slots
 
 def merge_schedule_history(new_data, existing_path="schedule_data.json", max_history_days=7):
     today = datetime.date.today()
@@ -505,6 +645,10 @@ def merge_schedule_history(new_data, existing_path="schedule_data.json", max_his
                             if not l1.startswith("1 подгруппа") and not l1.startswith("2 подгруппа"):
                                 lessons[1] = "2 подгруппа\n" + l1
 
+            # Dedicated bell schedule and pair count for Course 1 Group 9 at ул. Курчатова, 5
+            if cid == "1" and g_name == "ГРУППА 9":
+                normalize_course1_group9_days(merged_days)
+
             # Chronological sort of days
             def sort_key(k):
                 d = parse_day_date(k, today)
@@ -548,7 +692,11 @@ def build_all():
     propagate_stream_languages(full_data["courses"])
 
     final_data = merge_schedule_history(full_data, "schedule_data.json", max_history_days=7)
+    if "ГРУППА 9" in final_data["courses"].get("1", {}):
+        normalize_course1_group9_days(final_data["courses"]["1"]["ГРУППА 9"])
     propagate_stream_languages(final_data["courses"])
+    if "ГРУППА 9" in final_data["courses"].get("1", {}):
+        normalize_course1_group9_days(final_data["courses"]["1"]["ГРУППА 9"])
 
     with open("schedule_data.json", "w", encoding="utf-8") as f:
         json.dump(final_data, f, ensure_ascii=False, indent=2)

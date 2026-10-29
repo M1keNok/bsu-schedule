@@ -1695,14 +1695,11 @@
           .trim();
       }
 
-      // Если в ячейке 2 записи с одинаковым предметом или обе записи относятся к английскому/иностранному языку:
+      // Если в ячейке 2 записи с одинаковым предметом:
       // плашка типа пары отображается как общая для двух подгрупп
-      const isBothLang = parsedItems.length === 2 &&
-        detectLessonLanguage(parsedItems[0].raw) === 'EN' &&
-        detectLessonLanguage(parsedItems[1].raw) === 'EN';
-
       const isSameSubject = parsedItems.length === 2 &&
-        (isBothLang || (normalizeSubjectTitle(parsedItems[0].title) && normalizeSubjectTitle(parsedItems[0].title) === normalizeSubjectTitle(parsedItems[1].title)));
+        normalizeSubjectTitle(parsedItems[0].title) &&
+        normalizeSubjectTitle(parsedItems[0].title) === normalizeSubjectTitle(parsedItems[1].title);
 
       if (isSameSubject) {
         const lType = parsedItems[0].type || parsedItems[1].type;
@@ -3325,14 +3322,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'bsu-schedule-v21') caches.delete(k);
+          if (k !== 'bsu-schedule-v22') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=21')
+        navigator.serviceWorker.register('./sw.js?v=22')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
