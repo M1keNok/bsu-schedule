@@ -51,15 +51,22 @@ def download_file(course_id, cfg):
     res.raise_for_status()
     with open(cfg["raw_file"], "wb") as f:
         f.write(res.content)
-    
-    lm = res.headers.get("last-modified")
-    if lm:
-        try:
-            dt = datetime.datetime.strptime(lm, "%a, %d %b %Y %H:%M:%S GMT") + datetime.timedelta(hours=3)
+
+def extract_decanat_modtime(docx_path):
+    try:
+        import docx
+        doc = docx.Document(docx_path)
+        dt = doc.core_properties.modified
+        if dt:
+            if dt.tzinfo is not None:
+                minsk_tz = datetime.timezone(datetime.timedelta(hours=3))
+                dt = dt.astimezone(minsk_tz)
+            else:
+                dt = dt + datetime.timedelta(hours=3)
             return format_datetime_ru(dt)
-        except Exception:
-            pass
-    return format_datetime_ru(datetime.datetime.now())
+    except Exception as e:
+        print(f"Не удалось извлечь время деканата из {docx_path}: {e}")
+    return None
 
 def convert_docs(files):
     if not files:
@@ -517,15 +524,22 @@ def merge_schedule_history(new_data, existing_path="schedule_data.json", max_his
 
 def build_all():
     print("Загрузка файлов деканата...")
-    updated_times = {}
     to_convert = []
 
     for cid, cfg in COURSES_CONFIG.items():
-        updated_times[cid] = download_file(cid, cfg)
+        download_file(cid, cfg)
         if cfg["needs_conversion"]:
             to_convert.append(cfg["raw_file"])
 
     convert_docs(to_convert)
+
+    # Извлекаем фактическое время последнего обновления файла деканатом
+    updated_times = {}
+    for cid, cfg in COURSES_CONFIG.items():
+        decanat_time = extract_decanat_modtime(cfg["docx_file"])
+        if decanat_time:
+            updated_times[cid] = decanat_time
+            print(f"Курс {cid}: время обновления от деканата = {decanat_time}")
 
     full_data = {"courses": {}, "updated_times": updated_times}
     for cid, cfg in COURSES_CONFIG.items():

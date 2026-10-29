@@ -2286,9 +2286,9 @@
         headerTitle.textContent = `${currentProfile.course} курс • ${currentProfile.group_name.replace('ГРУППА ', 'Группа ')}`;
         if (headerSync) {
           const rawTime = facultyData?.updated_times?.[currentProfile.course] || Object.values(facultyData?.updated_times || {})[0];
-          const text = rawTime ? `Обновлено ${rawTime}` : 'Синхронизировано';
+          const text = rawTime ? `Деканат: ${rawTime}` : 'Синхронизировано';
           headerSync.textContent = text;
-          headerSync.title = text;
+          headerSync.title = rawTime ? `Расписание от деканата обновлено: ${rawTime}` : 'Расписание синхронизировано';
         }
       }
     }
@@ -3325,14 +3325,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'bsu-schedule-v20') caches.delete(k);
+          if (k !== 'bsu-schedule-v21') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=20')
+        navigator.serviceWorker.register('./sw.js?v=21')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
