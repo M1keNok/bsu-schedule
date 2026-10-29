@@ -731,16 +731,33 @@
       opacity: 0.9;
     }
 
+    @keyframes pulseAuraRing {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6), 0 0 10px rgba(16, 185, 129, 0.35);
+        border-color: rgba(16, 185, 129, 0.9);
+      }
+      50% {
+        box-shadow: 0 0 0 3.5px rgba(16, 185, 129, 0.22), 0 0 16px rgba(16, 185, 129, 0.65);
+        border-color: #10b981;
+      }
+    }
+
+    .calendar-day-btn.is-today-btn {
+      border: 1.5px solid rgba(16, 185, 129, 0.85) !important;
+      animation: pulseAuraRing 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
+      position: relative;
+    }
+
     .calendar-today-dot {
       position: absolute;
       top: 4px;
       right: 4.5px;
-      width: 5px;
-      height: 5px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: #10b981;
-      box-shadow: 0 0 6px rgba(16, 185, 129, 0.7);
-      animation: pulseAura 2.5s ease-in-out infinite;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.9);
+      animation: pulseAura 2s ease-in-out infinite;
     }
 
     .archive-card {
@@ -966,6 +983,29 @@
         </button>
       </div>
 
+      <!-- Development Alert Banner -->
+      <div id="devWarningBanner" class="card-glass flex items-start gap-2.5 p-3 rounded-2xl w-full box-border border border-amber-500/30 bg-amber-500/10 text-base-content shadow-sm relative overflow-hidden" role="alert">
+        <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-500 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+        </div>
+        <div class="flex-1 min-w-0 pr-5">
+          <div class="text-[11.5px] font-bold text-amber-500 mb-0.5 tracking-wide flex items-center gap-1.5">
+            <span>Внимание: бета-версия</span>
+            <span class="badge badge-warning badge-xs font-bold text-[9px] px-1 py-0 h-4">BETA</span>
+          </div>
+          <p class="text-[11px] leading-relaxed text-base-content/85 font-medium m-0">
+            Приложение ещё в разработке, и очень рекомендуется сверять расписание со стандартным расписанием в <a href="https://www.dropbox.com/scl/fo/ltk4mvd0monarv8c9k70a/h?rlkey=yp9pp95tget8jo9oct0yppp7n&dl=0" target="_blank" rel="noopener noreferrer" class="text-amber-500 font-bold underline underline-offset-2 hover:opacity-80">Dropbox</a>. Когда я буду точно уверен в достоверности расписания в приложении, это оповещение пропадёт.
+          </p>
+        </div>
+        <button type="button" onclick="dismissDevWarning()" class="absolute top-2 right-2 btn btn-ghost btn-xs btn-circle text-base-content/50 hover:text-base-content hover:bg-base-content/10" aria-label="Закрыть">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
       <div id="calendarSelector" class="calendar-selector"></div>
 
       <div id="dayHeaderRow" style="display: flex; align-items: center; justify-content: space-between; margin-top: 1px; padding: 0 2px; min-height: 28px;">
@@ -1075,7 +1115,7 @@
     function formatLessonTitle(rawTitle) {
       if (!rawTitle) return 'Пара';
       let title = rawTitle.replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?|уср|фак\.?\s*зан\.?)[^)]*\)/gi, '').trim();
-      title = title.replace(/\s+(препод\.?-стаж[её]р|ст\.?\s*препод|доцент|профессор|преподаватель|заместитель\s+декана|зам\.?\s*декана).*$/gi, '');
+      title = title.replace(/\s+(?:старш(?:ий|ая|\.)?\s*препод[а-яё.]*|старш(?:ий|ая|\.)?|препод[а-яё.-]*|ст\.?\s*препод[а-яё.]*|доцент|профессор|ассистент|заместитель\s+декана|зам\.?\s*декана|зав\.?\s*каф).*$/gi, '');
       title = title.replace(/\s+/g, ' ');
 
       title = cleanHyphens(title);
@@ -1151,12 +1191,13 @@
     }
 
     function parseLessonRaw(raw) {
-      if (!raw) return { title: 'Пара', type: null, lines: [], raw: '' };
+      if (!raw) return { title: 'Пара', type: null, subgroup: null, lines: [], raw: '' };
       let lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-      if (!lines.length) return { title: 'Пара', type: null, lines: [], raw };
+      if (!lines.length) return { title: 'Пара', type: null, subgroup: null, lines: [], raw };
 
       let startIdx = 0;
       let weekTag = null;
+      let subgroupTag = null;
       while (startIdx < lines.length) {
         const l = lines[startIdx];
         if (/^\d{1,2}[.:]\d{2}\s*[-–—]\s*\d{1,2}[.:]\d{2}$/.test(l)) {
@@ -1168,26 +1209,38 @@
           startIdx++;
           continue;
         }
+        if (/^[12]\s*(?:подгруппа|п\/г)$/i.test(l)) {
+          subgroupTag = l.toLowerCase().replace(/п\/г/, 'подгруппа');
+          startIdx++;
+          continue;
+        }
         break;
       }
       if (startIdx >= lines.length) startIdx = 0;
 
       let titleLine = lines[startIdx];
       titleLine = titleLine.replace(/^\d{1,2}[.:]\d{2}\s*[-–—]\s*\d{1,2}[.:]\d{2}\s*/, '');
+      const typeInTitleRegex = /\((?:лекц\.?|лаб\.?|практ\.?|сем\.?|уср|фак\.?\s*зан\.?)[^)]*\)/i;
 
       let nextIdx = startIdx + 1;
-      while (nextIdx < lines.length) {
-        const nxt = lines[nextIdx];
-        // Stop title assembly when encountering teacher rank, room, link, or exam marker
-        if (/^(доцент|ст\.?\s*препод|преподават|профессор|ассистент|зам\.?\s*декана|заместитель\s+декана|ауд\.?|каб\.?|http|зач[её]т|экзамен|\([а-яёА-ЯЁ\s.,]+\)$)/i.test(nxt)) {
-          break;
+      // Assemble multi-line title only if titleLine does not already end with a lesson type
+      if (!typeInTitleRegex.test(titleLine)) {
+        while (nextIdx < lines.length) {
+          const nxt = lines[nextIdx];
+          // Stop title assembly when encountering teacher rank, room, link, or exam marker
+          if (/^(?:старш(?:ий|ая|\.)?|ст\.?\s*препод|препод[а-яё.]*|доцент|профессор|ассистент|зам\.?\s*декана|заместитель\s+декана|зав\.?\s*каф|декан|ауд\.?|каб\.?|ул\.?|корп\.?|http|зач[её]т|экзамен|\([а-яёА-ЯЁ\s.,]+\)$)/i.test(nxt)) {
+            break;
+          }
+          // Also stop if this line is an obvious person's name: Surname I.O.
+          if (/^[А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?\s+[А-ЯЁ]\.\s*[А-ЯЁ]\.?/.test(nxt)) {
+            break;
+          }
+          titleLine += ' ' + nxt;
+          nextIdx++;
+          if (typeInTitleRegex.test(titleLine)) {
+            break;
+          }
         }
-        // Also stop if this line is an obvious person's name: Surname I.O.
-        if (/^[А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?\s+[А-ЯЁ]\.\s*[А-ЯЁ]\.?/.test(nxt)) {
-          break;
-        }
-        titleLine += ' ' + nxt;
-        nextIdx++;
       }
 
       // Языковая классификация и точное именование
@@ -1223,6 +1276,7 @@
         if (/^иностранный\s+язык/i.test(l)) return false;
         if (/^язык\s+профессионального\s+общения/i.test(l)) return false;
         if (/^\d{1,2}[.:]\d{2}\s*[-–—]\s*\d{1,2}[.:]\d{2}$/.test(l)) return false;
+        if (/^[12]\s*(?:подгруппа|п\/г)$/i.test(l)) return false;
         return true;
       });
 
@@ -1231,13 +1285,14 @@
       return {
         title,
         type: lType,
+        subgroup: subgroupTag,
         lines: remainingLines,
         raw
       };
     }
 
     function detectLessonType(text) {
-      if (/лекц/i.test(text)) return { label: 'Лекция', color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.16)', border: 'rgba(244, 63, 94, 0.35)' };
+      if (/лекц/i.test(text)) return { label: 'Лекция', color: '#eab308', bg: 'rgba(234, 179, 8, 0.16)', border: 'rgba(234, 179, 8, 0.35)' };
       if (/лаб/i.test(text)) return { label: 'Лабораторная', color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.16)', border: 'rgba(59, 130, 246, 0.35)' };
       if (/практ/i.test(text)) return { label: 'Практика', color: '#a855f7', bg: 'rgba(168, 85, 247, 0.16)', border: 'rgba(168, 85, 247, 0.35)' };
       if (/сем/i.test(text)) return { label: 'Семинар', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.16)', border: 'rgba(245, 158, 11, 0.35)' };
@@ -1636,8 +1691,19 @@
         return [{
           title: parsedItems[0].title,
           type: lType,
+          subgroup: parsedItems[0].subgroup || null,
           subgroups: [sg1, sg2]
         }];
+      }
+
+      // Если в слоте 2 разных предмета и у них не проставлена подгруппа, назначаем верхнему 1, нижнему 2
+      if (parsedItems.length === 2 && !parsedItems[0].subgroup && !parsedItems[1].subgroup) {
+        const isPE0 = /физическ.*культ|спорт\s*комплекс/i.test(parsedItems[0].raw || parsedItems[0].title);
+        const isPE1 = /физическ.*культ|спорт\s*комплекс/i.test(parsedItems[1].raw || parsedItems[1].title);
+        if (!isPE0 && !isPE1) {
+          parsedItems[0].subgroup = '1 подгруппа';
+          parsedItems[1].subgroup = '2 подгруппа';
+        }
       }
 
       return parsedItems.map(p => {
@@ -1647,6 +1713,7 @@
           return {
             title: p.title,
             type: p.type,
+            subgroup: p.subgroup,
             subgroups: detectedSubgroups
           };
         }
@@ -1668,6 +1735,7 @@
         return {
           title: p.title,
           type: p.type,
+          subgroup: p.subgroup,
           room: room,
           details: details
         };
@@ -1913,6 +1981,42 @@
     function renderLessonDetails(detailsStr) {
       if (!detailsStr) return '';
       return `<div style="font-size: 11px; color: var(--text-sub); margin-top: 4px; font-weight: 500;">${detailsStr}</div>`;
+    }
+
+    // ─── Development Warning Banner ──────────────────────────────────────────
+    function dismissDevWarning() {
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+      }
+      const banner = document.getElementById('devWarningBanner');
+      if (banner) {
+        banner.style.transition = 'opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        banner.style.opacity = '0';
+        banner.style.transform = 'scale(0.96)';
+        banner.style.maxHeight = banner.offsetHeight + 'px';
+        setTimeout(() => {
+          banner.style.maxHeight = '0px';
+          banner.style.paddingTop = '0px';
+          banner.style.paddingBottom = '0px';
+          banner.style.marginTop = '0px';
+          banner.style.marginBottom = '0px';
+          setTimeout(() => {
+            banner.style.display = 'none';
+          }, 300);
+        }, 150);
+      }
+      try {
+        sessionStorage.setItem('devWarningDismissed', 'true');
+      } catch (e) {}
+    }
+
+    function checkDevWarningVisibility() {
+      try {
+        if (sessionStorage.getItem('devWarningDismissed') === 'true') {
+          const banner = document.getElementById('devWarningBanner');
+          if (banner) banner.style.display = 'none';
+        }
+      } catch (e) {}
     }
 
     // ─── Main Tab Navigation (Schedule vs Settings) ───────────────────────────
@@ -2402,7 +2506,7 @@
       if (currentDay.isPast) {
         badgeBox.innerHTML = '<span class="badge badge-neutral badge-sm font-bold opacity-70">Архив</span>';
       } else if (currentDay.isToday) {
-        badgeBox.innerHTML = '<span class="badge badge-accent badge-sm font-bold gap-1 text-white shadow-sm"><span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>Сегодня</span>';
+        badgeBox.innerHTML = '<span class="badge badge-accent badge-sm font-bold gap-1 text-white shadow-sm ring-2 ring-emerald-500/50 ring-offset-1 ring-offset-base-100 animate-pulse"><span class="w-1.5 h-1.5 rounded-full bg-white"></span>Сегодня</span>';
       } else if (currentDay.isTomorrow) {
         badgeBox.innerHTML = '<span class="badge badge-ghost badge-sm font-bold border border-base-content/20">Завтра</span>';
       } else {
@@ -2533,10 +2637,18 @@
             ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${item.room}</span>`
             : '';
 
+          const isSg1 = item.subgroup && item.subgroup.includes('1');
+          const subgroupBadge = item.subgroup ? `
+            <span class="badge ${isSg1 ? 'badge-info bg-sky-500/15 text-sky-400 border-sky-500/30' : 'badge-warning bg-amber-500/15 text-amber-400 border-amber-500/30'} badge-xs font-bold uppercase tracking-wider flex-shrink-0 py-0.5 px-1.5 h-auto text-[9.5px]">
+              ${item.subgroup}
+            </span>
+          ` : '';
+
           innerContent += `
             <div class="${idx > 0 ? 'mt-2.5 pt-2.5 border-t border-base-content/10' : ''}">
               <div class="flex items-start justify-between gap-2">
                 <div class="flex items-center gap-1.5 flex-wrap min-w-0">
+                  ${subgroupBadge}
                   <span class="text-[14px] font-bold leading-snug">${item.title}</span>
                   ${item.type ? `<span class="badge badge-sm font-bold flex-shrink-0" style="color: ${item.type.color}; background: ${item.type.bg}; border: 1px solid ${item.type.border};">${item.type.label}</span>` : ''}
                 </div>
@@ -2672,7 +2784,7 @@
         const isActive = idx === selectedDayIndex;
 
         const btn = document.createElement('button');
-        btn.className = `calendar-day-btn tap-scale ${isActive ? 'active' : ''} ${d.isPast ? 'past-day' : ''}`;
+        btn.className = `calendar-day-btn tap-scale ${isActive ? 'active' : ''} ${d.isToday ? 'is-today-btn' : ''} ${d.isPast ? 'past-day' : ''}`;
         btn.onclick = () => selectDayIndex(idx, 'medium');
 
         btn.innerHTML = `
@@ -3090,6 +3202,7 @@
 
     async function init() {
       initTheme();
+      checkDevWarningVisibility();
       setupSwipeGestures();
 
       const savedProfile = localStorage.getItem('bsu_profile');
@@ -3127,14 +3240,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'bsu-schedule-v17') caches.delete(k);
+          if (k !== 'bsu-schedule-v18') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=17')
+        navigator.serviceWorker.register('./sw.js?v=18')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {

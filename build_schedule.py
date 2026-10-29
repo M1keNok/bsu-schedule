@@ -216,6 +216,8 @@ def parse_docx(path):
         if not header_groups:
             continue
 
+        # Group rows by (day, time)
+        day_time_rows = []
         cur_day, cur_time = None, None
         for row in table.rows[h_idx + 1:]:
             cells = row.cells
@@ -232,47 +234,70 @@ def parse_docx(path):
             if not cur_time:
                 continue
 
-            c_idx = 0
-            for tc in row._tr.findall('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tc'):
-                gs = tc.find('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tcPr/{http://schemas.openxmlformats.org/wordprocessingml/2006/main}gridSpan')
-                span = int(gs.get('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val')) if gs is not None else 1
-                cell_x1 = x_coords[c_idx]
-                cell_x2 = x_coords[min(c_idx + span, len(x_coords) - 1)]
-                raw_cell = row.cells[c_idx].text
-                c_idx += span
+            if not day_time_rows or day_time_rows[-1][0] != cur_day or day_time_rows[-1][1] != cur_time:
+                day_time_rows.append((cur_day, cur_time, [row]))
+            else:
+                day_time_rows[-1][2].append(row)
 
-                # Find which group columns this cell overlaps
-                matching_groups = []
-                for g_name, gx1, gx2 in header_groups:
-                    g_width = gx2 - gx1
-                    overlap = max(0, min(cell_x2, gx2) - max(cell_x1, gx1))
-                    if overlap >= 0.3 * g_width:
-                        matching_groups.append(g_name)
+        for cur_day, cur_time, rows in day_time_rows:
+            num_rows = len(rows)
+            for r_sub_idx, row in enumerate(rows):
+                c_idx = 0
+                for tc in row._tr.findall('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tc'):
+                    gs = tc.find('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tcPr/{http://schemas.openxmlformats.org/wordprocessingml/2006/main}gridSpan')
+                    span = int(gs.get('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val')) if gs is not None else 1
+                    cell_x1 = x_coords[c_idx]
+                    cell_x2 = x_coords[min(c_idx + span, len(x_coords) - 1)]
+                    raw_cell = row.cells[c_idx].text
+                    c_idx += span
 
-                if not matching_groups:
-                    continue
+                    # Find which group columns this cell overlaps
+                    matching_groups = []
+                    for g_name, gx1, gx2 in header_groups:
+                        g_width = gx2 - gx1
+                        overlap = max(0, min(cell_x2, gx2) - max(cell_x1, gx1))
+                        if overlap >= 0.3 * g_width:
+                            matching_groups.append(g_name)
 
-                if not is_cell_valid_for_slot(raw_cell, cur_time):
-                    continue
+                    if not matching_groups or not is_cell_valid_for_slot(raw_cell, cur_time):
+                        continue
 
-                lesson = clean_cell_text(raw_cell)
-                if "СПЕЦИАЛЬНОСТЬ" in lesson.upper() or "НАПРАВЛЕНИЕ" in lesson.upper():
-                    continue
+                    lesson = clean_cell_text(raw_cell)
+                    if "СПЕЦИАЛЬНОСТЬ" in lesson.upper() or "НАПРАВЛЕНИЕ" in lesson.upper() or not lesson:
+                        continue
 
-                slot_time = cur_time
-                pe_time = extract_pe_time(raw_cell, cur_time)
-                if pe_time:
-                    slot_time = pe_time
+                    # Subgroup detection:
+                    # In university schedule tables, when a slot has 2 rows:
+                    # Row 0 = Subgroup 1, Row 1 = Subgroup 2.
+                    # If the cell is vertically merged across rows, both subgroups attend together.
+                    is_vertically_merged = False
+                    if num_rows == 2:
+                        other_r_idx = 1 if r_sub_idx == 0 else 0
+                        other_cell_text = clean_cell_text(rows[other_r_idx].cells[c_idx - span].text)
+                        if other_cell_text == lesson:
+                            is_vertically_merged = True
 
-                for g_name in matching_groups:
-                    res.setdefault(g_name, {}).setdefault(cur_day, {}).setdefault(slot_time, [])
-                    if lesson:
-                        # Separate multiple subjects crammed into a single cell by Decanat
-                        sub_lessons = re.split(r"\n(?=(?:Немецкий язык|Русский язык как иностранный|ИНОСТРАННЫЙ ЯЗЫК|Французский язык))", lesson, flags=re.I)
-                        for sub in sub_lessons:
-                            sub = sub.strip()
-                            if sub and sub not in res[g_name][cur_day][slot_time]:
-                                res[g_name][cur_day][slot_time].append(sub)
+                    subgroup_prefix = ""
+                    if num_rows == 2 and not is_vertically_merged:
+                        if not re.search(r'русск|немец|франц|англ|культ', lesson, re.I):
+                            subgroup_prefix = f"{r_sub_idx + 1} подгруппа\n"
+
+                    tagged_lesson = (subgroup_prefix + lesson) if (subgroup_prefix and not lesson.startswith(subgroup_prefix)) else lesson
+
+                    slot_time = cur_time
+                    pe_time = extract_pe_time(raw_cell, cur_time)
+                    if pe_time:
+                        slot_time = pe_time
+
+                    for g_name in matching_groups:
+                        res.setdefault(g_name, {}).setdefault(cur_day, {}).setdefault(slot_time, [])
+                        if tagged_lesson:
+                            # Separate multiple subjects crammed into a single cell by Decanat
+                            sub_lessons = re.split(r"\n(?=(?:Немецкий язык|Русский язык как иностранный|ИНОСТРАННЫЙ ЯЗЫК|Французский язык))", tagged_lesson, flags=re.I)
+                            for sub in sub_lessons:
+                                sub = sub.strip()
+                                if sub and sub not in res[g_name][cur_day][slot_time]:
+                                    res[g_name][cur_day][slot_time].append(sub)
     return res
 
 def detect_lesson_language(text):
@@ -448,6 +473,30 @@ def merge_schedule_history(new_data, existing_path="schedule_data.json", max_his
                                         ("ТОПОГРАФИЯ" in l.upper() and slot == "09:40–11:00") or
                                         ("ОБЩАЯ ЭКОЛОГИЯ" in l.upper() and slot == "11:20–12:40"))
                             ]
+
+            # Subgroup tagging for historical slots:
+            # 1. Group 6 Saturday Topography is exclusively for Subgroup 2
+            if cid == "1" and g_name == "ГРУППА 6":
+                for day_key, slots in merged_days.items():
+                    if "СУББОТА" in day_key.upper():
+                        for slot in ["09:40–11:00", "11:20–12:40"]:
+                            if slot in slots:
+                                slots[slot] = [
+                                    ("2 подгруппа\n" + l) if not l.startswith("2 подгруппа") and not l.startswith("1 подгруппа") else l
+                                    for l in slots[slot]
+                                ]
+
+            # 2. When a slot has 2 distinct academic items, slot 0 is 1st subgroup, slot 1 is 2nd subgroup
+            for day_key, slots in merged_days.items():
+                for slot, lessons in slots.items():
+                    if len(lessons) == 2:
+                        l0, l1 = lessons[0], lessons[1]
+                        is_lang_pe = any(re.search(r'русск|немец|франц|англ|культ', l, re.I) for l in [l0, l1])
+                        if not is_lang_pe:
+                            if not l0.startswith("1 подгруппа") and not l0.startswith("2 подгруппа"):
+                                lessons[0] = "1 подгруппа\n" + l0
+                            if not l1.startswith("1 подгруппа") and not l1.startswith("2 подгруппа"):
+                                lessons[1] = "2 подгруппа\n" + l1
 
             # Chronological sort of days
             def sort_key(k):
