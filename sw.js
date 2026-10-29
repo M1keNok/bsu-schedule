@@ -2,13 +2,12 @@
 // Стратегия: Network-First для данных и html-оболочки (всегда свежий интерфейс при наличии сети, мгновенный откат на кэш в офлайне),
 //             Cache-First для внешних CDN библиотек (Tailwind CSS, daisyUI, Telegram SDK).
 
-const CACHE_NAME = 'bsu-schedule-v15';
+const CACHE_NAME = 'bsu-schedule-v16';
 const SHELL_ASSETS = [
   './',
   './index.html',
   './motion.js',
-  './schedule_data.json',
-  './teachers_info.json'
+  './schedule_data.json'
 ];
 
 const CDN_ASSETS = [
@@ -87,16 +86,15 @@ self.addEventListener('fetch', event => {
 
   const path = url.pathname.replace(/\/$/, '') || '/';
 
-  // 2. JSON-данные (расписание и досье преподавателей): Network-First
-  if (path.endsWith('schedule_data.json') || path.endsWith('teachers_info.json')) {
-    const filename = path.endsWith('teachers_info.json') ? 'teachers_info.json' : 'schedule_data.json';
+  // 2. JSON-данные (расписание): Network-First
+  if (path.endsWith('schedule_data.json')) {
     event.respondWith(
       fetch(event.request)
         .then(response => {
           if (response.ok) {
             const clone = response.clone();
             caches.open(CACHE_NAME).then(cache => {
-              cache.put(`./${filename}`, clone.clone());
+              cache.put('./schedule_data.json', clone.clone());
               cache.put(event.request, clone);
             });
           }
@@ -105,9 +103,9 @@ self.addEventListener('fetch', event => {
         .catch(async () => {
           const cache = await caches.open(CACHE_NAME);
           const cached = (await cache.match(event.request, { ignoreSearch: true })) ||
-                         (await cache.match(`./${filename}`)) ||
-                         (await cache.match(`/${filename}`)) ||
-                         (await cache.match(filename));
+                         (await cache.match('./schedule_data.json')) ||
+                         (await cache.match('/schedule_data.json')) ||
+                         (await cache.match('schedule_data.json'));
           if (cached) return cached;
           return new Response(JSON.stringify({}), {
             status: 503,

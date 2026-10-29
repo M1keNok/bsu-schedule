@@ -766,63 +766,6 @@
       gap: 6px;
     }
 
-    /* ─── Teacher Dossier & Interactive Chip ──────────────────────────────── */
-    .teacher-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 8px;
-      border-radius: 10px;
-      background: var(--glass-card-subtle);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
-      line-height: 1.25;
-      max-width: 100%;
-    }
-    .teacher-chip:hover {
-      background: var(--glass-card);
-      border-color: rgba(255, 255, 255, 0.25);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    }
-    .teacher-chip:active {
-      transform: scale(0.96);
-      opacity: 0.85;
-    }
-    .teacher-chip-icon {
-      font-size: 11px;
-      opacity: 0.85;
-    }
-    .teacher-chip-arrow {
-      font-size: 12px;
-      opacity: 0.5;
-      font-weight: 800;
-      margin-left: 1px;
-    }
-
-    .teacher-avatar-box {
-      width: 58px;
-      height: 58px;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      font-weight: 800;
-      color: #fff;
-      background: linear-gradient(135deg, #27272a 0%, #3f3f46 100%);
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-      flex-shrink: 0;
-      overflow: hidden;
-    }
-    .teacher-avatar-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
 
     /* ─── Toast Notification ─────────────────────────────────────────────── */
     .toast-notification {
@@ -911,27 +854,12 @@
         </div>
       </div>
 
-      <!-- daisyUI Dock Component (Settings, Schedule [Main], Teacher Search) -->
+      <!-- daisyUI Dock Component (Schedule [Main], Settings) -->
       <nav class="dock header-dock" role="tablist" aria-label="Основное меню">
         <!-- Физический плавающий тумблер (Motion Indicator Pill) -->
         <div id="dockIndicator" class="dock-indicator" aria-hidden="true"></div>
 
-        <!-- Settings -->
-        <button
-          type="button"
-          id="dockBtnSettings"
-          onclick="handleDockAction('settings')"
-          class="dock-btn"
-          title="Настройки"
-          aria-label="Настройки"
-        >
-          <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-          </svg>
-        </button>
-
-        <!-- Schedule (Center, Main, Highlighted) -->
+        <!-- Schedule (Main) -->
         <button
           type="button"
           id="dockBtnSchedule"
@@ -953,19 +881,18 @@
           </svg>
         </button>
 
-        <!-- Teacher Search -->
+        <!-- Settings -->
         <button
           type="button"
-          id="dockBtnTeachers"
-          onclick="handleDockAction('teachers')"
+          id="dockBtnSettings"
+          onclick="handleDockAction('settings')"
           class="dock-btn"
-          title="Поиск преподавателя"
-          aria-label="Поиск преподавателя"
+          title="Настройки"
+          aria-label="Настройки"
         >
-          <svg style="width: 17px; height: 17px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="6.5"></circle>
-            <line x1="21" y1="21" x2="15.8" y2="15.8"></line>
-            <path d="M8.5 11a2.5 2.5 0 0 1 5 0"></path>
+          <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
         </button>
       </nav>
@@ -1055,70 +982,7 @@
       </div>
     </div>
 
-    <!-- Tab 2: TEACHER SEARCH VIEW -->
-    <div id="teacherSearchView" class="tab-view" style="display: none; flex-direction: column; gap: 12px; width: 100%;">
-      <!-- Search input bar -->
-      <div class="relative w-full">
-        <input
-          type="text"
-          id="teacherSearchInput"
-          class="input input-bordered w-full card-glass pl-10 pr-9 text-sm font-semibold rounded-2xl placeholder:text-base-content/40 focus:outline-none focus:border-primary shadow-sm"
-          placeholder="Поиск по имени, фамилии, кафедре..."
-          oninput="onTeacherSearchInput(this.value)"
-          autocomplete="off"
-        />
-        <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-base-content/40 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="7"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <button
-          type="button"
-          id="teacherSearchClearBtn"
-          onclick="clearTeacherSearch()"
-          class="btn btn-ghost btn-circle btn-xs absolute right-2.5 top-1/2 -translate-y-1/2 hidden opacity-60 hover:opacity-100"
-          title="Очистить"
-        >
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-      </div>
 
-      <!-- Quick Filter Chips -->
-      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
-        <button
-          type="button"
-          id="filterChipAll"
-          onclick="setTeacherFilter('all')"
-          class="badge badge-sm font-bold gap-1 cursor-pointer transition-all badge-primary shadow-sm py-3 px-3 rounded-xl flex-shrink-0"
-        >
-          <span>Все</span>
-          <span id="badgeCountAll" class="opacity-75 font-mono text-[10px]">...</span>
-        </button>
-        <button
-          type="button"
-          id="filterChipLive"
-          onclick="setTeacherFilter('live')"
-          class="badge badge-sm badge-ghost font-bold gap-1 border border-base-content/15 cursor-pointer transition-all py-3 px-3 rounded-xl flex-shrink-0"
-        >
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Сейчас на парах</span>
-          <span id="badgeCountLive" class="opacity-75 font-mono text-[10px]">0</span>
-        </button>
-        <button
-          type="button"
-          id="filterChipToday"
-          onclick="setTeacherFilter('today')"
-          class="badge badge-sm badge-ghost font-bold gap-1 border border-base-content/15 cursor-pointer transition-all py-3 px-3 rounded-xl flex-shrink-0"
-        >
-          <span>Сегодня в корпусе</span>
-          <span id="badgeCountToday" class="opacity-75 font-mono text-[10px]">0</span>
-        </button>
-      </div>
-
-      <!-- Results list container -->
-      <div id="teacherSearchResultsList" class="flex flex-col gap-2.5 w-full">
-        <!-- populated dynamically -->
-      </div>
-    </div>
 
   </main>
 
@@ -1142,34 +1006,7 @@
     </div>
   </div>
 
-  <!-- Modal: О преподавателе -->
-  <div id="teacherModal" class="modal-overlay" onclick="if(event.target===this)closeTeacherModal()">
-    <div class="modal-sheet" style="max-height: 85vh; overflow-y: auto;">
-      <div class="modal-grabber"></div>
 
-      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-        <span class="section-title" style="margin-bottom: 0;">О преподавателе</span>
-        <button onclick="closeTeacherModal()" class="modal-close-btn tap-scale" title="Закрыть" aria-label="Закрыть">
-          <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-      </div>
-
-      <!-- Brief Teacher Info / Краткое описание -->
-      <div id="teacherDossierHeader" class="card-glass" style="padding: 16px; display: flex; gap: 14px; align-items: flex-start; margin-top: 4px;"></div>
-
-      <!-- Живой локатор («Где сейчас преподаватель?») -->
-      <div id="teacherLiveLocator" style="margin-top: 10px;"></div>
-
-      <!-- Расписание преподавателя на сегодня -->
-      <div id="teacherTodayScheduleSection" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;"></div>
-
-      <div style="display: flex; gap: 8px; margin-top: 12px;">
-        <button type="button" onclick="closeTeacherModal()" class="btn-primary tap-scale" style="width: 100%;">
-          Закрыть
-        </button>
-      </div>
-    </div>
-  </div>
 
   <script>
     const tg = window.Telegram?.WebApp;
@@ -1517,26 +1354,6 @@
       applyThemeWithReveal(targetTheme, x, y);
     }
 
-    let teachersInfo = {};
-    let _activeTeacherName = null;
-
-    async function loadTeachersInfo() {
-      try {
-        const res = await fetch('teachers_info.json?t=' + Date.now(), { cache: 'no-store' });
-        if (res.ok) {
-          teachersInfo = await res.json();
-          return true;
-        }
-      } catch (e) {}
-      try {
-        const fallbackRes = await fetch('teachers_info.json');
-        if (fallbackRes.ok) {
-          teachersInfo = await fallbackRes.json();
-          return true;
-        }
-      } catch (err) {}
-      return false;
-    }
 
     async function loadData() {
       try {
@@ -2081,181 +1898,25 @@
       }, 2300);
     }
 
-    // ─── Преподаватель (краткое описание) ──────────────────────────────────
-    function formatTeacherChipHTML(rawTeacherStr) {
-      if (!rawTeacherStr) return '—';
-      const m = rawTeacherStr.match(/([А-ЯЁ][а-яё]+)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/);
-      if (!m) {
-        return `<span style="font-size: 11px; color: var(--text-sub); font-weight: 500;">${rawTeacherStr}</span>`;
-      }
-      let initials = m[2].replace(/\s+/g, '');
-      if (!initials.endsWith('.')) initials += '.';
-      const teacherName = `${m[1]} ${initials}`;
-      const rank = rawTeacherStr.replace(m[0], '').replace(/^[-–—•,\s]+|[-–—•,\s]+$/g, '').trim();
-
-      return `
-        <div style="display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-top: 2px;">
-          ${rank ? `<span style="font-size: 10.5px; color: var(--text-sub); font-weight: 500;">${rank}</span>` : ''}
-          <button type="button" class="teacher-chip tap-scale" onclick="event.stopPropagation(); openTeacherModal('${teacherName.replace(/'/g, "\\'")}')" title="Открыть досье преподавателя">
-            <span class="teacher-chip-icon">👤</span>
-            <span class="teacher-chip-name" style="max-width: 125px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${teacherName}</span>
-            <span class="teacher-chip-arrow">›</span>
-          </button>
-        </div>
-      `;
-    }
-
     function renderLessonDetails(detailsStr) {
       if (!detailsStr) return '';
-      const m = detailsStr.match(/([А-ЯЁ][а-яё]+)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/);
-      if (!m) {
-        return `<div style="font-size: 11px; color: var(--text-sub); margin-top: 4px; font-weight: 500;">${detailsStr}</div>`;
-      }
-      let initials = m[2].replace(/\s+/g, '');
-      if (!initials.endsWith('.')) initials += '.';
-      const teacherName = `${m[1]} ${initials}`;
-
-      const parts = detailsStr.split(m[0]);
-      const prefix = parts[0]?.replace(/^[-–—•,\s]+|[-–—•,\s]+$/g, '').trim();
-      const suffix = parts[1]?.replace(/^[-–—•,\s]+|[-–—•,\s]+$/g, '').trim();
-
-      return `
-        <div style="display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-top: 4px;">
-          ${prefix ? `<span style="font-size: 11px; color: var(--text-sub); font-weight: 500;">${prefix}</span>` : ''}
-          <button type="button" class="teacher-chip tap-scale" onclick="event.stopPropagation(); openTeacherModal('${teacherName.replace(/'/g, "\\'")}')" title="Открыть досье преподавателя">
-            <span class="teacher-chip-icon">👤</span>
-            <span class="teacher-chip-name" style="max-width: 135px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${teacherName}</span>
-            <span class="teacher-chip-arrow">›</span>
-          </button>
-          ${suffix ? `<span style="font-size: 11px; color: var(--text-sub); font-weight: 500;">• ${suffix}</span>` : ''}
-        </div>
-      `;
+      return `<div style="font-size: 11px; color: var(--text-sub); margin-top: 4px; font-weight: 500;">${detailsStr}</div>`;
     }
 
-    let _activeTeacherTab = 'today';
-
-    function switchTeacherTab(tab) {
-      triggerHaptic('light');
-      _activeTeacherTab = tab;
-      if (_activeTeacherName) {
-        renderTeacherLocator(_activeTeacherName);
-      }
-    }
-
-    function openTeacherModal(teacherName) {
-      _activeTeacherName = teacherName;
-      _activeTeacherTab = 'today';
-      triggerHaptic('selection');
-
-      let info = teachersInfo[teacherName];
-      if (!info) {
-        const lName = teacherName.split(' ')[0].toLowerCase().replace(/ё/g, 'е');
-        const matchKey = Object.keys(teachersInfo || {}).find(k => k.split(' ')[0].toLowerCase().replace(/ё/g, 'е') === lName);
-        if (matchKey) info = teachersInfo[matchKey];
-      }
-      info = info || {};
-      const fullName = info.fullName || teacherName;
-      const department = info.department || 'Факультет географии и геоинформатики БГУ';
-      const bio = info.bio || 'Преподаватель факультета географии и геоинформатики БГУ.';
-      const photo = info.photo || '';
-
-      const parts = teacherName.split(' ');
-      const lastName = parts[0] || '';
-      const initStr = (parts[1] || '').replace(/[^А-ЯЁа-яёA-Za-z]/g, '');
-      const initials = (lastName.charAt(0) + (initStr.charAt(0) || '')).toUpperCase();
-
-      const headerContainer = document.getElementById('teacherDossierHeader');
-      if (headerContainer) {
-        headerContainer.innerHTML = `
-          <div class="teacher-avatar-box">
-            ${photo ? `<img src="${photo}" alt="${fullName}" onerror="this.onerror=null;this.parentElement.innerHTML='<span>${initials}</span>'">` : `<span>${initials}</span>`}
-          </div>
-          <div style="min-width: 0; flex: 1;">
-            <h3 style="font-size: 16px; font-weight: 800; letter-spacing: -0.2px; line-height: 1.25;">${fullName}</h3>
-            <div style="font-size: 11.5px; font-weight: 700; color: #10b981; margin-top: 3px;">${department}</div>
-            <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 4px; line-height: 1.4;">${bio}</div>
-          </div>
-        `;
-      }
-
-      renderTeacherLocator(teacherName);
-
-      const modal = document.getElementById('teacherModal');
-      const sheet = modal ? modal.querySelector('.modal-sheet') : null;
-
-      if (modal) {
-        modal.classList.add('open');
-        document.body.style.overflow = 'hidden';
-
-        if (window.Motion?.animate && sheet) {
-          Motion.animate(modal, {
-            opacity: [0, 1]
-          }, { duration: 0.35, ease: [0.16, 1, 0.3, 1] });
-
-          Motion.animate(sheet, {
-            transform: ['translate3d(0, 100%, 0)', 'translate3d(0, 0, 0)']
-          }, { duration: 0.44, ease: [0.16, 1, 0.3, 1] });
-
-          const innerItems = [
-            headerContainer,
-            document.getElementById('teacherLiveLocator'),
-            document.getElementById('teacherTodayScheduleSection'),
-            modal.querySelector('.btn-primary')
-          ].filter(Boolean);
-
-          Motion.animate(innerItems, {
-            opacity: [0, 1],
-            transform: ['translate3d(0, 16px, 0)', 'translate3d(0, 0, 0)']
-          }, {
-            delay: Motion.stagger(0.05, { startDelay: 0.10 }),
-            duration: 0.46,
-            ease: [0.16, 1, 0.3, 1]
-          });
-        }
-      }
-    }
-
-    function closeTeacherModal() {
-      _activeTeacherName = null;
-      const modal = document.getElementById('teacherModal');
-      const sheet = modal ? modal.querySelector('.modal-sheet') : null;
-
-      if (modal && sheet && window.Motion?.animate && modal.classList.contains('open')) {
-        Promise.all([
-          Motion.animate(sheet, {
-            transform: ['translate3d(0, 0, 0)', 'translate3d(0, 100%, 0)']
-          }, { duration: 0.28, ease: [0.35, 0, 0.25, 1] }),
-          Motion.animate(modal, {
-            opacity: [1, 0]
-          }, { duration: 0.28, ease: [0.35, 0, 0.25, 1] })
-        ]).then(() => {
-          modal.classList.remove('open');
-          document.body.style.overflow = '';
-        });
-      } else if (modal) {
-        modal.classList.remove('open');
-        document.body.style.overflow = '';
-      }
-    }
-
-    // ─── Main Tab Navigation (Settings vs Schedule vs Teachers) ───────────────
-    let currentMainTab = 'schedule'; // 'settings' | 'schedule' | 'teachers'
-    const MAIN_TABS = ['settings', 'schedule', 'teachers'];
-    let allTeachersCatalog = [];
-    let teacherSearchFilter = 'all'; // 'all' | 'live' | 'today'
-    let teacherSearchQuery = '';
+    // ─── Main Tab Navigation (Schedule vs Settings) ───────────────────────────
+    let currentMainTab = 'schedule'; // 'schedule' | 'settings'
+    const MAIN_TABS = ['schedule', 'settings'];
 
     function updateDockPill(tab, animate = true) {
       const dock = document.querySelector('.header-dock');
       const indicator = document.getElementById('dockIndicator');
-      const btnSettings = document.getElementById('dockBtnSettings');
       const btnSchedule = document.getElementById('dockBtnSchedule');
-      const btnTeachers = document.getElementById('dockBtnTeachers');
+      const btnSettings = document.getElementById('dockBtnSettings');
 
-      const targetBtn = tab === 'settings' ? btnSettings : (tab === 'teachers' ? btnTeachers : btnSchedule);
+      const targetBtn = tab === 'settings' ? btnSettings : btnSchedule;
       if (!dock || !indicator || !targetBtn) return;
 
-      [btnSettings, btnSchedule, btnTeachers].forEach(b => {
+      [btnSchedule, btnSettings].forEach(b => {
         if (b) b.classList.toggle('dock-active', b === targetBtn);
       });
 
@@ -2302,8 +1963,7 @@
 
       const tabViews = {
         settings: document.getElementById('settingsView'),
-        schedule: document.getElementById('scheduleView'),
-        teachers: document.getElementById('teacherSearchView')
+        schedule: document.getElementById('scheduleView')
       };
 
       const prevView = tabViews[prevTab];
@@ -2313,23 +1973,12 @@
       const nextIdx = MAIN_TABS.indexOf(targetTab);
       const isRight = nextIdx > prevIdx;
 
-      const headerTitle = document.getElementById('headerTitle');
-      const headerSync = document.getElementById('headerSync');
-
       if (targetTab === 'schedule') {
         updateHeaderGroupTitle();
         if (window.Telegram?.WebApp?.BackButton) Telegram.WebApp.BackButton.hide();
       } else if (targetTab === 'settings') {
         updateHeaderGroupTitle();
         renderSettingsTab();
-        if (window.Telegram?.WebApp?.BackButton) {
-          Telegram.WebApp.BackButton.show();
-          Telegram.WebApp.BackButton.onClick(onTelegramBackClick);
-        }
-      } else if (targetTab === 'teachers') {
-        updateHeaderGroupTitle();
-        updateTeacherFilterCounts();
-        renderTeacherSearchResults();
         if (window.Telegram?.WebApp?.BackButton) {
           Telegram.WebApp.BackButton.show();
           Telegram.WebApp.BackButton.onClick(onTelegramBackClick);
@@ -2371,18 +2020,6 @@
               transform: ['translate3d(0, 14px, 0)', 'translate3d(0, 0, 0)']
             }, {
               delay: Motion.stagger(0.045, { startDelay: 0.08 }),
-              duration: 0.44,
-              ease: [0.16, 1, 0.3, 1]
-            });
-          }
-        } else if (targetTab === 'teachers') {
-          const cards = Array.from(nextView.querySelectorAll('.card-glass'));
-          if (cards.length > 0) {
-            Motion.animate(cards.slice(0, 15), {
-              opacity: [0, 1],
-              transform: ['translate3d(0, 14px, 0)', 'translate3d(0, 0, 0)']
-            }, {
-              delay: Motion.stagger(0.035, { startDelay: 0.08 }),
               duration: 0.44,
               ease: [0.16, 1, 0.3, 1]
             });
@@ -2500,16 +2137,6 @@
       const headerSync = document.getElementById('headerSync');
       if (!headerTitle) return;
 
-      if (currentMainTab === 'teachers') {
-        headerTitle.textContent = 'Преподаватели';
-        if (headerSync) {
-          const count = allTeachersCatalog.length || 0;
-          headerSync.textContent = `${count} в каталоге`;
-          headerSync.title = `${count} преподавателей`;
-        }
-        return;
-      }
-
       if (currentMainTab === 'settings') {
         headerTitle.textContent = 'Настройки';
         if (headerSync) {
@@ -2528,641 +2155,6 @@
           headerSync.title = text;
         }
       }
-    }
-
-    // ─── Teacher Search & Live Locator ───────────────────────────────────────
-    function initTeachersCatalog() {
-      const map = new Map();
-
-      if (teachersInfo && typeof teachersInfo === 'object') {
-        Object.entries(teachersInfo).forEach(([shortName, data]) => {
-          const lastName = shortName.split(' ')[0].toLowerCase().replace(/ё/g, 'е');
-          map.set(lastName, {
-            shortName,
-            fullName: data.fullName || shortName,
-            photo: data.photo || null,
-            department: data.department || '',
-            bio: data.bio || '',
-            room: data.room || ''
-          });
-        });
-      }
-
-      if (facultyData && facultyData.courses) {
-        Object.values(facultyData.courses).forEach(groups => {
-          Object.values(groups).forEach(days => {
-            Object.values(days).forEach(times => {
-              Object.values(times).forEach(items => {
-                const list = Array.isArray(items) ? items : [items];
-                list.forEach(rawItem => {
-                  const matches = rawItem.match(/([А-ЯЁ][а-яё]+)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/g);
-                  if (matches) {
-                    matches.forEach(mStr => {
-                      const tm = mStr.match(/([А-ЯЁ][а-яё]+)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/);
-                      if (tm) {
-                        const lName = tm[1].toLowerCase().replace(/ё/g, 'е');
-                        if (!map.has(lName)) {
-                          const cleanShort = `${tm[1]} ${tm[2].replace(/\s+/g, '')}`;
-                          map.set(lName, {
-                            shortName: cleanShort,
-                            fullName: cleanShort,
-                            photo: null,
-                            department: 'Факультет географии и геоинформатики',
-                            bio: 'Преподаватель факультета',
-                            room: ''
-                          });
-                        }
-                      }
-                    });
-                  }
-                });
-              });
-            });
-          });
-        });
-      }
-
-      allTeachersCatalog = Array.from(map.values()).sort((a, b) => a.shortName.localeCompare(b.shortName, 'ru'));
-      updateTeacherFilterCounts();
-    }
-
-    function updateTeacherFilterCounts() {
-      const badgeAll = document.getElementById('badgeCountAll');
-      const badgeLive = document.getElementById('badgeCountLive');
-      const badgeToday = document.getElementById('badgeCountToday');
-
-      if (badgeAll) badgeAll.textContent = allTeachersCatalog.length;
-
-      let liveCount = 0;
-      let todayCount = 0;
-
-      const todayIdx = currentDaysList.findIndex(d => d.isToday);
-      const todayDate = (todayIdx !== -1 && currentDaysList[todayIdx]) ? currentDaysList[todayIdx].date : new Date();
-      const todayDDMM = formatDDMM(todayDate);
-
-      const now = new Date();
-      const curMin = now.getHours() * 60 + now.getMinutes();
-
-      allTeachersCatalog.forEach(t => {
-        const schedToday = findTeacherSchedule(t.shortName, todayDDMM);
-        if (schedToday && schedToday.length) {
-          todayCount++;
-          const isLive = schedToday.some(l => curMin >= l.startMin && curMin < l.endMin);
-          if (isLive) liveCount++;
-        }
-      });
-
-      if (badgeLive) badgeLive.textContent = liveCount;
-      if (badgeToday) badgeToday.textContent = todayCount;
-    }
-
-    function getTeacherLiveSummary(teacherName) {
-      const todayIdx = currentDaysList.findIndex(d => d.isToday);
-      const todayDate = (todayIdx !== -1 && currentDaysList[todayIdx]) ? currentDaysList[todayIdx].date : new Date();
-      const todayDDMM = formatDDMM(todayDate);
-
-      const lessonsToday = findTeacherSchedule(teacherName, todayDDMM);
-      const now = new Date();
-      const curMin = now.getHours() * 60 + now.getMinutes();
-
-      if (!lessonsToday.length) {
-        return {
-          type: 'none',
-          isLive: false,
-          badgeHtml: '<span class="badge badge-ghost badge-xs opacity-60">Пар нет</span>',
-          text: 'Сегодня пар в расписании нет',
-          room: null
-        };
-      }
-
-      const liveLesson = lessonsToday.find(l => curMin >= l.startMin && curMin < l.endMin);
-      if (liveLesson) {
-        const minsLeft = Math.max(0, liveLesson.endMin - curMin);
-        const roomStr = liveLesson.isOnline ? 'Онлайн (edugeo)' : (liveLesson.room || 'Аудитория уточняется');
-        return {
-          type: 'live',
-          isLive: true,
-          badgeHtml: '<span class="badge badge-accent badge-xs font-bold text-white shadow-sm gap-1"><span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>Идёт пара</span>',
-          text: `Сейчас: ${roomStr}`,
-          room: roomStr,
-          details: `${liveLesson.course} курс • ${liveLesson.groups.join(', ')} • ещё ${minsLeft} мин`
-        };
-      }
-
-      const nextLesson = lessonsToday.find(l => l.startMin > curMin);
-      if (nextLesson) {
-        const minsTo = Math.max(0, nextLesson.startMin - curMin);
-        const startStr = (nextLesson.timeStr.split(/[-–—]/)[0] || '').trim();
-        const roomStr = nextLesson.isOnline ? 'Онлайн (edugeo)' : (nextLesson.room || 'Аудитория уточняется');
-        return {
-          type: 'next',
-          isLive: false,
-          badgeHtml: `<span class="badge badge-warning badge-xs font-bold shadow-sm">в ${startStr}</span>`,
-          text: `След. пара: ${roomStr} (через ${minsTo} мин)`,
-          room: roomStr,
-          details: `${nextLesson.course} курс • ${nextLesson.groups.join(', ')}`
-        };
-      }
-
-      return {
-        type: 'ended',
-        isLive: false,
-        badgeHtml: '<span class="badge badge-neutral badge-xs opacity-60">Завершены</span>',
-        text: 'Пары на сегодня окончены',
-        room: null
-      };
-    }
-
-    function renderTeacherCard(teacher, liveSummary) {
-      const names = (teacher.fullName || teacher.shortName).split(' ');
-      const initials = names.slice(0, 2).map(n => n.charAt(0)).join('').toUpperCase();
-
-      const photoHtml = teacher.photo
-        ? `<img src="${teacher.photo}" alt="${teacher.shortName}" class="w-full h-full object-cover object-top rounded-xl" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'font-extrabold text-sm text-base-content/80\'>${initials}</span>';" />`
-        : `<span class="font-extrabold text-sm text-base-content/80">${initials}</span>`;
-
-      const deptText = teacher.department ? teacher.department.replace(/^Кафедра\s*/i, 'Каф. ') : 'Географический факультет';
-
-      let locationHtml = '';
-      if (liveSummary.type === 'live') {
-        locationHtml = `
-          <div class="mt-2 pt-2 border-t border-base-content/10 flex items-center justify-between gap-2">
-            <span class="badge badge-accent badge-sm font-bold text-white shadow-sm gap-1 flex-shrink-0">
-              <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-              <span>Сейчас: ${liveSummary.room}</span>
-            </span>
-            <span class="text-[11px] font-semibold text-emerald-500 truncate text-right">${liveSummary.details}</span>
-          </div>
-        `;
-      } else if (liveSummary.type === 'next') {
-        locationHtml = `
-          <div class="mt-2 pt-2 border-t border-base-content/10 flex items-center justify-between gap-2">
-            <span class="badge badge-warning badge-sm font-bold shadow-sm gap-1 flex-shrink-0">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>
-              <span>${liveSummary.room}</span>
-            </span>
-            <span class="text-[11px] font-medium text-base-content/70 truncate text-right">${liveSummary.text}</span>
-          </div>
-        `;
-      } else {
-        const permRoom = teacher.room ? ` • ауд. ${teacher.room}` : '';
-        locationHtml = `
-          <div class="mt-2 pt-2 border-t border-base-content/10 flex items-center justify-between gap-2 text-base-content/50 text-[11px]">
-            <span class="flex items-center gap-1 truncate font-medium">
-              <svg class="w-3 h-3 opacity-60 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 21h18M3 7v14M21 7v14M6 10h2M11 10h2M16 10h2M6 14h2M11 14h2M16 14h2M6 18h2M11 18h2M16 18h2M12 3l9 4H3l9-4z"></path></svg>
-              <span class="truncate">${deptText}${permRoom}</span>
-            </span>
-            <span class="badge badge-ghost badge-xs opacity-60 flex-shrink-0">${liveSummary.type === 'ended' ? 'Пары завершены' : 'Пар нет'}</span>
-          </div>
-        `;
-      }
-
-      return `
-        <div class="card-glass rounded-2xl p-3.5 w-full tap-scale flex flex-col justify-between cursor-pointer border border-base-content/10 hover:border-primary/40 transition-all box-border" onclick="openTeacherModal('${teacher.shortName.replace(/'/g, "\'")}')">
-          <div class="flex items-start gap-3 min-w-0">
-            <div class="w-12 h-12 rounded-xl flex-shrink-0 bg-base-200/70 border border-base-content/10 overflow-hidden flex items-center justify-center shadow-inner">
-              ${photoHtml}
-            </div>
-
-            <div class="min-w-0 flex-1">
-              <div class="flex items-center justify-between gap-1">
-                <h4 class="text-sm font-extrabold text-base-content leading-tight truncate">
-                  ${teacher.fullName || teacher.shortName}
-                </h4>
-                <svg class="w-3.5 h-3.5 opacity-40 hover:opacity-100 flex-shrink-0 transition-opacity" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-              </div>
-
-              <div class="text-[11px] font-medium text-base-content/65 truncate mt-0.5">
-                ${teacher.bio || deptText}
-              </div>
-
-              <div class="text-[10px] font-medium text-base-content/50 truncate mt-0.5 flex items-center gap-1.5">
-                <span class="badge badge-ghost badge-xs font-mono font-bold">${teacher.shortName}</span>
-                <span class="truncate opacity-80">${deptText}</span>
-              </div>
-            </div>
-          </div>
-
-          ${locationHtml}
-        </div>
-      `;
-    }
-
-    function setTeacherFilter(filter) {
-      teacherSearchFilter = filter;
-      triggerHaptic('light');
-
-      ['all', 'live', 'today'].forEach(f => {
-        const el = document.getElementById('filterChip' + f.charAt(0).toUpperCase() + f.slice(1));
-        if (!el) return;
-        if (f === filter) {
-          el.className = 'badge badge-sm font-bold gap-1 cursor-pointer transition-all badge-primary shadow-sm py-3 px-3 rounded-xl flex-shrink-0';
-        } else {
-          el.className = 'badge badge-sm badge-ghost font-bold gap-1 border border-base-content/15 cursor-pointer transition-all py-3 px-3 rounded-xl flex-shrink-0';
-        }
-      });
-
-      renderTeacherSearchResults();
-    }
-
-    function onTeacherSearchInput(val) {
-      teacherSearchQuery = (val || '').trim();
-      const clearBtn = document.getElementById('teacherSearchClearBtn');
-      if (clearBtn) {
-        clearBtn.classList.toggle('hidden', !teacherSearchQuery);
-      }
-      renderTeacherSearchResults();
-    }
-
-    function clearTeacherSearch() {
-      const input = document.getElementById('teacherSearchInput');
-      if (input) {
-        input.value = '';
-        input.focus();
-      }
-      teacherSearchQuery = '';
-      const clearBtn = document.getElementById('teacherSearchClearBtn');
-      if (clearBtn) clearBtn.classList.add('hidden');
-      renderTeacherSearchResults();
-    }
-
-    function renderTeacherSearchResults() {
-      const container = document.getElementById('teacherSearchResultsList');
-      if (!container) return;
-
-      const todayIdx = currentDaysList.findIndex(d => d.isToday);
-      const todayDate = (todayIdx !== -1 && currentDaysList[todayIdx]) ? currentDaysList[todayIdx].date : new Date();
-      const todayDDMM = formatDDMM(todayDate);
-
-      const queryNorm = teacherSearchQuery.toLowerCase().replace(/ё/g, 'е');
-
-      const filtered = allTeachersCatalog.filter(t => {
-        if (queryNorm) {
-          const matchFull = (t.fullName || '').toLowerCase().replace(/ё/g, 'е').includes(queryNorm);
-          const matchShort = (t.shortName || '').toLowerCase().replace(/ё/g, 'е').includes(queryNorm);
-          const matchDept = (t.department || '').toLowerCase().replace(/ё/g, 'е').includes(queryNorm);
-          const matchBio = (t.bio || '').toLowerCase().replace(/ё/g, 'е').includes(queryNorm);
-          if (!matchFull && !matchShort && !matchDept && !matchBio) return false;
-        }
-
-        if (teacherSearchFilter === 'live' || teacherSearchFilter === 'today') {
-          const sched = findTeacherSchedule(t.shortName, todayDDMM);
-          if (!sched || !sched.length) return false;
-          if (teacherSearchFilter === 'live') {
-            const now = new Date();
-            const curMin = now.getHours() * 60 + now.getMinutes();
-            const isLive = sched.some(l => curMin >= l.startMin && curMin < l.endMin);
-            if (!isLive) return false;
-          }
-        }
-
-        return true;
-      });
-
-      if (!filtered.length) {
-        container.innerHTML = `
-          <div class="card-glass rounded-2xl p-6 text-center flex flex-col items-center justify-center gap-2 mt-2">
-            <div class="w-12 h-12 rounded-2xl bg-base-200/60 border border-base-content/10 flex items-center justify-center text-xl">
-              🔍
-            </div>
-            <h4 class="text-sm font-bold text-base-content mt-1">Преподаватель не найден</h4>
-            <p class="text-xs text-base-content/60 max-w-xs">
-              ${queryNorm ? `По запросу «${teacherSearchQuery}» ничего не найдено. Проверьте правильность написания фамилии.` : 'В данной категории нет преподавателей.'}
-            </p>
-          </div>
-        `;
-        return;
-      }
-
-      const itemsWithLive = filtered.map(t => ({
-        teacher: t,
-        liveSummary: getTeacherLiveSummary(t.shortName)
-      }));
-
-      if (teacherSearchFilter === 'all' && !queryNorm) {
-        itemsWithLive.sort((a, b) => {
-          if (a.liveSummary.type === 'live' && b.liveSummary.type !== 'live') return -1;
-          if (b.liveSummary.type === 'live' && a.liveSummary.type !== 'live') return 1;
-          if (a.liveSummary.type === 'next' && b.liveSummary.type !== 'next') return -1;
-          if (b.liveSummary.type === 'next' && a.liveSummary.type !== 'next') return 1;
-          return a.teacher.shortName.localeCompare(b.teacher.shortName, 'ru');
-        });
-      }
-
-      const maxInitial = 40;
-      const toRender = itemsWithLive.slice(0, maxInitial);
-
-      let html = toRender.map(item => renderTeacherCard(item.teacher, item.liveSummary)).join('');
-
-      if (itemsWithLive.length > maxInitial) {
-        html += `
-          <div class="text-center py-2">
-            <span class="text-xs text-base-content/50 font-medium">Показано ${maxInitial} из ${itemsWithLive.length} преподавателей. Уточните поиск для быстрого выбора.</span>
-          </div>
-        `;
-      }
-
-      container.innerHTML = html;
-
-      if (window.Motion?.animate) {
-        const cards = Array.from(container.querySelectorAll('.card-glass'));
-        if (cards.length > 0) {
-          Motion.animate(cards.slice(0, 16), {
-            opacity: [0, 1],
-            transform: ['translate3d(0, 6px, 0)', 'translate3d(0, 0, 0)']
-          }, {
-            delay: Motion.stagger(0.025, { startDelay: 0.02 }),
-            duration: 0.42,
-            ease: [0.16, 1, 0.3, 1]
-          });
-        }
-      }
-    }
-
-    function getTeacherRoomAndOnline(raw, lastName) {
-      const splitRooms = extractSplitRooms(raw);
-      const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-      const teachers = [];
-      let curT = null;
-      for (let i = 0; i < lines.length; i++) {
-        const l = lines[i];
-        const tm = l.match(/([А-ЯЁ][а-яё]+)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/);
-        if (tm) {
-          curT = { name: tm[1].toLowerCase().replace(/ё/g, 'е'), room: null, isOnline: false };
-          teachers.push(curT);
-          const rm = l.match(/(?:ауд\.?|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z.]+)/i);
-          if (rm) curT.room = rm[0];
-          if (/https?:\/\/|edugeo|edueng|онлайн/i.test(l)) curT.isOnline = true;
-        } else if (curT) {
-          const rm = l.match(/(?:ауд\.?|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z.]+)/i);
-          if (rm && !curT.room) curT.room = rm[0];
-          if (/https?:\/\/|edugeo|edueng|онлайн/i.test(l)) curT.isOnline = true;
-        }
-      }
-
-      if (splitRooms && splitRooms.length >= 2 && teachers.length >= 2) {
-        teachers[0].room = splitRooms[0];
-        teachers[1].room = splitRooms[1];
-      }
-
-      const myT = teachers.find(t => t.name.includes(lastName));
-      if (myT) {
-        if (myT.isOnline && !myT.room) return { room: 'Онлайн', isOnline: true };
-        return { room: myT.room || '', isOnline: myT.isOnline };
-      }
-
-      const defMatch = raw.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z.]+)/i);
-      return { room: defMatch ? defMatch[0].trim() : '', isOnline: /https?:\/\/|edugeo|edueng/i.test(raw) };
-    }
-
-    function findTeacherSchedule(teacherName, targetDDMM = null) {
-      const matches = [];
-      if (!facultyData?.courses) return matches;
-
-      const lastName = teacherName.split(' ')[0].toLowerCase().replace(/ё/g, 'е');
-
-      Object.entries(facultyData.courses).forEach(([course, groups]) => {
-        Object.entries(groups).forEach(([groupName, days]) => {
-          Object.entries(days).forEach(([dayKey, times]) => {
-            if (targetDDMM && !dayKey.includes(targetDDMM)) return;
-
-            Object.entries(times).forEach(([timeStr, items]) => {
-              const itemList = Array.isArray(items) ? items : [items];
-              itemList.forEach(rawItem => {
-                const rawLower = rawItem.toLowerCase().replace(/ё/g, 'е');
-                if (rawLower.includes(lastName)) {
-                  const slotMin = parseTimeSlotMinutes(timeStr);
-                  const roomInfo = getTeacherRoomAndOnline(rawItem, lastName);
-                  const parsed = parseLessonRaw(rawItem);
-                  const title = parsed.title;
-                  const type = parsed.type || detectLessonType(rawItem);
-
-                  matches.push({
-                    dayKey,
-                    timeStr,
-                    startMin: slotMin ? slotMin.startMin : 0,
-                    endMin: slotMin ? slotMin.endMin : 0,
-                    course,
-                    groupName,
-                    room: roomInfo.room,
-                    isOnline: roomInfo.isOnline,
-                    title,
-                    type
-                  });
-                }
-              });
-            });
-          });
-        });
-      });
-
-      const grouped = [];
-      matches.forEach(m => {
-        const cleanGroup = m.groupName.replace(/^ГРУППА\s*/i, 'Гр. ');
-        const existing = grouped.find(g =>
-          g.dayKey === m.dayKey && g.timeStr === m.timeStr && g.title === m.title && g.course === m.course
-        );
-        if (existing) {
-          if (!existing.groups.includes(cleanGroup)) existing.groups.push(cleanGroup);
-        } else {
-          grouped.push({
-            dayKey: m.dayKey,
-            timeStr: m.timeStr,
-            startMin: m.startMin,
-            endMin: m.endMin,
-            course: m.course,
-            room: m.room,
-            isOnline: m.isOnline,
-            title: m.title,
-            type: m.type,
-            groups: [cleanGroup]
-          });
-        }
-      });
-
-      grouped.sort((a, b) => {
-        if (a.dayKey !== b.dayKey) return a.dayKey.localeCompare(b.dayKey);
-        return a.startMin - b.startMin;
-      });
-
-      return grouped;
-    }
-
-    function renderTeacherLocator(teacherName) {
-      const container = document.getElementById('teacherLiveLocator');
-      const schedSection = document.getElementById('teacherTodayScheduleSection');
-      if (!container) return;
-
-      const todayIdx = currentDaysList.findIndex(d => d.isToday);
-      const todayDate = (todayIdx !== -1 && currentDaysList[todayIdx]) ? currentDaysList[todayIdx].date : new Date();
-      const todayDDMM = formatDDMM(todayDate);
-
-      const now = new Date();
-      const curMin = now.getHours() * 60 + now.getMinutes();
-      const lessonsToday = findTeacherSchedule(teacherName, todayDDMM);
-      const lessonsAll = findTeacherSchedule(teacherName, null);
-
-      // ─── 1. Live status banner ──────────────────────────────────────────
-      if (!lessonsToday.length) {
-        container.innerHTML = `
-          <div class="card-glass" style="padding: 12px 14px; display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 20px;">☕</span>
-            <div>
-              <div style="font-size: 13px; font-weight: 800;">Сегодня пар в расписании нет</div>
-              <div style="font-size: 11px; color: var(--text-sub); margin-top: 1px;">У преподавателя сегодня нет аудиторных занятий.</div>
-            </div>
-          </div>
-        `;
-      } else {
-        const liveLesson = lessonsToday.find(l => curMin >= l.startMin && curMin < l.endMin);
-        const nextLesson = lessonsToday.find(l => l.startMin > curMin);
-        const lastLesson = lessonsToday[lessonsToday.length - 1];
-
-        if (liveLesson) {
-          const minsLeft = Math.max(0, liveLesson.endMin - curMin);
-          const endStr = (liveLesson.timeStr.split(/[-–—]/)[1] || '').trim();
-          container.innerHTML = `
-            <div class="card-glass" style="padding: 13px 15px; border-color: rgba(16, 185, 129, 0.6); background: rgba(16, 185, 129, 0.08);">
-              <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);" class="animate-pulse"></span>
-                  <span style="font-size: 12px; font-weight: 800; color: #10b981;">Прямо сейчас идёт пара</span>
-                </div>
-                <span class="badge badge-accent badge-sm font-bold text-white shadow-sm">до ${endStr} (${minsLeft} мин)</span>
-              </div>
-              <div style="font-size: 14.5px; font-weight: 800; margin-top: 6px;">
-                ${liveLesson.room ? `Аудитория: <span style="font-family: monospace; color: var(--text-main); font-weight: 800;">${liveLesson.room}</span>` : (liveLesson.isOnline ? `<span class="badge badge-info badge-sm font-bold text-white">Дистанционный формат (edugeo)</span>` : 'Аудитория не указана')}
-              </div>
-              <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 3px;">
-                ${liveLesson.title} • ${liveLesson.course} курс (${liveLesson.groups.join(', ')})
-              </div>
-            </div>
-          `;
-        } else if (nextLesson) {
-          const minsTo = Math.max(0, nextLesson.startMin - curMin);
-          const startStr = (nextLesson.timeStr.split(/[-–—]/)[0] || '').trim();
-          container.innerHTML = `
-            <div class="card-glass" style="padding: 13px 15px; border-color: rgba(56, 189, 248, 0.45); background: rgba(56, 189, 248, 0.08);">
-              <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <span style="width: 8px; height: 8px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);"></span>
-                  <span style="font-size: 12px; font-weight: 800; color: #38bdf8;">Следующая пара через ${formatMinutesLeft(minsTo)}</span>
-                </div>
-                <span class="badge badge-info badge-sm font-bold text-white shadow-sm">в ${startStr}</span>
-              </div>
-              <div style="font-size: 14.5px; font-weight: 800; margin-top: 6px;">
-                ${nextLesson.room ? `Аудитория: <span style="font-family: monospace; color: var(--text-main); font-weight: 800;">${nextLesson.room}</span>` : (nextLesson.isOnline ? `<span class="badge badge-info badge-sm font-bold text-white">Дистанционный формат (edugeo)</span>` : 'Аудитория не указана')}
-              </div>
-              <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 3px;">
-                ${nextLesson.title} • ${nextLesson.course} курс (${nextLesson.groups.join(', ')})
-              </div>
-            </div>
-          `;
-        } else if (curMin >= lastLesson.endMin) {
-          const endStr = (lastLesson.timeStr.split(/[-–—]/)[1] || '').trim();
-          container.innerHTML = `
-            <div class="card-glass" style="padding: 12px 14px; opacity: 0.85;">
-              <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--text-sub); opacity: 0.6;"></span>
-                <span style="font-size: 12px; font-weight: 800; color: var(--text-sub);">Пары на сегодня завершены</span>
-              </div>
-              <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px;">
-                Последнее занятие преподавателя закончилось в ${endStr}
-              </div>
-            </div>
-          `;
-        }
-      }
-
-      // ─── 2. Schedule Tabs & List Section ───────────────────────────────
-      if (!schedSection) return;
-
-      let scheduleHTML = `
-        <div class="tabs tabs-boxed bg-base-200/50 p-1 rounded-xl flex w-full mt-2">
-          <button type="button" class="tab tab-sm flex-1 font-bold ${_activeTeacherTab === 'today' ? 'tab-active !bg-base-100 !text-base-content shadow-sm' : 'text-base-content/60'}" onclick="switchTeacherTab('today')">
-            Сегодня (${lessonsToday.length})
-          </button>
-          <button type="button" class="tab tab-sm flex-1 font-bold ${_activeTeacherTab === 'all' ? 'tab-active !bg-base-100 !text-base-content shadow-sm' : 'text-base-content/60'}" onclick="switchTeacherTab('all')">
-            Все дни (${lessonsAll.length})
-          </button>
-        </div>
-      `;
-
-      if (_activeTeacherTab === 'today') {
-        if (!lessonsToday.length) {
-          scheduleHTML += `
-            <div style="padding: 14px 4px; text-align: center; font-size: 12px; color: var(--text-sub);">
-              Нажмите «Все дни», чтобы посмотреть расписание преподавателя на всю неделю.
-            </div>
-          `;
-        } else {
-          scheduleHTML += `
-            <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px;">
-              ${lessonsToday.map(l => {
-                const isCur = curMin >= l.startMin && curMin < l.endMin;
-                return `
-                  <div class="card-glass" style="padding: 10px 12px; display: flex; flex-direction: column; gap: 5px; ${isCur ? 'border-color: rgba(16,185,129,0.5); background: rgba(16,185,129,0.07);' : ''}">
-                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-                      <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                        <span class="badge ${isCur ? 'badge-accent font-bold text-white shadow-sm' : 'badge-ghost font-bold font-mono'} badge-sm">${l.timeStr}</span>
-                        ${l.type ? `<span class="badge badge-xs font-semibold" style="color: ${l.type.color}; background: ${l.type.bg};">${l.type.label}</span>` : ''}
-                      </div>
-                      ${l.room ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${l.room}</span>` : (l.isOnline ? `<span class="badge badge-info badge-outline badge-xs font-semibold flex-shrink-0">Онлайн</span>` : '<span class="badge badge-ghost badge-xs opacity-60">Ауд. уточняется</span>')}
-                    </div>
-                    <div style="font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--text-main);">
-                      ${l.title}
-                    </div>
-                    <div style="font-size: 11px; color: var(--text-sub); display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                      <span class="badge badge-ghost badge-xs font-semibold">${l.course} курс</span>
-                      <span style="word-break: break-word;">${l.groups.join(', ')}</span>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          `;
-        }
-      } else {
-        const dayGroups = {};
-        lessonsAll.forEach(l => {
-          if (!dayGroups[l.dayKey]) dayGroups[l.dayKey] = [];
-          dayGroups[l.dayKey].push(l);
-        });
-
-        scheduleHTML += `
-          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 6px;">
-            ${Object.entries(dayGroups).map(([dayTitle, list]) => `
-              <div>
-                <div style="font-size: 10.5px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; padding-left: 2px;">
-                  ${dayTitle}
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 6px;">
-                  ${list.map(l => `
-                    <div class="card-glass" style="padding: 10px 12px; display: flex; flex-direction: column; gap: 5px;">
-                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-                        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                          <span class="badge badge-ghost font-bold font-mono badge-sm">${l.timeStr}</span>
-                          ${l.type ? `<span class="badge badge-xs font-semibold" style="color: ${l.type.color}; background: ${l.type.bg};">${l.type.label}</span>` : ''}
-                        </div>
-                        ${l.room ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${l.room}</span>` : (l.isOnline ? `<span class="badge badge-info badge-outline badge-xs font-semibold flex-shrink-0">Онлайн</span>` : '<span class="badge badge-ghost badge-xs opacity-60">Ауд. уточняется</span>')}
-                      </div>
-                      <div style="font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--text-main);">
-                        ${l.title}
-                      </div>
-                      <div style="font-size: 11px; color: var(--text-sub); display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                        <span class="badge badge-ghost badge-xs font-semibold">${l.course} курс</span>
-                        <span style="word-break: break-word;">${l.groups.join(', ')}</span>
-                      </div>
-                    </div>
-                  `).join('')}
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        `;
-      }
-
-      schedSection.innerHTML = scheduleHTML;
     }
 
     function parseDayKeyDate(rawKey, refDate = new Date()) {
@@ -3563,12 +2555,8 @@
                             ${rank || '&nbsp;'}
                           </div>
                         </div>
-                        <div class="mt-1 min-w-0">
-                          <button type="button" class="teacher-chip tap-scale w-full" onclick="event.stopPropagation(); openTeacherModal('${teacherName.replace(/'/g, "\\'")}')" title="Открыть досье преподавателя">
-                            <span class="teacher-chip-icon">👤</span>
-                            <span class="teacher-chip-name truncate flex-1 text-left" style="max-width: none;">${teacherName}</span>
-                            <span class="teacher-chip-arrow flex-shrink-0">›</span>
-                          </button>
+                        <div class="mt-1 min-w-0 text-[11px] font-semibold text-base-content/75 truncate">
+                          ${teacherName}
                         </div>
                       </div>
                     `;
@@ -4035,8 +3023,6 @@
         if (!e.changedTouches || e.changedTouches.length !== 1) return;
         const modal = document.getElementById('settingsModal');
         if (modal && modal.classList.contains('open')) return;
-        const teachModal = document.getElementById('teacherModal');
-        if (teachModal && teachModal.classList.contains('open')) return;
         if (currentMainTab !== 'schedule') return;
 
         const deltaX = e.changedTouches[0].clientX - touchStartX;
@@ -4067,7 +3053,6 @@
       window.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
           closeSettingsModal();
-          closeTeacherModal();
           return;
         }
 
@@ -4103,17 +3088,12 @@
         } catch(e) {}
       }
 
-      const [okSchedule] = await Promise.all([
-        loadData(),
-        loadTeachersInfo()
-      ]);
+      const okSchedule = await loadData();
 
       if (!okSchedule) {
         document.getElementById('headerTitle').textContent = 'Ошибка загрузки расписания';
         return;
       }
-
-      initTeachersCatalog();
 
       const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
       selectedDayIndex = findInitialDayIndex(groupSchedule);
@@ -4135,14 +3115,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'bsu-schedule-v15') caches.delete(k);
+          if (k !== 'bsu-schedule-v16') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=15')
+        navigator.serviceWorker.register('./sw.js?v=16')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
