@@ -76,6 +76,9 @@
       --accent-emerald: #10b981;
       --accent-amber: #f59e0b;
       --active-card-inner: #ffffff;
+      --badge-lecture-color: #854d0e;
+      --badge-lecture-bg: rgba(250, 204, 21, 0.24);
+      --badge-lecture-border: rgba(202, 138, 4, 0.45);
     }
 
     .dark {
@@ -93,6 +96,9 @@
       --accent-emerald: #34d399;
       --accent-amber: #fbbf24;
       --active-card-inner: #0c0c0e;
+      --badge-lecture-color: #fef08a;
+      --badge-lecture-bg: rgba(254, 240, 138, 0.16);
+      --badge-lecture-border: rgba(254, 240, 138, 0.45);
     }
 
     html.dark, html.dark body {
@@ -979,7 +985,7 @@
           <span>Сегодня воскресенье — выходной</span>
         </div>
         <button onclick="selectDayIndex(-1, 'medium')" class="btn btn-warning btn-xs rounded-lg font-bold">
-          Сегодня
+          Перейти
         </button>
       </div>
 
@@ -1292,7 +1298,7 @@
     }
 
     function detectLessonType(text) {
-      if (/лекц/i.test(text)) return { label: 'Лекция', color: '#eab308', bg: 'rgba(234, 179, 8, 0.16)', border: 'rgba(234, 179, 8, 0.35)' };
+      if (/лекц/i.test(text)) return { label: 'Лекция', color: 'var(--badge-lecture-color, #fef08a)', bg: 'var(--badge-lecture-bg, rgba(254, 240, 138, 0.16))', border: 'var(--badge-lecture-border, rgba(254, 240, 138, 0.45))' };
       if (/лаб/i.test(text)) return { label: 'Лабораторная', color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.16)', border: 'rgba(59, 130, 246, 0.35)' };
       if (/практ/i.test(text)) return { label: 'Практика', color: '#a855f7', bg: 'rgba(168, 85, 247, 0.16)', border: 'rgba(168, 85, 247, 0.35)' };
       if (/сем/i.test(text)) return { label: 'Семинар', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.16)', border: 'rgba(245, 158, 11, 0.35)' };
@@ -1679,19 +1685,33 @@
 
       const parsedItems = kept.map(parseLessonRaw);
 
-      // Если в ячейке 2 записи с одинаковым предметом или обе записи относятся к английскому/иностранному языку
+      function normalizeSubjectTitle(str) {
+        if (!str) return '';
+        return str
+          .toLowerCase()
+          .replace(/^[12]\s*подгруппа\s*/i, '')
+          .replace(/\((?:лекц\.?|лаб\.?|практ\.?|сем\.?|уср|фак\.?\s*зан\.?)[^)]*\)/gi, '')
+          .replace(/[^a-zа-яё0-9]/gi, '')
+          .trim();
+      }
+
+      // Если в ячейке 2 записи с одинаковым предметом или обе записи относятся к английскому/иностранному языку:
+      // плашка типа пары отображается как общая для двух подгрупп
       const isBothLang = parsedItems.length === 2 &&
         detectLessonLanguage(parsedItems[0].raw) === 'EN' &&
         detectLessonLanguage(parsedItems[1].raw) === 'EN';
 
-      if (parsedItems.length === 2 && (parsedItems[0].title.toLowerCase() === parsedItems[1].title.toLowerCase() || isBothLang)) {
+      const isSameSubject = parsedItems.length === 2 &&
+        (isBothLang || (normalizeSubjectTitle(parsedItems[0].title) && normalizeSubjectTitle(parsedItems[0].title) === normalizeSubjectTitle(parsedItems[1].title)));
+
+      if (isSameSubject) {
         const lType = parsedItems[0].type || parsedItems[1].type;
         const sg1 = cleanTeacherAndRoom(parsedItems[0].raw, 0);
         const sg2 = cleanTeacherAndRoom(parsedItems[1].raw, 1);
         return [{
           title: parsedItems[0].title,
           type: lType,
-          subgroup: parsedItems[0].subgroup || null,
+          subgroup: null, // Общая пара для обеих подгрупп: плашка типа общая, без плашки 1 подгруппы в заголовке
           subgroups: [sg1, sg2]
         }];
       }
@@ -2505,10 +2525,6 @@
 
       if (currentDay.isPast) {
         badgeBox.innerHTML = '<span class="badge badge-neutral badge-sm font-bold opacity-70">Архив</span>';
-      } else if (currentDay.isToday) {
-        badgeBox.innerHTML = '<span class="badge badge-accent badge-sm font-bold gap-1 text-white shadow-sm ring-2 ring-emerald-500/50 ring-offset-1 ring-offset-base-100 animate-pulse"><span class="w-1.5 h-1.5 rounded-full bg-white"></span>Сегодня</span>';
-      } else if (currentDay.isTomorrow) {
-        badgeBox.innerHTML = '<span class="badge badge-ghost badge-sm font-bold border border-base-content/20">Завтра</span>';
       } else {
         badgeBox.innerHTML = '';
       }
@@ -3240,14 +3256,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'bsu-schedule-v18') caches.delete(k);
+          if (k !== 'bsu-schedule-v19') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=18')
+        navigator.serviceWorker.register('./sw.js?v=19')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
