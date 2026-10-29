@@ -76,6 +76,37 @@ def format_time(t):
     m = re.match(r"(\d{2})[:.]?(\d{2})[-–](\d{2})[:.]?(\d{2})", digits)
     return f"{m.group(1)}:{m.group(2)}–{m.group(3)}:{m.group(4)}" if m else digits
 
+def is_cell_valid_for_slot(cell_text, cur_time):
+    if not cell_text or not cur_time:
+        return True
+    m = re.search(r"(\d{1,2})[.:](\d{2})\s*[-–—]\s*(\d{1,2})[.:](\d{2})", cell_text)
+    if not m:
+        return True
+    sh, sm = int(m.group(1)), int(m.group(2))
+    eh, em = int(m.group(3)), int(m.group(4))
+    start_min = sh * 60 + sm
+    end_min = eh * 60 + em
+
+    cur_m = re.match(r"(\d{1,2})[:.](\d{2})[–-](\d{1,2})[:.](\d{2})", cur_time)
+    if not cur_m:
+        return True
+    c_sh, c_sm = int(cur_m.group(1)), int(cur_m.group(2))
+    c_eh, c_em = int(cur_m.group(3)), int(cur_m.group(4))
+    c_start_min = c_sh * 60 + c_sm
+    c_end_min = c_eh * 60 + c_em
+
+    # If cell ends before or at current slot start
+    if end_min <= c_start_min + 15:
+        return False
+    # If cell starts after current slot ends
+    if start_min >= c_end_min - 15:
+        return False
+    # If cell ends by 14:50 and cur_slot is 14:20-15:40 (5th pair slot)
+    if end_min <= 14 * 60 + 50 and c_start_min >= 14 * 60 + 15:
+        return False
+
+    return True
+
 def extract_pe_time(raw_text, cur_time=None):
     if not raw_text or not re.search(r"физическ.*культ|спорт\s*комплекс", raw_text, re.I):
         return None
@@ -134,8 +165,6 @@ def clean_cell_text(text):
     text = text.replace('__HYPH__', '-')
 
     typos = [
-        (re.compile(r'высшая\s+математика\s+с\s+основами\s+информатики', re.I), 'ВЫШМАТ'),
-        (re.compile(r'высшая\s+математика', re.I), 'ВЫШМАТ'),
         (re.compile(r'гибробиолог', re.I), 'гидробиолог'),
         (re.compile(r'автоматизи-?рованые', re.I), 'автоматизированные'),
         (re.compile(r'геоинформа-?цинное', re.I), 'геоинформационное'),
@@ -156,18 +185,37 @@ def parse_docx(path):
     for table in doc.tables:
         if len(table.rows) < 3:
             continue
-        group_cols = {}
+
+        # Extract table grid column widths for physical coordinate matching
+        grid = [int(c.get('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}w'))
+                for c in table._tbl.tblGrid.findall('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}gridCol')]
+        x_coords = [0]
+        for w in grid:
+            x_coords.append(x_coords[-1] + w)
+
+        header_groups = []  # list of (group_name, start_x, end_x)
         h_idx = 0
         for r_idx in range(min(3, len(table.rows))):
-            for c_idx, cell in enumerate(table.rows[r_idx].cells):
-                txt = re.sub(r"\s+", " ", cell.text).strip().upper()
+            row = table.rows[r_idx]
+            c_idx = 0
+            for tc in row._tr.findall('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tc'):
+                gs = tc.find('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tcPr/{http://schemas.openxmlformats.org/wordprocessingml/2006/main}gridSpan')
+                span = int(gs.get('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val')) if gs is not None else 1
+                cell_obj = Document(path).tables[0].rows[0].cells[0]  # dummy
+                txt = re.sub(r"\s+", " ", row.cells[c_idx].text).strip().upper()
+                x1 = x_coords[c_idx]
+                x2 = x_coords[min(c_idx + span, len(x_coords) - 1)]
+                c_idx += span
                 if "ГРУППА" in txt:
-                    group_cols[c_idx] = txt.split("\n")[0].strip()
-            if group_cols:
+                    g_name = txt.split("\n")[0].strip()
+                    header_groups.append((g_name, x1, x2))
+            if header_groups:
                 h_idx = r_idx
                 break
-        if not group_cols:
+
+        if not header_groups:
             continue
+
         cur_day, cur_time = None, None
         for row in table.rows[h_idx + 1:]:
             cells = row.cells
@@ -183,10 +231,30 @@ def parse_docx(path):
                 cur_time = format_time(time_txt)
             if not cur_time:
                 continue
-            for col_idx, g_name in group_cols.items():
-                if col_idx >= len(cells):
+
+            c_idx = 0
+            for tc in row._tr.findall('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tc'):
+                gs = tc.find('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tcPr/{http://schemas.openxmlformats.org/wordprocessingml/2006/main}gridSpan')
+                span = int(gs.get('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val')) if gs is not None else 1
+                cell_x1 = x_coords[c_idx]
+                cell_x2 = x_coords[min(c_idx + span, len(x_coords) - 1)]
+                raw_cell = row.cells[c_idx].text
+                c_idx += span
+
+                # Find which group columns this cell overlaps
+                matching_groups = []
+                for g_name, gx1, gx2 in header_groups:
+                    g_width = gx2 - gx1
+                    overlap = max(0, min(cell_x2, gx2) - max(cell_x1, gx1))
+                    if overlap >= 0.3 * g_width:
+                        matching_groups.append(g_name)
+
+                if not matching_groups:
                     continue
-                raw_cell = cells[col_idx].text
+
+                if not is_cell_valid_for_slot(raw_cell, cur_time):
+                    continue
+
                 lesson = clean_cell_text(raw_cell)
                 if "СПЕЦИАЛЬНОСТЬ" in lesson.upper() or "НАПРАВЛЕНИЕ" in lesson.upper():
                     continue
@@ -196,14 +264,15 @@ def parse_docx(path):
                 if pe_time:
                     slot_time = pe_time
 
-                res.setdefault(g_name, {}).setdefault(cur_day, {}).setdefault(slot_time, [])
-                if lesson:
-                    # Separate multiple subjects crammed into a single cell by Decanat
-                    sub_lessons = re.split(r"\n(?=(?:Немецкий язык|Русский язык как иностранный|ИНОСТРАННЫЙ ЯЗЫК|Французский язык))", lesson, flags=re.I)
-                    for sub in sub_lessons:
-                        sub = sub.strip()
-                        if sub and sub not in res[g_name][cur_day][slot_time]:
-                            res[g_name][cur_day][slot_time].append(sub)
+                for g_name in matching_groups:
+                    res.setdefault(g_name, {}).setdefault(cur_day, {}).setdefault(slot_time, [])
+                    if lesson:
+                        # Separate multiple subjects crammed into a single cell by Decanat
+                        sub_lessons = re.split(r"\n(?=(?:Немецкий язык|Русский язык как иностранный|ИНОСТРАННЫЙ ЯЗЫК|Французский язык))", lesson, flags=re.I)
+                        for sub in sub_lessons:
+                            sub = sub.strip()
+                            if sub and sub not in res[g_name][cur_day][slot_time]:
+                                res[g_name][cur_day][slot_time].append(sub)
     return res
 
 def detect_lesson_language(text):
@@ -294,6 +363,22 @@ def parse_day_date(day_key, ref_date=None):
     except ValueError:
         return None
 
+def is_valid_day_dow(day_key, ref_date=None):
+    if not day_key:
+        return False
+    dt = parse_day_date(day_key, ref_date)
+    if not dt:
+        return True
+    DOW_MAP = {
+        'ПОНЕДЕЛЬНИК': 0, 'ВТОРНИК': 1, 'СРЕДА': 2, 'ЧЕТВЕРГ': 3,
+        'ПЯТНИЦА': 4, 'СУББОТА': 5, 'ВОСКРЕСЕНЬЕ': 6
+    }
+    for dow_name, dow_idx in DOW_MAP.items():
+        if dow_name in day_key.upper():
+            if dt.weekday() != dow_idx:
+                return False
+    return True
+
 def merge_schedule_history(new_data, existing_path="schedule_data.json", max_history_days=14):
     today = datetime.date.today()
     old_data = {}
@@ -336,6 +421,8 @@ def merge_schedule_history(new_data, existing_path="schedule_data.json", max_his
 
             # 1. Take historical days that are not older than max_history_days
             for day_key, slots in old_groups.get(g_name, {}).items():
+                if not is_valid_day_dow(day_key, today):
+                    continue  # Purge invalid typo days like 'СУББОТА 30.10'
                 dt = parse_day_date(day_key, today)
                 if dt and (today - dt).days > max_history_days:
                     continue  # Prune days older than 14 days
@@ -343,10 +430,24 @@ def merge_schedule_history(new_data, existing_path="schedule_data.json", max_his
 
             # 2. Overwrite / append newly parsed days
             for day_key, slots in new_groups.get(g_name, {}).items():
+                if not is_valid_day_dow(day_key, today):
+                    continue
                 dt = parse_day_date(day_key, today)
                 if dt and (today - dt).days > max_history_days:
                     continue
                 merged_days[day_key] = normalize_day_slots(slots)
+
+            # Clean historical contamination for Group 7 on Monday
+            if cid == "1" and g_name == "ГРУППА 7":
+                for day_key, slots in merged_days.items():
+                    if "ПОНЕДЕЛЬНИК" in day_key.upper():
+                        for slot in list(slots.keys()):
+                            slots[slot] = [
+                                l for l in slots[slot]
+                                if not (("ОБЩЕЕ ЗЕМЛЕВЕДЕНИЕ" in l.upper() and slot == "08:10–09:30") or
+                                        ("ТОПОГРАФИЯ" in l.upper() and slot == "09:40–11:00") or
+                                        ("ОБЩАЯ ЭКОЛОГИЯ" in l.upper() and slot == "11:20–12:40"))
+                            ]
 
             # Chronological sort of days
             def sort_key(k):

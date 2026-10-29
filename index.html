@@ -1074,8 +1074,8 @@
 
     function formatLessonTitle(rawTitle) {
       if (!rawTitle) return 'Пара';
-      let title = rawTitle.replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?|уср|фак\.?\s*зан\.?)\)/gi, '').trim();
-      title = title.replace(/\s+(препод\.?-стаж[её]р|ст\.?\s*препод|доцент|профессор).*$/gi, '');
+      let title = rawTitle.replace(/\((лекц\.?|лаб\.?|практ\.?|сем\.?|уср|фак\.?\s*зан\.?)[^)]*\)/gi, '').trim();
+      title = title.replace(/\s+(препод\.?-стаж[её]р|ст\.?\s*препод|доцент|профессор|преподаватель|заместитель\s+декана|зам\.?\s*декана).*$/gi, '');
       title = title.replace(/\s+/g, ' ');
 
       title = cleanHyphens(title);
@@ -1094,31 +1094,21 @@
         [/историче\s+ская/gi, 'историческая'],
         [/иностран\s+ный/gi, 'иностранный'],
         [/социально-экономическая\s*$/gi, 'социально-экономическая география'],
+        [/гискартограф/gi, 'ГИС-картограф'],
+        [/гисанализ/gi, 'ГИС-анализ'],
       ];
       typoFixes.forEach(([re, rep]) => { title = title.replace(re, rep); });
       title = title.replace(/^[-–—•,\s]+|[-–—•,\s]+$/g, '').trim();
 
+      // Only strict uniform aliases where full exact match is needed
       const aliases = [
-        { match: /высш(ая|\.)?\s*матем|вышмат/i, to: 'ВЫШМАТ' },
-        { match: /матем(атическ(ий|\.))?\s*анализ/i, to: 'Матанализ' },
-        { match: /безопасн(ость|\.)?\s*жизнедеят|бжд|бжч/i, to: 'БЖЧ' },
-        { match: /дистанционн.*зонд|дзз/i, to: 'ДЗЗ' },
-        { match: /введение\s+в\s+социально-эконом|социально-эконом.*геогр|соц.*эконом/i, to: 'Соц-эконом география' },
-        { match: /информатик/i, to: 'Информатика' },
-        { match: /основы\s*эколог|охрана\s*природ|эколог/i, to: 'Экология' },
-        { match: /истор(ия|\.)?\s*беларус/i, to: 'История Беларуси' },
-        { match: /физическ(ая|\.)?\s*культ/i, to: 'Физкультура' },
-        { match: /топограф(ия|\.)?.*геодез|топография\s+с\s+основами/i, to: 'Топография и геодезия' },
-        { match: /геоинформационн|гис/i, to: 'ГИС-технологии' },
-        { match: /метеоролог/i, to: 'Метеорология и климат' },
-        { match: /почвоведен|почвовед/i, to: 'Почвоведение' },
-        { match: /геолог/i, to: 'Геология' },
-        { match: /геоморфолог|геоморфол/i, to: 'Геоморфология' },
-        { match: /иностранн(ый|\.)?\s*язык\s*\(?проф/i, to: 'Иностранный язык (проф.)' },
-        { match: /^иностранн(ый|\.)?\s*язык$/i, to: 'Иностранный язык' },
-        { match: /русск(ий|\.)?\s*язык\s*как\s*иностр/i, to: 'Русский как иностранный' },
-        { match: /информационн(ый|\.)?\s*час/i, to: 'Информационный час' },
-        { match: /общее\s*землеведен/i, to: 'Общее землеведение' },
+        { match: /^(?:высшая\s+математика|вышмат)$/i, to: 'Высшая математика' },
+        { match: /^безопасность\s+жизнедеятельности(?:\s+человека)?$/i, to: 'Безопасность жизнедеятельности' },
+        { match: /^информационный\s*(?:час)?$/i, to: 'Информационный час' },
+        { match: /^физическая\s+культура.*$/i, to: 'Физкультура' },
+        { match: /^иностранный\s+язык\s*\(?проф.*$/i, to: 'Иностранный язык (проф.)' },
+        { match: /^иностранный\s+язык$/i, to: 'Иностранный язык' },
+        { match: /^русский\s+язык\s+как\s+иностр.*$/i, to: 'Русский как иностранный' },
       ];
 
       for (const item of aliases) {
@@ -1127,9 +1117,31 @@
 
       if (title.length > 2) {
         const words = title.split(' ');
-        const acronyms = new Set(['ГИС', 'ДЗЗ', 'БЖЧ', 'БЖД', 'СУБД', 'УСР', 'РКИ', 'ВЫШМАТ']);
+        const acronyms = new Set(['ГИС', 'ДЗЗ', 'БЖЧ', 'БЖД', 'СУБД', 'УСР', 'РКИ', 'ВЫШМАТ', 'BIM', 'САПР']);
+        const properNouns = new Map([
+          ['беларуси', 'Беларуси'],
+          ['беларусь', 'Беларусь'],
+          ['земли', 'Земли'],
+          ['европы', 'Европы'],
+          ['россии', 'России']
+        ]);
         title = words.map((w, i) => {
-          if (acronyms.has(w.toUpperCase())) return w.toUpperCase();
+          if (w.includes('-')) {
+            const parts = w.split('-');
+            const res = parts.map((p, pi) => {
+              const u = p.toUpperCase();
+              if (acronyms.has(u)) return u;
+              const prop = properNouns.get(p.toLowerCase());
+              if (prop) return prop;
+              if (i === 0 && pi === 0) return p.charAt(0).toUpperCase() + p.slice(1).toLowerCase();
+              return p.toLowerCase();
+            });
+            return res.join('-');
+          }
+          const u = w.toUpperCase();
+          if (acronyms.has(u)) return u;
+          const prop = properNouns.get(w.toLowerCase());
+          if (prop) return prop;
           if (i === 0) return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
           return w.toLowerCase();
         }).join(' ');
@@ -1166,16 +1178,16 @@
       let nextIdx = startIdx + 1;
       while (nextIdx < lines.length) {
         const nxt = lines[nextIdx];
-        if (/^(доцент|ст\.?\s*препод|преподават|профессор|ауд\.?|каб\.?|http|зачет|\([а-яёА-ЯЁ\s.,]+\))/i.test(nxt)) {
+        // Stop title assembly when encountering teacher rank, room, link, or exam marker
+        if (/^(доцент|ст\.?\s*препод|преподават|профессор|ассистент|зам\.?\s*декана|заместитель\s+декана|ауд\.?|каб\.?|http|зач[её]т|экзамен|\([а-яёА-ЯЁ\s.,]+\)$)/i.test(nxt)) {
           break;
         }
-        const u = titleLine.toUpperCase().trim();
-        if (/^(ОБЩЕЕ|ОБЩЕЕ\s+ЗЕМЛЕВЕДЕ|ИСТОРИЧЕ|ЯЗЫК\s+ПРОФЕССИО|СОЦИАЛЬНО-ЭКОНОМИЧЕСКАЯ|ГРУНТОВЕ|ИНФОРМАЦИОННЫЙ|ГЕОИНФОРМАЦИОННОЕ)$/.test(u) || /иностранн.*\(проф/i.test(u)) {
-          titleLine += ' ' + nxt;
-          nextIdx++;
-          continue;
+        // Also stop if this line is an obvious person's name: Surname I.O.
+        if (/^[А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?\s+[А-ЯЁ]\.\s*[А-ЯЁ]\.?/.test(nxt)) {
+          break;
         }
-        break;
+        titleLine += ' ' + nxt;
+        nextIdx++;
       }
 
       // Языковая классификация и точное именование
@@ -1225,10 +1237,10 @@
     }
 
     function detectLessonType(text) {
-      if (/лекц/i.test(text)) return { label: 'Лекция', color: '#10b981', bg: 'rgba(16,185,129,0.1)' };
-      if (/лаб/i.test(text)) return { label: 'Лабораторная', color: '#a855f7', bg: 'rgba(168,85,247,0.12)' };
-      if (/практ/i.test(text)) return { label: 'Практика', color: '#14b8a6', bg: 'rgba(20,184,166,0.1)' };
-      if (/сем/i.test(text)) return { label: 'Семинар', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' };
+      if (/лекц/i.test(text)) return { label: 'Лекция', color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.16)', border: 'rgba(244, 63, 94, 0.35)' };
+      if (/лаб/i.test(text)) return { label: 'Лабораторная', color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.16)', border: 'rgba(59, 130, 246, 0.35)' };
+      if (/практ/i.test(text)) return { label: 'Практика', color: '#a855f7', bg: 'rgba(168, 85, 247, 0.16)', border: 'rgba(168, 85, 247, 0.35)' };
+      if (/сем/i.test(text)) return { label: 'Семинар', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.16)', border: 'rgba(245, 158, 11, 0.35)' };
       return null;
     }
 
@@ -2526,7 +2538,7 @@
               <div class="flex items-start justify-between gap-2">
                 <div class="flex items-center gap-1.5 flex-wrap min-w-0">
                   <span class="text-[14px] font-bold leading-snug">${item.title}</span>
-                  ${item.type ? `<span class="badge badge-sm font-bold flex-shrink-0" style="color: ${item.type.color}; background: ${item.type.bg};">${item.type.label}</span>` : ''}
+                  ${item.type ? `<span class="badge badge-sm font-bold flex-shrink-0" style="color: ${item.type.color}; background: ${item.type.bg}; border: 1px solid ${item.type.border};">${item.type.label}</span>` : ''}
                 </div>
                 ${itemRoomBadge}
               </div>
@@ -3115,14 +3127,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'bsu-schedule-v16') caches.delete(k);
+          if (k !== 'bsu-schedule-v17') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=16')
+        navigator.serviceWorker.register('./sw.js?v=17')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
