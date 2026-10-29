@@ -2338,12 +2338,12 @@
       const keys = Object.keys(groupSchedule || {});
       const daysMap = new Map();
 
-      // 1. Add all parsed days from groupSchedule (within 14 days)
+      // 1. Add all parsed days from groupSchedule (within 7 days)
       keys.forEach(rawKey => {
         const keyDate = parseDayKeyDate(rawKey, now);
         if (!keyDate) return;
         const diffDays = Math.round((todayStart.getTime() - keyDate.getTime()) / 86400000);
-        if (diffDays > 14) return;
+        if (diffDays > 7) return;
 
         const dayDef = findDayDef(rawKey, keyDate);
         const isToday = diffDays === 0;
@@ -2801,7 +2801,16 @@
 
         const btn = document.createElement('button');
         btn.className = `calendar-day-btn tap-scale ${isActive ? 'active' : ''} ${d.isToday ? 'is-today-btn' : ''} ${d.isPast ? 'past-day' : ''}`;
-        btn.onclick = () => selectDayIndex(idx, 'medium');
+        btn.onclick = (e) => {
+          if (isCalendarDragging) {
+            if (e) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+            return;
+          }
+          selectDayIndex(idx, 'medium');
+        };
 
         btn.innerHTML = `
           ${d.isToday ? '<span class="calendar-today-dot"></span>' : ''}
@@ -3146,6 +3155,48 @@
     let touchStartX = 0;
     let touchStartY = 0;
     let touchStartTime = 0;
+    let touchStartedInCalendar = false;
+
+    let isCalendarDragging = false;
+    let calendarTouchStartX = 0;
+    let calendarTouchStartY = 0;
+
+    function setupCalendarDragHandling() {
+      const selectorBox = document.getElementById('calendarSelector');
+      if (!selectorBox) return;
+
+      selectorBox.addEventListener('touchstart', e => {
+        if (e.touches && e.touches.length === 1) {
+          calendarTouchStartX = e.touches[0].clientX;
+          calendarTouchStartY = e.touches[0].clientY;
+          isCalendarDragging = false;
+        }
+      }, { passive: true });
+
+      selectorBox.addEventListener('touchmove', e => {
+        if (e.touches && e.touches.length === 1) {
+          const dx = Math.abs(e.touches[0].clientX - calendarTouchStartX);
+          const dy = Math.abs(e.touches[0].clientY - calendarTouchStartY);
+          if (dx > 6 || dy > 6) {
+            isCalendarDragging = true;
+          }
+        }
+      }, { passive: true });
+
+      selectorBox.addEventListener('touchend', () => {
+        if (isCalendarDragging) {
+          setTimeout(() => {
+            isCalendarDragging = false;
+          }, 100);
+        }
+      }, { passive: true });
+
+      selectorBox.addEventListener('wheel', e => {
+        if (e.deltaY !== 0 && e.deltaX === 0) {
+          selectorBox.scrollLeft += e.deltaY;
+        }
+      }, { passive: true });
+    }
 
     function setupSwipeGestures() {
       const main = document.getElementById('mainContent');
@@ -3156,11 +3207,28 @@
           touchStartX = e.touches[0].clientX;
           touchStartY = e.touches[0].clientY;
           touchStartTime = Date.now();
+
+          // Игнорируем свайп смены дня, если жест начался на полосе выбора дней календаря
+          const target = e.target;
+          touchStartedInCalendar = Boolean(
+            target.closest('#calendarSelector') ||
+            target.closest('.calendar-selector') ||
+            target.closest('.header-dock') ||
+            target.closest('#devWarningBanner')
+          );
         }
       }, { passive: true });
 
       main.addEventListener('touchend', e => {
+        if (touchStartedInCalendar) {
+          touchStartedInCalendar = false;
+          return;
+        }
+
         if (!e.changedTouches || e.changedTouches.length !== 1) return;
+        const target = e.target;
+        if (target.closest('#calendarSelector') || target.closest('.calendar-selector')) return;
+
         const modal = document.getElementById('settingsModal');
         if (modal && modal.classList.contains('open')) return;
         if (currentMainTab !== 'schedule') return;
@@ -3219,6 +3287,7 @@
     async function init() {
       initTheme();
       checkDevWarningVisibility();
+      setupCalendarDragHandling();
       setupSwipeGestures();
 
       const savedProfile = localStorage.getItem('bsu_profile');
@@ -3256,14 +3325,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'bsu-schedule-v19') caches.delete(k);
+          if (k !== 'bsu-schedule-v20') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=19')
+        navigator.serviceWorker.register('./sw.js?v=20')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {

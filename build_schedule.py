@@ -404,7 +404,7 @@ def is_valid_day_dow(day_key, ref_date=None):
                 return False
     return True
 
-def merge_schedule_history(new_data, existing_path="schedule_data.json", max_history_days=14):
+def merge_schedule_history(new_data, existing_path="schedule_data.json", max_history_days=7):
     today = datetime.date.today()
     old_data = {}
     if os.path.exists(existing_path):
@@ -450,7 +450,7 @@ def merge_schedule_history(new_data, existing_path="schedule_data.json", max_his
                     continue  # Purge invalid typo days like 'СУББОТА 30.10'
                 dt = parse_day_date(day_key, today)
                 if dt and (today - dt).days > max_history_days:
-                    continue  # Prune days older than 14 days
+                    continue  # Prune days older than 7 days
                 merged_days[day_key] = normalize_day_slots(slots)
 
             # 2. Overwrite / append newly parsed days
@@ -533,7 +533,7 @@ def build_all():
 
     propagate_stream_languages(full_data["courses"])
 
-    final_data = merge_schedule_history(full_data, "schedule_data.json", max_history_days=14)
+    final_data = merge_schedule_history(full_data, "schedule_data.json", max_history_days=7)
     propagate_stream_languages(final_data["courses"])
 
     with open("schedule_data.json", "w", encoding="utf-8") as f:
