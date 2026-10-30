@@ -918,6 +918,61 @@
       height: 3.5px !important;
     }
 
+    /* ─── Distance Learning (ДО / Онлайн) Badge ───────────────────────── */
+    .badge-do {
+      display: inline-flex;
+      align-items: center;
+      gap: 3.5px;
+      padding: 1.5px 6.5px;
+      border-radius: 6px;
+      background: rgba(6, 182, 212, 0.16);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      color: #22d3ee;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      line-height: 1.2;
+      flex-shrink: 0;
+    }
+    html:not(.dark) .badge-do {
+      background: rgba(8, 145, 178, 0.12);
+      border-color: rgba(8, 145, 178, 0.30);
+      color: #0e7490;
+    }
+
+    .moodle-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 6px;
+      padding: 3px 8px;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.3;
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.28);
+      color: #22d3ee;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .moodle-link-btn:hover, .moodle-link-btn:active {
+      background: rgba(6, 182, 212, 0.22);
+      border-color: rgba(6, 182, 212, 0.45);
+      color: #67e8f9;
+    }
+    html:not(.dark) .moodle-link-btn {
+      background: rgba(8, 145, 178, 0.10);
+      border-color: rgba(8, 145, 178, 0.25);
+      color: #0e7490;
+    }
+    html:not(.dark) .moodle-link-btn:hover, html:not(.dark) .moodle-link-btn:active {
+      background: rgba(8, 145, 178, 0.18);
+      border-color: rgba(8, 145, 178, 0.40);
+      color: #155e75;
+    }
+
     /* ─── Slide to Confirm (Swipe to dismiss beta banner) ─────────────────── */
     .slide-to-confirm-bar {
       position: relative;
@@ -1578,17 +1633,20 @@
       }
 
       const lType = detectLessonType(raw);
+      const isRemote = isRemoteLesson(raw);
+      const url = extractLessonUrl(raw);
       let remainingLines = lines.slice(nextIdx);
 
-      // Исключаем лишние строки, дублирующие название предмета или тип занятия
+      // Исключаем лишние строки, дублирующие название предмета, тип занятия или URL
       remainingLines = remainingLines.filter(line => {
         const l = line.toLowerCase().trim();
-        if (/^\(?(?:практ|лекц|лаб|сем|фак\.зан)\.?(?:\s*зан\.?)?\)?$/i.test(l)) return false;
+        if (/^\(?(?:практ|лекц|лаб|сем|фак\.зан|уср)\.?(?:\s*зан\.?)?\)?$/i.test(l)) return false;
         if (/^(?:франц|немецк|нем|англ|русск|иностранн).*(?:язык)?\.?$/i.test(l)) return false;
         if (/^иностранный\s+язык/i.test(l)) return false;
         if (/^язык\s+профессионального\s+общения/i.test(l)) return false;
         if (/^\d{1,2}[.:]\d{2}\s*[-–—]\s*\d{1,2}[.:]\d{2}$/.test(l)) return false;
         if (/^[12]\s*(?:подгруппа|п\/г)$/i.test(l)) return false;
+        if (/^https?:\/\//i.test(line)) return false;
         return true;
       });
 
@@ -1597,10 +1655,31 @@
       return {
         title,
         type: lType,
+        isRemote,
+        url,
         subgroup: subgroupTag,
         lines: remainingLines,
         raw
       };
+    }
+
+    function isRemoteLesson(raw) {
+      if (!raw) return false;
+      if (/физическ.*культ|спорт\s*комплекс|октябрьск/i.test(raw)) return false;
+      const cleaned = raw.replace(/дистанционн\w*\s+зондирован\w*|зондирован\w*\s+дистанционн\w*/gi, '');
+      if (/(?:^|[^а-яёa-z0-9_])(?:ДО|Д\/О|дистанционн\w*|онлайн|online|уср)(?:[^а-яёa-z0-9_]|$)/i.test(cleaned)) {
+        return true;
+      }
+      if (/edugeo\.bsu\.by|eduengscience\.bsu\.by|eduffsn\.bsu\.by|moodle|zoom|teams/i.test(raw)) {
+        return true;
+      }
+      return false;
+    }
+
+    function extractLessonUrl(raw) {
+      if (!raw) return null;
+      const m = raw.match(/https?:\/\/[^\s\n]+/i);
+      return m ? m[0].replace(/[.,;)]+$/, '') : null;
     }
 
     function detectLessonType(text) {
@@ -1608,6 +1687,7 @@
       if (/лаб/i.test(text)) return { label: 'Лабораторная', color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.16)', border: 'rgba(59, 130, 246, 0.35)' };
       if (/практ/i.test(text)) return { label: 'Практика', color: '#a855f7', bg: 'rgba(168, 85, 247, 0.16)', border: 'rgba(168, 85, 247, 0.35)' };
       if (/сем/i.test(text)) return { label: 'Семинар', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.16)', border: 'rgba(245, 158, 11, 0.35)' };
+      if (/уср/i.test(text)) return { label: 'УСР', color: '#06b6d4', bg: 'rgba(6, 182, 212, 0.16)', border: 'rgba(6, 182, 212, 0.35)' };
       return null;
     }
 
@@ -1790,7 +1870,7 @@
         if (m) {
           room = m[0].trim();
           s = s.replace(m[0], '').trim();
-        } else if (/https?:\/\/|edugeo|edueng|онлайн/i.test(s)) {
+        } else if (/https?:\/\/|edugeo|edueng|онлайн/i.test(s) || isRemoteLesson(s)) {
           room = 'Онлайн';
         }
       }
@@ -1906,6 +1986,9 @@
       while (i < lines.length) {
         let line = lines[i].trim();
         if (!line) { i++; continue; }
+        // Очищаем от URL ссылок, чтобы не захламлять текстовое описание
+        line = line.replace(/https?:\/\/\S+/gi, '').trim();
+        if (!line) { i++; continue; }
         // Если должность/звание преподавателя на отдельной строке перед ФИО, объединяем
         if (/^(?:ст\.?\s*препод(?:аватель|\.)?|доцент|профессор|старший\s+преподаватель|преподаватель|препод\.?-стажер)$/i.test(line) && i + 1 < lines.length) {
           merged.push(line + ' ' + lines[i + 1].trim());
@@ -2009,11 +2092,15 @@
 
       if (isSameSubject) {
         const lType = parsedItems[0].type || parsedItems[1].type;
+        const isRemote = parsedItems[0].isRemote || parsedItems[1].isRemote;
+        const url = parsedItems[0].url || parsedItems[1].url;
         const sg1 = cleanTeacherAndRoom(parsedItems[0].raw, 0);
         const sg2 = cleanTeacherAndRoom(parsedItems[1].raw, 1);
         return [{
           title: parsedItems[0].title,
           type: lType,
+          isRemote,
+          url,
           subgroup: null, // Общая пара для обеих подгрупп: плашка типа общая, без плашки 1 подгруппы в заголовке
           subgroups: [sg1, sg2]
         }];
@@ -2036,6 +2123,8 @@
           return {
             title: p.title,
             type: p.type,
+            isRemote: p.isRemote,
+            url: p.url,
             subgroup: p.subgroup,
             subgroups: detectedSubgroups
           };
@@ -2051,13 +2140,15 @@
           if (/зач[её]т/i.test(p.raw)) details += ' • Зачет';
         } else {
           const roomMatch = p.raw.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
-          room = roomMatch ? roomMatch[0] : null;
+          room = roomMatch ? roomMatch[0] : (p.isRemote ? 'Онлайн' : null);
           details = formatDetailsLines(p.lines, room);
         }
 
         return {
           title: p.title,
           type: p.type,
+          isRemote: p.isRemote,
+          url: p.url,
           subgroup: p.subgroup,
           room: room,
           details: details
@@ -3260,6 +3351,9 @@
           items[0].type.label === items[1].type.label;
         const commonType = hasCommonType ? items[0].type : null;
 
+        // Если все занятия в ячейке дистанционные (ДО) — выносим плашку ДО общей в заголовок карточки
+        const hasCommonRemote = items.length > 0 && items.every(it => it.isRemote);
+
         const liveBadgeHTML = isLive ? `
           <span class="badge badge-accent badge-sm font-bold gap-1 text-white shadow-sm flex-shrink-0">
             <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
@@ -3271,15 +3365,26 @@
           <span class="badge badge-sm font-bold flex-shrink-0" style="color: ${commonType.color}; background: ${commonType.bg}; border: 1px solid ${commonType.border};">${commonType.label}</span>
         ` : '';
 
+        const doBadgeMarkup = `
+          <span class="badge-do" title="Дистанционное обучение / ДО">
+            <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+            <span>ДО</span>
+          </span>
+        `;
+        const commonRemoteBadge = hasCommonRemote ? doBadgeMarkup : '';
+
         // Room badge at the top-right ONLY if there is exactly 1 item and it has no subgroups
-        const showTopRoom = items.length === 1 && !items[0].subgroups && items[0].room;
-        const topRoomBadge = showTopRoom ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${items[0].room}</span>` : '';
+        const topRoomText = items.length === 1 && !items[0].subgroups
+          ? (items[0].room || (items[0].isRemote ? 'Онлайн' : null))
+          : null;
+        const topRoomBadge = topRoomText ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${topRoomText}</span>` : '';
 
         let innerContent = `
           <div class="flex items-center justify-between gap-2 mb-2">
             <div class="flex items-center gap-1.5 flex-wrap min-w-0">
               <span class="badge ${isLive ? 'badge-accent font-bold text-white shadow-sm' : 'badge-ghost font-bold font-mono'} badge-sm flex-shrink-0">${timeStr}</span>
               ${commonTypeBadge}
+              ${commonRemoteBadge}
               ${liveBadgeHTML}
             </div>
             ${topRoomBadge}
@@ -3288,8 +3393,9 @@
 
         items.forEach((item, idx) => {
           // If multiple items, show each item's room badge directly on its row
-          const itemRoomBadge = (!showTopRoom && !item.subgroups && item.room)
-            ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${item.room}</span>`
+          const itemRoomText = item.room || (item.isRemote ? 'Онлайн' : null);
+          const itemRoomBadge = (!topRoomText && !item.subgroups && itemRoomText)
+            ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${itemRoomText}</span>`
             : '';
 
           const subgroupBadge = item.subgroup ? `
@@ -3304,6 +3410,18 @@
             <span class="badge badge-sm font-bold flex-shrink-0" style="color: ${item.type.color}; background: ${item.type.bg}; border: 1px solid ${item.type.border};">${item.type.label}</span>
           ` : '';
 
+          // Плашка ДО на строке предмета ТОЛЬКО если она не вынесена общей в заголовок
+          const itemRemoteBadge = (!hasCommonRemote && item.isRemote) ? doBadgeMarkup : '';
+
+          const linkButton = item.url ? `
+            <div class="mt-1.5">
+              <a href="${item.url}" target="_blank" rel="noopener noreferrer" onclick="if(window.Telegram?.WebApp?.openLink){Telegram.WebApp.openLink('${item.url}');return false;}" class="moodle-link-btn">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                <span>Moodle / ЭУМК</span>
+              </a>
+            </div>
+          ` : '';
+
           innerContent += `
             <div class="${idx > 0 ? 'mt-2.5 pt-2.5 border-t border-base-content/10' : ''}">
               <div class="flex items-start justify-between gap-2">
@@ -3311,6 +3429,7 @@
                   ${subgroupBadge}
                   <span class="text-[14px] font-bold leading-snug">${item.title}</span>
                   ${itemTypeBadge}
+                  ${itemRemoteBadge}
                 </div>
                 ${itemRoomBadge}
               </div>
@@ -3350,6 +3469,7 @@
                   }).join('')}
                 </div>
               ` : renderLessonDetails(item.details)}
+              ${linkButton}
             </div>
           `;
         });
@@ -3986,14 +4106,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v8') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v10') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=9')
+        navigator.serviceWorker.register('./sw-preview.js?v=10')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
