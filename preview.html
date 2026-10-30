@@ -476,7 +476,7 @@
       background: var(--glass-card-subtle);
       border: 1px solid var(--border-color);
       border-radius: 14px;
-      padding: 9px 10px;
+      padding: 8px 9px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -876,21 +876,21 @@
       gap: 5px;
       padding: 2.5px 8.5px;
       border-radius: 7px;
-      background: rgba(255, 255, 255, 0.14);
-      border: 1px solid rgba(255, 255, 255, 0.28);
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.32);
       color: #ffffff;
       font-size: 11px;
-      font-weight: 750;
+      font-weight: 800;
       letter-spacing: 0.25px;
       line-height: 1.2;
       flex-shrink: 0;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     }
     html:not(.dark) .subgroup-pill {
-      background: rgba(0, 0, 0, 0.08);
-      border-color: rgba(0, 0, 0, 0.22);
+      background: rgba(0, 0, 0, 0.10);
+      border-color: rgba(0, 0, 0, 0.26);
       color: #09090b;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
     }
     .subgroup-pill .sg-dot {
       width: 5px;
@@ -899,21 +899,34 @@
       background: #ffffff;
       opacity: 0.95;
       flex-shrink: 0;
+      box-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
     }
     html:not(.dark) .subgroup-pill .sg-dot {
       background: #09090b;
-      opacity: 0.85;
+      opacity: 0.9;
+      box-shadow: none;
+    }
+    .subgroup-pill-compact {
+      padding: 1px 5.5px !important;
+      font-size: 9.5px !important;
+      gap: 3px !important;
+      border-radius: 5.5px !important;
+      letter-spacing: 0.1px !important;
+    }
+    .subgroup-pill-compact .sg-dot {
+      width: 3.5px !important;
+      height: 3.5px !important;
     }
 
     /* ─── Slide to Confirm (Swipe to dismiss beta banner) ─────────────────── */
     .slide-to-confirm-bar {
       position: relative;
-      margin-top: 8px;
+      margin-top: 2px;
       width: 100%;
-      height: 30px;
+      height: 26px;
       border-radius: 9999px;
       background: rgba(0, 0, 0, 0.24);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.14);
       display: flex;
       align-items: center;
       padding: 2px;
@@ -923,14 +936,14 @@
       -webkit-user-select: none;
     }
     html:not(.dark) .slide-to-confirm-bar {
-      background: rgba(0, 0, 0, 0.06);
-      border-color: rgba(0, 0, 0, 0.12);
+      background: rgba(0, 0, 0, 0.07);
+      border-color: rgba(0, 0, 0, 0.14);
     }
     .slide-track-text {
       position: absolute;
       width: 100%;
       text-align: center;
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 700;
       letter-spacing: 0.2px;
       color: var(--text-sub);
@@ -942,11 +955,11 @@
     .slide-thumb {
       position: absolute;
       left: 2px;
-      width: 26px;
-      height: 26px;
+      width: 22px;
+      height: 22px;
       border-radius: 9999px;
       background: #ffffff;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -957,7 +970,7 @@
     }
     .slide-thumb:active {
       cursor: grabbing;
-      transform: scale(1.08);
+      transform: scale(1.06);
     }
 
   </style>
@@ -1095,27 +1108,25 @@
       </div>
 
       <!-- Development Alert Banner -->
-      <div id="devWarningBanner" class="card-glass flex items-start gap-2.5 p-3 rounded-2xl w-full box-border border border-amber-500/30 bg-amber-500/10 text-base-content shadow-sm relative overflow-hidden" role="alert">
-        <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-500 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-          </svg>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="text-[11.5px] font-bold text-amber-500 mb-0.5 tracking-wide flex items-center gap-1.5">
-            <span>Внимание: бета-версия</span>
-            <span class="badge badge-warning badge-xs font-bold text-[9px] px-1 py-0 h-4">BETA</span>
+      <div id="devWarningBanner" class="card-glass p-2.5 rounded-2xl w-full box-border border border-amber-500/30 bg-amber-500/10 text-base-content shadow-sm flex flex-col gap-2 relative overflow-hidden" role="alert">
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-500 flex items-center justify-center flex-shrink-0 shadow-sm">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
           </div>
-          <p class="text-[11px] leading-relaxed text-base-content/85 font-medium m-0">
-            Приложение ещё в разработке, и очень рекомендуется сверять расписание со стандартным расписанием в <a href="https://www.dropbox.com/scl/fo/ltk4mvd0monarv8c9k70a/h?rlkey=yp9pp95tget8jo9oct0yppp7n&dl=0" target="_blank" rel="noopener noreferrer" class="text-amber-500 font-bold underline underline-offset-2 hover:opacity-80">Dropbox</a>. Когда я буду точно уверен в достоверности расписания в приложении, это оповещение пропадёт.
-          </p>
+          <div class="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap">
+            <span class="text-[12px] font-bold text-amber-500">Внимание: бета-версия</span>
+            <span class="badge badge-warning badge-xs font-bold text-[8.5px] px-1 py-0 h-3.5">DROPBOX</span>
+          </div>
         </div>
-          <!-- Slide To Confirm Widget -->
-          <div class="slide-to-confirm-bar" id="slideToConfirmBar">
-            <div class="slide-track-text">Смахни бегунок вправо для скрытия</div>
-            <div class="slide-thumb" id="slideThumb">
-              <svg class="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </div>
+        <p class="text-[11px] leading-snug text-base-content/85 font-medium m-0 pl-0.5">
+          Сверяйте расписание со стандартным в <a href="https://www.dropbox.com/scl/fo/ltk4mvd0monarv8c9k70a/h?rlkey=yp9pp95tget8jo9oct0yppp7n&dl=0" target="_blank" rel="noopener noreferrer" class="text-amber-500 font-bold underline underline-offset-2 hover:opacity-80">Dropbox</a>.
+        </p>
+        <div class="slide-to-confirm-bar" id="slideToConfirmBar">
+          <div class="slide-track-text">Смахните вправо для скрытия</div>
+          <div class="slide-thumb" id="slideThumb">
+            <svg class="w-3 h-3 text-black" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </div>
         </div>
       </div>
@@ -2111,6 +2122,7 @@
       triggerHaptic('medium');
       const banner = document.getElementById('devWarningBanner');
       if (banner) {
+        banner.style.overflow = 'hidden';
         banner.style.transition = 'opacity 0.25s ease, transform 0.25s ease, max-height 0.3s ease, margin 0.3s ease, padding 0.3s ease';
         banner.style.opacity = '0';
         banner.style.transform = 'translate3d(120%, 0, 0)';
@@ -2166,7 +2178,7 @@
         const match = currentTransform.match(/translateX\(([\d.]+)px\)/);
         const currentX = match ? parseFloat(match[1]) : 0;
 
-        if (currentX >= maxTranslate * 0.72) {
+        if (currentX >= maxTranslate * 0.7) {
           thumb.style.transition = 'transform 0.15s ease-out';
           thumb.style.transform = 'translateX(' + maxTranslate + 'px)';
           dismissDevWarning();
@@ -2180,13 +2192,18 @@
         }
       }
 
-      thumb.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX), { passive: true });
+      thumb.addEventListener('touchstart', (e) => {
+        if (e.touches && e.touches.length === 1) onStart(e.touches[0].clientX);
+      }, { passive: true });
       window.addEventListener('touchmove', (e) => {
-        if (isDragging && e.touches.length === 1) onMove(e.touches[0].clientX);
+        if (isDragging && e.touches && e.touches.length === 1) onMove(e.touches[0].clientX);
       }, { passive: true });
       window.addEventListener('touchend', onEnd, { passive: true });
 
-      thumb.addEventListener('mousedown', (e) => onStart(e.clientX));
+      thumb.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        onStart(e.clientX);
+      });
       window.addEventListener('mousemove', (e) => {
         if (isDragging) onMove(e.clientX);
       });
@@ -2956,12 +2973,12 @@
                     return `
                       <div class="subgroup-box min-w-0 h-full flex flex-col justify-between">
                         <div>
-                          <div class="flex items-center justify-between pb-1.5 border-b border-base-content/10">
-                            <span class="subgroup-pill text-[10px] py-0.5 px-2">
-                              <span class="sg-dot" style="width: 4px; height: 4px;"></span>
-                              <span>${sgIdx + 1} подгруппа</span>
+                          <div class="flex items-center justify-between gap-1 pb-1.5 border-b border-base-content/10 min-w-0">
+                            <span class="subgroup-pill subgroup-pill-compact font-extrabold flex-shrink-0" title="${sgIdx + 1} подгруппа">
+                              <span class="sg-dot"></span>
+                              <span>${sgIdx + 1} п/г</span>
                             </span>
-                            ${sg.room ? `<span class="badge badge-ghost badge-xs font-mono font-bold flex-shrink-0">${sg.room}</span>` : ''}
+                            ${sg.room ? `<span class="badge badge-ghost badge-xs font-mono font-bold flex-shrink-0 text-[10px] px-1.5 py-0 h-4 leading-4 max-w-[85px] truncate" title="${sg.room}">${sg.room}</span>` : ''}
                           </div>
                           <div class="text-[10px] text-base-content/55 truncate h-4 leading-4 font-medium mt-1">
                             ${rank || '&nbsp;'}
@@ -3611,14 +3628,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v6') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v7') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=6')
+        navigator.serviceWorker.register('./sw-preview.js?v=7')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
