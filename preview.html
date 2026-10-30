@@ -65,8 +65,8 @@
       --bg-gradient: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
       --text-main: #09090b;
       --text-sub: #71717a;
-      --glass-card: rgba(255, 255, 255, 0.82);
-      --glass-card-subtle: rgba(255, 255, 255, 0.60);
+      --glass-card: rgba(255, 255, 255, 0.75);
+      --glass-card-subtle: rgba(255, 255, 255, 0.52);
       --glass-border: rgba(0, 0, 0, 0.08);
       --glass-inner-bevel: inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
       --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
@@ -85,8 +85,8 @@
       --bg-gradient: #000000;
       --text-main: #f4f4f5;
       --text-sub: #a1a1aa;
-      --glass-card: rgba(14, 14, 16, 0.88);
-      --glass-card-subtle: rgba(24, 24, 27, 0.68);
+      --glass-card: rgba(14, 14, 16, 0.76);
+      --glass-card-subtle: rgba(22, 22, 26, 0.56);
       --glass-border: rgba(255, 255, 255, 0.09);
       --glass-inner-bevel: inset 0 1px 1px 0 rgba(255, 255, 255, 0.06);
       --card-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.95);
@@ -870,10 +870,10 @@
     }
 
     /* ═════════════════════════════════════════════════════════════════════════
-       KOKONUT UI DESIGN SYSTEM (Apple Liquid Glass, Spring Physics, Micro-Interactions)
+       REFINED KOKONUT UI SYSTEM (Subtle Apple Aesthetics, OLED Pure Black, Pure Monochrome Subgroups)
        ═════════════════════════════════════════════════════════════════════════ */
 
-    /* ─── 1. Topo Background Canvas ───────────────────────────────────────── */
+    /* ─── 1. Topo Background Canvas (Crisp & Visibly Distinct) ─────────────── */
     .topo-bg-canvas {
       position: fixed;
       inset: 0;
@@ -881,11 +881,10 @@
       height: 100vh;
       pointer-events: none;
       z-index: 0;
-      opacity: 0.9;
-      transition: opacity 0.5s ease;
+      opacity: 1;
     }
 
-    /* ─── 2. Kokonut UI Switch Button (Theme Toggle) ───────────────────────── */
+    /* ─── 2. Theme Toggle Button (Silver Moon in Dark, Warm Sun in Light) ──── */
     .kokonut-switch-btn {
       position: relative;
       width: 36px;
@@ -901,60 +900,42 @@
       transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
       flex-shrink: 0;
       outline: none;
+      overflow: hidden;
     }
     .kokonut-switch-btn:hover {
       background: var(--glass-card-hover);
       border-color: rgba(255, 255, 255, 0.25);
     }
-    .kokonut-switch-icon {
-      overflow: visible;
-      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    .theme-icon-sun {
+      position: absolute;
+      color: #f59e0b;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
     }
-    .kokonut-sun-disc {
-      transform-origin: 12px 12px;
-      transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1), fill 0.35s ease;
+    .theme-icon-moon {
+      position: absolute;
+      color: #f4f4f5;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
     }
-    .kokonut-moon-bite {
-      transition: transform 0.38s cubic-bezier(0.65, 0, 0.35, 1);
-    }
-    .kokonut-sun-rays line {
-      transform-origin: 12px 12px;
-      transition: opacity 0.25s ease, transform 0.26s cubic-bezier(0.23, 1, 0.32, 1);
-    }
-    /* Light Mode: Sun is glowing amber, rays expanded */
-    html:not(.dark) .kokonut-sun-disc {
-      fill: #f59e0b;
-      transform: scale(1);
-    }
-    html:not(.dark) .kokonut-moon-bite {
-      transform: translate(0, 0);
-    }
-    html:not(.dark) .kokonut-sun-rays {
-      opacity: 1;
-      transform: scale(1);
-    }
-    /* Dark Mode: Rays retract sequentially into center, bite carves crescent moon */
-    html.dark .kokonut-sun-disc {
-      fill: #f4f4f5;
-      transform: scale(1.15);
-    }
-    html.dark .kokonut-moon-bite {
-      transform: translate(-6.2px, 6.2px);
-    }
-    html.dark .kokonut-sun-rays line {
+    html.dark .theme-icon-sun {
+      transform: rotate(90deg) scale(0.3);
       opacity: 0;
-      transform: scale(0.3);
+      pointer-events: none;
     }
-    .ray-0 { transition-delay: 0ms; }
-    .ray-1 { transition-delay: 18ms; }
-    .ray-2 { transition-delay: 36ms; }
-    .ray-3 { transition-delay: 54ms; }
-    .ray-4 { transition-delay: 72ms; }
-    .ray-5 { transition-delay: 90ms; }
-    .ray-6 { transition-delay: 108ms; }
-    .ray-7 { transition-delay: 126ms; }
+    html.dark .theme-icon-moon {
+      transform: rotate(0deg) scale(1);
+      opacity: 1;
+    }
+    html:not(.dark) .theme-icon-sun {
+      transform: rotate(0deg) scale(1);
+      opacity: 1;
+    }
+    html:not(.dark) .theme-icon-moon {
+      transform: rotate(-90deg) scale(0.3);
+      opacity: 0;
+      pointer-events: none;
+    }
 
-    /* ─── 3. Kokonut UI Swipe Tabs (Header Navigation) ─────────────────────── */
+    /* ─── 3. Header Swipe Tabs (Monochrome & Discreet) ─────────────────────── */
     .kokonut-swipe-tabs {
       position: relative;
       display: inline-flex;
@@ -992,9 +973,9 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 6px 14px;
+      padding: 5px 13px;
       border-radius: 9999px;
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--text-sub);
       transition: color 0.2s ease, opacity 0.2s ease;
@@ -1011,7 +992,7 @@
       opacity: 0.8;
     }
 
-    /* ─── 4. Kokonut UI Status Island (Dynamic Island) ─────────────────────── */
+    /* ─── 4. Status Indicator (Live Lesson Capsule) ────────────────────────── */
     .kokonut-status-island {
       display: inline-flex;
       align-items: center;
@@ -1026,32 +1007,26 @@
     .island-capsule {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      background: rgba(18, 18, 22, 0.82);
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      gap: 6px;
+      background: var(--glass-card-subtle);
+      border: 1px solid var(--border-color);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-radius: 9999px;
-      padding: 4px 11px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    html:not(.dark) .island-capsule {
-      background: rgba(255, 255, 255, 0.88);
-      border-color: rgba(0, 0, 0, 0.12);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      padding: 3.5px 10px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+      transition: all 0.25s ease;
     }
     .island-dot {
-      width: 6.5px;
-      height: 6.5px;
+      width: 6px;
+      height: 6px;
       border-radius: 9999px;
       flex-shrink: 0;
     }
     .island-text-title {
-      font-size: 11.5px;
-      font-weight: 800;
+      font-size: 11px;
+      font-weight: 700;
       color: var(--text-main);
-      letter-spacing: -0.1px;
     }
     .island-separator {
       font-size: 10px;
@@ -1059,23 +1034,21 @@
       opacity: 0.5;
     }
     .island-text-timer {
-      font-size: 11.5px;
+      font-size: 11px;
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-weight: 700;
-      color: #10b981;
+      font-weight: 600;
     }
     .island-chevron {
-      width: 12px;
-      height: 12px;
+      width: 11px;
+      height: 11px;
       color: var(--text-sub);
-      opacity: 0.7;
-      transition: transform 0.25s ease;
+      opacity: 0.6;
     }
     .island-modal-overlay {
       position: fixed;
       inset: 0;
       z-index: 100;
-      background: rgba(0, 0, 0, 0.55);
+      background: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       display: flex;
@@ -1083,7 +1056,7 @@
       justify-content: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.28s ease;
+      transition: opacity 0.25s ease;
     }
     .island-modal-overlay.open {
       opacity: 1;
@@ -1095,11 +1068,11 @@
       background: var(--glass-card);
       border: 1px solid var(--border-color);
       border-bottom: none;
-      border-radius: 28px 28px 0 0;
-      padding: 18px 20px 28px;
+      border-radius: 26px 26px 0 0;
+      padding: 16px 20px 24px;
       box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
       transform: translateY(100%);
-      transition: transform 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .island-modal-overlay.open .island-modal-sheet {
       transform: translateY(0);
@@ -1109,60 +1082,51 @@
       height: 4px;
       border-radius: 9999px;
       background: var(--border-color);
-      margin: 0 auto 14px;
-      opacity: 0.8;
+      margin: 0 auto 12px;
+      opacity: 0.7;
     }
 
-    /* ─── 5. Kokonut UI Notification Stack & Slide-To-Confirm ────────────── */
+    /* ─── 5. Notification Stack (Zero Space Left When Closed) ──────────────── */
     .kokonut-notification-stack {
       position: relative;
       width: 100%;
-      min-height: 72px;
-      perspective: 1000px;
-      margin-bottom: 2px;
+      margin-bottom: 6px;
+      transition: margin 0.25s ease, opacity 0.25s ease;
+    }
+    .kokonut-notification-stack:empty {
+      display: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      height: 0 !important;
+      min-height: 0 !important;
     }
     .kokonut-stack-card {
       position: relative;
       width: 100%;
       background: var(--glass-card);
       border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 12px 14px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, box-shadow 0.3s ease;
-      transform-origin: top center;
-      cursor: pointer;
-      user-select: none;
+      border-radius: 18px;
+      padding: 10px 13px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      transition: transform 0.25s ease, opacity 0.25s ease;
       box-sizing: border-box;
     }
-    .kokonut-notification-stack.is-fanned .kokonut-stack-card:nth-child(1) {
-      transform: translateY(0px) scale(1) !important;
-      z-index: 3;
-    }
-    .kokonut-notification-stack.is-fanned .kokonut-stack-card:nth-child(2) {
-      transform: translateY(68px) scale(0.98) !important;
-      z-index: 2;
-    }
     .notif-card-warning {
-      border-color: rgba(245, 158, 11, 0.3);
-      background: rgba(245, 158, 11, 0.08);
-    }
-    .notif-card-success {
-      border-color: rgba(16, 185, 129, 0.3);
-      background: rgba(16, 185, 129, 0.08);
+      border-color: rgba(245, 158, 11, 0.25);
+      background: rgba(245, 158, 11, 0.06);
     }
     .notif-card-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 9px;
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
     .notif-close-btn {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       border-radius: 9999px;
       border: none;
       background: rgba(255, 255, 255, 0.08);
@@ -1181,30 +1145,25 @@
     }
     .kokonut-micro-badge {
       font-size: 9px;
-      font-weight: 800;
+      font-weight: 700;
       font-family: ui-monospace, monospace;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
       padding: 1px 5px;
-      border-radius: 5px;
-      background: rgba(245, 158, 11, 0.2);
+      border-radius: 4px;
+      background: rgba(245, 158, 11, 0.15);
       color: #f59e0b;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-    }
-    .kokonut-micro-badge.badge-emerald {
-      background: rgba(16, 185, 129, 0.2);
-      color: #10b981;
-      border-color: rgba(16, 185, 129, 0.3);
+      border: 1px solid rgba(245, 158, 11, 0.25);
     }
 
     /* Slide to confirm bar */
     .slide-to-confirm-bar {
       position: relative;
-      margin-top: 10px;
+      margin-top: 8px;
       width: 100%;
-      height: 32px;
+      height: 28px;
       border-radius: 9999px;
-      background: rgba(0, 0, 0, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       align-items: center;
       padding: 2px;
@@ -1212,24 +1171,23 @@
       touch-action: pan-y;
     }
     html:not(.dark) .slide-to-confirm-bar {
-      background: rgba(0, 0, 0, 0.06);
+      background: rgba(0, 0, 0, 0.05);
       border-color: rgba(0, 0, 0, 0.08);
     }
     .slide-track-text {
       position: absolute;
       width: 100%;
       text-align: center;
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 700;
       color: var(--text-sub);
       pointer-events: none;
-      letter-spacing: 0.2px;
     }
     .slide-thumb {
       position: relative;
       z-index: 2;
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
       border-radius: 9999px;
       background: #f59e0b;
       color: #000;
@@ -1237,12 +1195,7 @@
       align-items: center;
       justify-content: center;
       cursor: grab;
-      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
-      transition: transform 0.05s linear;
-    }
-    .slide-thumb:active {
-      cursor: grabbing;
-      transform: scale(1.05);
+      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4);
     }
 
     /* ─── 6. Smooth Tab Indicator on Days Strip ───────────────────────────── */
@@ -1252,16 +1205,16 @@
       bottom: 6px;
       border-radius: 14px;
       background: var(--glass-card);
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
       pointer-events: none;
-      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), width 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 1;
     }
     html:not(.dark) .calendar-momentum-pill {
       background: #ffffff;
-      border-color: rgba(0, 0, 0, 0.12);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-color: rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     }
     .calendar-day-btn {
       position: relative;
@@ -1279,54 +1232,40 @@
       font-weight: 800 !important;
     }
 
-    /* ─── 7. Kokonut UI Subgroup Micro-Tag & Badge Replacements ───────────── */
+    /* ─── 7. PURE MONOCHROME SUBGROUP TAGS (Clean & Calm) ─────────────────── */
     .kokonut-subgroup-pill {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 2px 8px;
-      border-radius: 9999px;
-      background: var(--glass-card-subtle);
-      border: 1px solid var(--border-color);
+      gap: 4px;
+      padding: 1.5px 6.5px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #e4e4e7;
       font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.3px;
-      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.2px;
       flex-shrink: 0;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    html:not(.dark) .kokonut-subgroup-pill {
+      background: rgba(0, 0, 0, 0.05);
+      border-color: rgba(0, 0, 0, 0.1);
+      color: #3f3f46;
     }
     .kokonut-subgroup-pill .sg-dot {
-      width: 5px;
-      height: 5px;
+      width: 4px;
+      height: 4px;
       border-radius: 9999px;
-      flex-shrink: 0;
-    }
-    .kokonut-subgroup-pill.sg-1 {
-      border-color: rgba(56, 189, 248, 0.35);
-      background: rgba(56, 189, 248, 0.09);
-      color: #38bdf8;
-    }
-    .kokonut-subgroup-pill.sg-1 .sg-dot {
-      background: #38bdf8;
-      box-shadow: 0 0 6px #38bdf8;
-    }
-    .kokonut-subgroup-pill.sg-2 {
-      border-color: rgba(245, 158, 11, 0.35);
-      background: rgba(245, 158, 11, 0.09);
-      color: #fbbf24;
-    }
-    .kokonut-subgroup-pill.sg-2 .sg-dot {
-      background: #fbbf24;
-      box-shadow: 0 0 6px #fbbf24;
+      background: var(--text-sub);
+      opacity: 0.65;
     }
     .kokonut-time-capsule {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 2px 8px;
-      border-radius: 8px;
-      background: var(--glass-card-subtle);
-      border: 1px solid var(--border-color);
+      padding: 1.5px 7px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 11px;
       font-weight: 700;
@@ -1334,8 +1273,8 @@
       flex-shrink: 0;
     }
     .kokonut-time-capsule.is-live {
-      background: rgba(16, 185, 129, 0.15);
-      border-color: rgba(16, 185, 129, 0.4);
+      background: rgba(16, 185, 129, 0.14);
+      border-color: rgba(16, 185, 129, 0.35);
       color: #10b981;
     }
 
@@ -1400,7 +1339,7 @@
         </button>
       </nav>
 
-      <!-- Kokonut UI Switch Button (Theme Toggle with Sun/Moon Physical Morph) -->
+      <!-- Sleek Theme Toggle Button (Crisp Silver Moon in Dark, Warm Sun in Light) -->
       <button
         type="button"
         id="kokonutThemeSwitch"
@@ -1409,22 +1348,21 @@
         title="Сменить тему"
         aria-label="Сменить тему"
       >
-        <svg class="kokonut-switch-icon" viewBox="0 0 24 24" width="18" height="18">
-          <mask id="kokonutMoonBiteMask">
-            <rect x="0" y="0" width="24" height="24" fill="white" />
-            <circle class="kokonut-moon-bite" cx="18" cy="6" r="6.2" fill="black" />
-          </mask>
-          <circle class="kokonut-sun-disc" cx="12" cy="12" r="4.8" mask="url(#kokonutMoonBiteMask)" />
-          <g class="kokonut-sun-rays" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-            <line class="ray ray-0" x1="12" y1="1.5" x2="12" y2="3.5" />
-            <line class="ray ray-1" x1="19.4" y1="4.6" x2="18" y2="6" />
-            <line class="ray ray-2" x1="22.5" y1="12" x2="20.5" y2="12" />
-            <line class="ray ray-3" x1="19.4" y1="19.4" x2="18" y2="18" />
-            <line class="ray ray-4" x1="12" y1="22.5" x2="12" y2="20.5" />
-            <line class="ray ray-5" x1="4.6" y1="19.4" x2="6" y2="18" />
-            <line class="ray ray-6" x1="1.5" y1="12" x2="3.5" y2="12" />
-            <line class="ray ray-7" x1="4.6" y1="4.6" x2="6" y2="6" />
-          </g>
+        <!-- Sun Icon (Light Mode) -->
+        <svg class="theme-icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <!-- Moon Icon (Dark Mode - High-contrast white/silver) -->
+        <svg class="theme-icon-moon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
     </div>
@@ -1535,7 +1473,7 @@
           <h2 id="dayFullTitle" style="font-size: 15px; font-weight: 800; letter-spacing: -0.2px; margin: 0;">...</h2>
           <div id="dayStatusBadge"></div>
           <!-- Kokonut UI Status Island (Dynamic Island Capsule) -->
-          <div id="kokonutStatusIsland" class="kokonut-status-island" onclick="openStatusIslandModal()" title="Нажмите для открытия деталей">
+          <div id="kokonutStatusIsland" class="kokonut-status-island" onclick="openStatusIslandModal()" title="Нажмите для просмотра подробностей пары">
             <div class="island-capsule">
               <span id="islandDot" class="island-dot bg-emerald-400 animate-pulse"></span>
               <span id="islandTitle" class="island-text-title">Идёт пара</span>
@@ -1583,7 +1521,7 @@
             </div>
           </div>
           <button type="button" onclick="closeStatusIslandModal()" class="btn btn-ghost btn-sm w-full rounded-2xl text-xs font-bold border border-base-content/10 mt-1">
-            Свернуть остров
+            Закрыть
           </button>
         </div>
       </div>
@@ -2604,8 +2542,10 @@
     function checkDevWarningVisibility() {
       try {
         if (sessionStorage.getItem('devWarningDismissed') === 'true') {
-          const banner = document.getElementById('devWarningBanner');
-          if (banner) banner.style.display = 'none';
+          const stack = document.getElementById('kokonutNotificationStack');
+          if (stack) stack.style.display = 'none';
+          const card = document.getElementById('notifCardDropbox');
+          if (card) card.remove();
         }
       } catch (e) {}
     }
@@ -3302,7 +3242,7 @@
         ` : '';
 
         const commonTypeBadge = commonType ? `
-          <span class="badge badge-sm font-bold flex-shrink-0" style="color: ${commonType.color}; background: ${commonType.bg}; border: 1px solid ${commonType.border};">${commonType.label}</span>
+          <span class="badge badge-ghost badge-sm text-[11px] font-semibold opacity-75 border border-base-content/10 flex-shrink-0">${commonType.label}</span>
         ` : '';
 
         // Room badge at the top-right ONLY if there is exactly 1 item and it has no subgroups
@@ -3326,17 +3266,16 @@
             ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${item.room}</span>`
             : '';
 
-          const isSg1 = item.subgroup && item.subgroup.includes('1');
           const subgroupBadge = item.subgroup ? `
-            <span class="kokonut-subgroup-pill ${isSg1 ? 'sg-1' : 'sg-2'}">
+            <span class="kokonut-subgroup-pill">
               <span class="sg-dot"></span>
-              <span class="sg-text">${item.subgroup}</span>
+              <span>${item.subgroup}</span>
             </span>
           ` : '';
 
           // Плашка типа занятия выводится на строке предмета ТОЛЬКО если она не вынесена общей в заголовок
           const itemTypeBadge = (!commonType && item.type) ? `
-            <span class="badge badge-sm font-bold flex-shrink-0" style="color: ${item.type.color}; background: ${item.type.bg}; border: 1px solid ${item.type.border};">${item.type.label}</span>
+            <span class="badge badge-ghost badge-sm text-[11px] font-semibold opacity-75 border border-base-content/10 flex-shrink-0">${item.type.label}</span>
           ` : '';
 
           innerContent += `
@@ -3991,17 +3930,151 @@
     // KOKONUT UI INTERACTIVE RUNTIME ENGINES
     // ═════════════════════════════════════════════════════════════════════════
 
-    // ─── 1. Topo Background Interactive Canvas Engine ─────────────────────────
+    // ─── 1. Authentic Kokonut UI Topo Background (Marching Squares) ──────────
     let topoCanvas, topoCtx, topoW, topoH;
-    let topoMouse = { x: -100, y: -100, active: false };
+    let topoNoise = null;
+    let topoDrift = 0;
+    let topoHill = { x: 0, y: 0, targetX: 0, targetY: 0, amount: 0, on: false };
     let topoRipples = [];
-    let topoTime = 0;
     let topoAnimFrame = null;
+
+    const TOPO_CELL = 18;
+    const TOPO_INDEX_EVERY = 4;
+    const TOPO_SCALE = 320;
+    const TOPO_INTERVAL = 0.085;
+
+    function createNoise(seed) {
+      const p = Array.from({ length: 256 }, (_, i) => i);
+      let state = seed >>> 0 || 1;
+      const random = () => {
+        state = (state * 1664525 + 1013904223) >>> 0;
+        return state / 4294967296;
+      };
+      for (let i = 255; i > 0; i--) {
+        const j = Math.floor(random() * (i + 1));
+        [p[i], p[j]] = [p[j], p[i]];
+      }
+      const perm = new Uint8Array(512);
+      for (let i = 0; i < 512; i++) perm[i] = p[i & 255];
+      const fade = t => t * t * t * (t * (t * 6 - 15) + 10);
+      const lerp = (a, b, t) => a + (b - a) * t;
+      const grad = (hash, x, y, z) => {
+        const h = hash & 15;
+        const u = h < 8 ? x : y;
+        const v = h < 4 ? y : (h === 12 || h === 14 ? x : z);
+        return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
+      };
+      return (x, y, z) => {
+        const X = Math.floor(x) & 255;
+        const Y = Math.floor(y) & 255;
+        const Z = Math.floor(z) & 255;
+        const fx = x - Math.floor(x);
+        const fy = y - Math.floor(y);
+        const fz = z - Math.floor(z);
+        const u = fade(fx);
+        const v = fade(fy);
+        const w = fade(fz);
+        const A = perm[X] + Y;
+        const AA = perm[A] + Z;
+        const AB = perm[A + 1] + Z;
+        const B = perm[X + 1] + Y;
+        const BA = perm[B] + Z;
+        const BB = perm[B + 1] + Z;
+        return lerp(
+          lerp(
+            lerp(grad(perm[AA], fx, fy, fz), grad(perm[BA], fx - 1, fy, fz), u),
+            lerp(grad(perm[AB], fx, fy - 1, fz), grad(perm[BB], fx - 1, fy - 1, fz), u),
+            v
+          ),
+          lerp(
+            lerp(grad(perm[AA + 1], fx, fy, fz - 1), grad(perm[BA + 1], fx - 1, fy, fz - 1), u),
+            lerp(grad(perm[AB + 1], fx, fy - 1, fz - 1), grad(perm[BB + 1], fx - 1, fy - 1, fz - 1), u),
+            v
+          ),
+          w
+        );
+      };
+    }
+
+    function cellSegments(path, index, box, cross) {
+      const { x0, y0, x1, y1 } = box;
+      const { top, right, bottom, left } = cross;
+      const line = (ax, ay, bx, by) => {
+        path.moveTo(ax, ay);
+        path.lineTo(bx, by);
+      };
+      switch (index) {
+        case 1:
+        case 14:
+          line(x0, left, bottom, y1);
+          break;
+        case 2:
+        case 13:
+          line(bottom, y1, x1, right);
+          break;
+        case 3:
+        case 12:
+          line(x0, left, x1, right);
+          break;
+        case 4:
+        case 11:
+          line(top, y0, x1, right);
+          break;
+        case 6:
+        case 9:
+          line(top, y0, bottom, y1);
+          break;
+        case 7:
+        case 8:
+          line(x0, left, top, y0);
+          break;
+        case 5:
+          line(x0, left, top, y0);
+          line(bottom, y1, x1, right);
+          break;
+        case 10:
+          line(top, y0, x1, right);
+          line(x0, left, bottom, y1);
+          break;
+      }
+    }
+
+    function traceContours(field, cols, rows, interval, minor, major) {
+      for (let j = 0; j < rows - 1; j++) {
+        for (let i = 0; i < cols - 1; i++) {
+          const a = field[j * cols + i];
+          const b = field[j * cols + i + 1];
+          const c = field[(j + 1) * cols + i + 1];
+          const d = field[(j + 1) * cols + i];
+          const x0 = i * TOPO_CELL;
+          const y0 = j * TOPO_CELL;
+          const first = Math.ceil(Math.min(a, b, c, d) / interval);
+          const last = Math.floor(Math.max(a, b, c, d) / interval);
+          if (first > last) continue;
+
+          const box = { x0, y0, x1: x0 + TOPO_CELL, y1: y0 + TOPO_CELL };
+          for (let level = first; level <= last; level++) {
+            const t = level * interval;
+            const index = (a > t ? 8 : 0) | (b > t ? 4 : 0) | (c > t ? 2 : 0) | (d > t ? 1 : 0);
+            if (index === 0 || index === 15) continue;
+            const isIndex = level % TOPO_INDEX_EVERY === 0;
+            const cross = {
+              top: x0 + TOPO_CELL * ((t - a) / (b - a || 1e-6)),
+              right: y0 + TOPO_CELL * ((t - b) / (c - b || 1e-6)),
+              bottom: x0 + TOPO_CELL * ((t - d) / (c - d || 1e-6)),
+              left: y0 + TOPO_CELL * ((t - a) / (d - a || 1e-6))
+            };
+            cellSegments(isIndex ? major : minor, index, box, cross);
+          }
+        }
+      }
+    }
 
     function initTopoCanvas() {
       topoCanvas = document.getElementById('topoCanvas');
       if (!topoCanvas) return;
       topoCtx = topoCanvas.getContext('2d');
+      topoNoise = createNoise(42);
 
       function resize() {
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -4015,109 +4088,94 @@
       resize();
 
       window.addEventListener('pointermove', (e) => {
-        topoMouse.x = e.clientX;
-        topoMouse.y = e.clientY;
-        topoMouse.active = true;
+        topoHill.targetX = e.clientX;
+        topoHill.targetY = e.clientY;
+        topoHill.on = true;
       }, { passive: true });
 
       window.addEventListener('pointerleave', () => {
-        topoMouse.active = false;
+        topoHill.on = false;
       }, { passive: true });
 
-      // Click or tap on background sends a harmonic ripple wave across isolines
       window.addEventListener('pointerdown', (e) => {
-        // Only trigger ripple if clicking outside interactive elements
         if (e.target.closest('button, a, input, select, .modal-sheet, .card-glass, .island-capsule')) {
           return;
         }
         topoRipples.push({
           x: e.clientX,
           y: e.clientY,
-          radius: 0,
-          opacity: 1.0
+          start: performance.now()
         });
-        if (topoRipples.length > 5) topoRipples.shift();
+        if (topoRipples.length > 4) topoRipples.shift();
       }, { passive: true });
-
-      function getTopoHeight(x, y, t) {
-        const scale = 0.008;
-        let val = Math.sin(x * scale + t * 0.25) * Math.cos(y * scale + t * 0.2);
-        val += Math.sin((x + y) * scale * 0.5 - t * 0.12) * 0.45;
-
-        // Hill follows pointer with spring spread
-        if (topoMouse.active) {
-          const dx = x - topoMouse.x;
-          const dy = y - topoMouse.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            val += (1 - dist / 120) * 0.75;
-          }
-        }
-
-        // Circular ripples propagate outward
-        for (let i = 0; i < topoRipples.length; i++) {
-          const r = topoRipples[i];
-          const dx = x - r.x;
-          const dy = y - r.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (Math.abs(dist - r.radius) < 32) {
-            const wave = Math.sin((dist - r.radius) * 0.2);
-            val += wave * 0.45 * r.opacity;
-          }
-        }
-        return val;
-      }
 
       function drawTopoLoop() {
         if (document.hidden) {
           topoAnimFrame = requestAnimationFrame(drawTopoLoop);
           return;
         }
+        topoDrift += 0.0018;
 
-        topoTime += 0.012;
-        topoCtx.clearRect(0, 0, topoW, topoH);
+        const follow = 0.08;
+        topoHill.x += (topoHill.targetX - topoHill.x) * follow;
+        topoHill.y += (topoHill.targetY - topoHill.y) * follow;
+        const goal = topoHill.on ? 1 : 0;
+        topoHill.amount += (goal - topoHill.amount) * 0.05;
 
-        // Update ripples
-        for (let i = topoRipples.length - 1; i >= 0; i--) {
-          topoRipples[i].radius += 2.2;
-          topoRipples[i].opacity -= 0.012;
-          if (topoRipples[i].opacity <= 0) topoRipples.splice(i, 1);
-        }
+        const cols = Math.ceil(topoW / TOPO_CELL) + 1;
+        const rows = Math.ceil(topoH / TOPO_CELL) + 1;
+        const field = new Float32Array(cols * rows);
 
-        const isDark = document.documentElement.classList.contains('dark');
-        const baseStroke = isDark ? 'rgba(255, 255, 255, 0.065)' : 'rgba(0, 0, 0, 0.055)';
-        const indexStroke = isDark ? 'rgba(16, 185, 129, 0.26)' : 'rgba(16, 185, 129, 0.20)';
+        const now = performance.now();
+        for (let j = 0; j < rows; j++) {
+          const y = j * TOPO_CELL;
+          for (let i = 0; i < cols; i++) {
+            const x = i * TOPO_CELL;
+            let val = topoNoise(x / TOPO_SCALE, y / TOPO_SCALE, topoDrift);
 
-        const step = 14;
-        const levels = [-0.65, -0.35, 0.0, 0.35, 0.65];
-
-        for (let y = 0; y < topoH; y += step) {
-          topoCtx.beginPath();
-          let drawing = false;
-          for (let x = 0; x < topoW; x += step) {
-            const h = getTopoHeight(x, y, topoTime);
-            const nearLvl = levels.find(lvl => Math.abs(h - lvl) < 0.07);
-
-            if (nearLvl !== undefined) {
-              const isIndex = (nearLvl === 0.0);
-              topoCtx.strokeStyle = isIndex ? indexStroke : baseStroke;
-              topoCtx.lineWidth = isIndex ? 1.4 : 0.8;
-              if (!drawing) {
-                topoCtx.moveTo(x, y);
-                drawing = true;
-              } else {
-                topoCtx.lineTo(x, y);
-              }
-            } else {
-              if (drawing) {
-                topoCtx.stroke();
-                topoCtx.beginPath();
-                drawing = false;
+            if (topoHill.amount > 0.01) {
+              const dx = x - topoHill.x;
+              const dy = y - topoHill.y;
+              const d2 = dx * dx + dy * dy;
+              if (d2 < 14400) {
+                val += (1 - Math.sqrt(d2) / 120) * 0.45 * topoHill.amount;
               }
             }
+
+            for (let r = 0; r < topoRipples.length; r++) {
+              const rip = topoRipples[r];
+              const age = now - rip.start;
+              const rad = age * 0.22;
+              const dx = x - rip.x;
+              const dy = y - rip.y;
+              const d = Math.sqrt(dx * dx + dy * dy);
+              if (Math.abs(d - rad) < 40) {
+                const wave = Math.sin((d - rad) * 0.16);
+                const fade = Math.max(0, 1 - age / 1800);
+                val += wave * 0.3 * fade;
+              }
+            }
+            field[j * cols + i] = val;
           }
-          if (drawing) topoCtx.stroke();
         }
+
+        topoRipples = topoRipples.filter(r => (now - r.start) < 1800);
+
+        topoCtx.clearRect(0, 0, topoW, topoH);
+        const minorPath = new Path2D();
+        const majorPath = new Path2D();
+
+        traceContours(field, cols, rows, TOPO_INTERVAL, minorPath, majorPath);
+
+        const isDark = document.documentElement.classList.contains('dark');
+
+        topoCtx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.14)' : 'rgba(0, 0, 0, 0.11)';
+        topoCtx.lineWidth = 0.85;
+        topoCtx.stroke(minorPath);
+
+        topoCtx.strokeStyle = isDark ? 'rgba(16, 185, 129, 0.45)' : 'rgba(16, 185, 129, 0.38)';
+        topoCtx.lineWidth = 1.6;
+        topoCtx.stroke(majorPath);
 
         topoAnimFrame = requestAnimationFrame(drawTopoLoop);
       }
@@ -4246,7 +4304,7 @@
 
       if (_islandData.state === 'live' && _islandData.lesson) {
         dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse';
-        statusLabel.textContent = 'ИДЁТ ПАРА ПРЯМО СЕЙЧАС';
+        statusLabel.textContent = 'Идёт занятие';
         statusLabel.className = 'text-xs font-bold uppercase tracking-wider text-emerald-400';
         timeRange.textContent = _islandData.timeStr || '10:00 — 11:20';
 
@@ -4263,7 +4321,7 @@
         remaining.textContent = `Осталось ${_islandData.minsLeft} мин`;
       } else if (_islandData.state === 'break' && _islandData.lesson) {
         dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse';
-        statusLabel.textContent = _islandData.isWindow ? 'ФОРТОЧКА МЕЖДУ ПАРАМИ' : 'ПЕРЕМЕНА';
+        statusLabel.textContent = _islandData.isWindow ? 'Окно между парами' : 'Перемена';
         statusLabel.className = 'text-xs font-bold uppercase tracking-wider text-amber-400';
         timeRange.textContent = _islandData.timeStr || 'Перерыв';
 
@@ -4279,7 +4337,7 @@
         remaining.textContent = `Звонок через ${_islandData.minsLeft} мин`;
       } else if (_islandData.state === 'before' && _islandData.lesson) {
         dot.className = 'w-2.5 h-2.5 rounded-full bg-sky-400';
-        statusLabel.textContent = 'СКОРО НАЧАЛО ЗАНЯТИЙ';
+        statusLabel.textContent = 'Скоро начало занятий';
         statusLabel.className = 'text-xs font-bold uppercase tracking-wider text-sky-400';
         timeRange.textContent = _islandData.timeStr || 'Первая пара';
 
@@ -4295,7 +4353,7 @@
         remaining.textContent = `Начало через ${_islandData.minsLeft} мин`;
       } else {
         dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
-        statusLabel.textContent = 'ДЕНЬ ЗАВЕРШЁН';
+        statusLabel.textContent = 'Занятия окончены';
         statusLabel.className = 'text-xs font-bold uppercase tracking-wider text-emerald-400';
         timeRange.textContent = 'Отдых';
         lessonTitle.textContent = 'Все пары на сегодня закончились!';
@@ -4336,22 +4394,31 @@
         event.stopPropagation();
       }
       triggerHaptic('medium');
+      const stack = document.getElementById('kokonutNotificationStack');
       if (type === 'dropbox') {
         const card = document.getElementById('notifCardDropbox');
         if (card) {
-          card.style.transform = 'translate3d(120%, 0, 0) rotate(12deg)';
+          card.style.transform = 'translate3d(120%, 0, 0) scale(0.9)';
           card.style.opacity = '0';
           setTimeout(() => {
             card.remove();
             sessionStorage.setItem('devWarningDismissed', 'true');
-          }, 320);
+            if (stack && stack.children.length === 0) {
+              stack.style.display = 'none';
+            }
+          }, 240);
         }
       } else if (type === 'update') {
         const card = document.getElementById('notifCardUpdate');
         if (card) {
-          card.style.transform = 'translate3d(120%, 0, 0) rotate(12deg)';
+          card.style.transform = 'translate3d(120%, 0, 0) scale(0.9)';
           card.style.opacity = '0';
-          setTimeout(() => card.remove(), 320);
+          setTimeout(() => {
+            card.remove();
+            if (stack && stack.children.length === 0) {
+              stack.style.display = 'none';
+            }
+          }, 240);
         }
       }
     }
@@ -4452,14 +4519,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v2') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v3') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=2')
+        navigator.serviceWorker.register('./sw-preview.js?v=3')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
