@@ -1900,9 +1900,9 @@
       if (curMin < firstLesson.startMin) {
         const minsLeft = Math.max(0, firstLesson.startMin - curMin);
         liveTimerBox.innerHTML = `
-          <span class="badge badge-ghost badge-sm font-bold border border-base-content/20 gap-1" title="До начала первой пары">
-            <span>До пары</span>
-            ${formatCountdownDigits(minsLeft)}
+          <span class="badge badge-ghost badge-sm font-bold border border-base-content/20 gap-1.5" title="До начала пар">
+            <svg class="w-3 h-3 opacity-70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>
+            <span>до пары — ${formatMinutesLeft(minsLeft)}</span>
           </span>
         `;
         return;
@@ -1919,24 +1919,22 @@
       if (liveLesson) {
         const minsLeft = Math.max(0, liveLesson.endMin - curMin);
         liveTimerBox.innerHTML = `
-          <span class="badge badge-accent badge-sm font-bold gap-1 text-white shadow-sm" title="Идёт пара">
+          <span class="badge badge-accent badge-sm font-bold gap-1.5 text-white shadow-sm" title="Идёт пара">
             <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-            <span>Пара</span>
-            ${formatCountdownDigits(minsLeft)}
+            <span>до перерыва — ${formatMinutesLeft(minsLeft)}</span>
           </span>
         `;
         return;
       }
 
-      // 4. Перемена между парами
+      // 4. Перемена или окно между парами
       const nextLesson = dayLessonSlots.find(s => s.startMin > curMin);
       if (nextLesson) {
         const minsLeft = Math.max(0, nextLesson.startMin - curMin);
         liveTimerBox.innerHTML = `
-          <span class="badge badge-warning badge-sm font-bold gap-1 shadow-sm" title="Перемена">
+          <span class="badge badge-warning badge-sm font-bold gap-1.5 shadow-sm" title="Перемена">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>
-            <span>Перемена</span>
-            ${formatCountdownDigits(minsLeft)}
+            <span>до пары — ${formatMinutesLeft(minsLeft)}</span>
           </span>
         `;
         return;
@@ -2646,26 +2644,52 @@
       const times = Object.keys(rawSlots);
       if (!times.length) return [];
 
-      const slotsWithItems = times.map(timeStr => {
+      // 1. Извлекаем все фактические пары студента на этот день
+      const validLessons = [];
+      times.forEach(timeStr => {
         const items = getLessonsForSlot(timeStr, dayKey, groupSchedule, currentProfile);
-        const actualTimeStr = getLessonActualTime(timeStr, items);
-        return { timeStr: actualTimeStr, items };
+        if (items && items.length > 0) {
+          const actualTimeStr = getLessonActualTime(timeStr, items);
+          const parsed = parseTimeSlotMinutes(actualTimeStr);
+          if (parsed) {
+            validLessons.push({
+              timeStr: actualTimeStr,
+              startMin: parsed.startMin,
+              endMin: parsed.endMin,
+              items: items
+            });
+          }
+        }
       });
 
-      // Хронологическая сортировка слотов по времени начала
-      slotsWithItems.sort((a, b) => {
-        const ma = parseTimeSlotMinutes(a.timeStr)?.startMin || 0;
-        const mb = parseTimeSlotMinutes(b.timeStr)?.startMin || 0;
-        return ma - mb;
-      });
+      if (!validLessons.length) return [];
 
-      const firstIdx = slotsWithItems.findIndex(s => s.items.length > 0);
-      const lastIdx = slotsWithItems.findLastIndex(s => s.items.length > 0);
+      // 2. Сортируем пары по времени начала
+      validLessons.sort((a, b) => a.startMin - b.startMin);
 
-      if (firstIdx === -1) return []; // Нет занятий для студента в этот день (выходной)
+      // 3. Формируем расписание дня с автоматической вставкой окон (форточек) между парами
+      const result = [];
+      for (let i = 0; i < validLessons.length; i++) {
+        const cur = validLessons[i];
+        result.push({ timeStr: cur.timeStr, items: cur.items });
 
-      // Строго от первой до последней пары студента (отсекаем висящие форточки в конце и начале дня)
-      return slotsWithItems.slice(firstIdx, lastIdx + 1);
+        if (i < validLessons.length - 1) {
+          const next = validLessons[i + 1];
+          const gapMins = next.startMin - cur.endMin;
+          // Если разрыв между парами >= 35 минут, это окно (форточка)
+          if (gapMins >= 35) {
+            const formatHM = (mins) => {
+              const h = Math.floor(mins / 60);
+              const m = mins % 60;
+              return `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}`;
+            };
+            const gapTimeStr = `${formatHM(cur.endMin)}–${formatHM(next.startMin)}`;
+            result.push({ timeStr: gapTimeStr, items: [] });
+          }
+        }
+      }
+
+      return result;
     }
 
     function renderLessonCards(activeSlots, isToday, isPast = false) {
@@ -2699,19 +2723,23 @@
         if (isPast) cardClasses += ' archive-card';
         card.className = cardClasses;
 
-        // Countdown inside active pair card (unlimited > 100 mins supported)
-        let liveCountdownHTML = '';
-        if (isLive) {
-          const slotMin = parseTimeSlotMinutes(timeStr);
-          const curMin = new Date().getHours() * 60 + new Date().getMinutes();
-          const leftMin = slotMin ? Math.max(0, slotMin.endMin - curMin) : 0;
-          liveCountdownHTML = `
-            <span class="badge badge-accent badge-sm font-bold gap-1 text-white shadow-sm flex-shrink-0">
-              <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-              <span>Идёт пара • ${formatLiveCardCountdown(leftMin)}</span>
-            </span>
-          `;
-        }
+        // Если у обеих подгрупп один и тот же тип занятия (например, у обоих лабораторная или у обоих практика) —
+        // выносим плашку типа занятия общей в заголовок карточки
+        const hasCommonType = items.length === 2 &&
+          items[0].type && items[1].type &&
+          items[0].type.label === items[1].type.label;
+        const commonType = hasCommonType ? items[0].type : null;
+
+        const liveBadgeHTML = isLive ? `
+          <span class="badge badge-accent badge-sm font-bold gap-1 text-white shadow-sm flex-shrink-0">
+            <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+            <span>Идёт пара</span>
+          </span>
+        ` : '';
+
+        const commonTypeBadge = commonType ? `
+          <span class="badge badge-sm font-bold flex-shrink-0" style="color: ${commonType.color}; background: ${commonType.bg}; border: 1px solid ${commonType.border};">${commonType.label}</span>
+        ` : '';
 
         // Room badge at the top-right ONLY if there is exactly 1 item and it has no subgroups
         const showTopRoom = items.length === 1 && !items[0].subgroups && items[0].room;
@@ -2721,7 +2749,8 @@
           <div class="flex items-center justify-between gap-2 mb-2">
             <div class="flex items-center gap-1.5 flex-wrap min-w-0">
               <span class="badge ${isLive ? 'badge-accent font-bold text-white shadow-sm' : 'badge-ghost font-bold font-mono'} badge-sm flex-shrink-0">${timeStr}</span>
-              ${liveCountdownHTML}
+              ${commonTypeBadge}
+              ${liveBadgeHTML}
             </div>
             ${topRoomBadge}
           </div>
@@ -2740,13 +2769,18 @@
             </span>
           ` : '';
 
+          // Плашка типа занятия выводится на строке предмета ТОЛЬКО если она не вынесена общей в заголовок
+          const itemTypeBadge = (!commonType && item.type) ? `
+            <span class="badge badge-sm font-bold flex-shrink-0" style="color: ${item.type.color}; background: ${item.type.bg}; border: 1px solid ${item.type.border};">${item.type.label}</span>
+          ` : '';
+
           innerContent += `
             <div class="${idx > 0 ? 'mt-2.5 pt-2.5 border-t border-base-content/10' : ''}">
               <div class="flex items-start justify-between gap-2">
                 <div class="flex items-center gap-1.5 flex-wrap min-w-0">
                   ${subgroupBadge}
                   <span class="text-[14px] font-bold leading-snug">${item.title}</span>
-                  ${item.type ? `<span class="badge badge-sm font-bold flex-shrink-0" style="color: ${item.type.color}; background: ${item.type.bg}; border: 1px solid ${item.type.border};">${item.type.label}</span>` : ''}
+                  ${itemTypeBadge}
                 </div>
                 ${itemRoomBadge}
               </div>
@@ -3418,14 +3452,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'bsu-schedule-v24') caches.delete(k);
+          if (k !== 'bsu-schedule-v25') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=24')
+        navigator.serviceWorker.register('./sw.js?v=25')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
