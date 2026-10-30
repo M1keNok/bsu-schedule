@@ -567,12 +567,16 @@
 
     /* Disable bounce/scale jumps on modal option and parameter selection buttons */
     .modal-sheet button:not(.modal-close-btn),
-    .modal-sheet .btn:not(.modal-close-btn) {
+    .modal-sheet .btn:not(.modal-close-btn),
+    #settingsView button,
+    #settingsView .btn {
       transform: none !important;
       transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease !important;
     }
     .modal-sheet button:not(.modal-close-btn):active,
-    .modal-sheet .btn:not(.modal-close-btn):active {
+    .modal-sheet .btn:not(.modal-close-btn):active,
+    #settingsView button:active,
+    #settingsView .btn:active {
       transform: none !important;
       opacity: 0.88;
     }
@@ -873,17 +877,6 @@
        REFINED KOKONUT UI SYSTEM (Subtle Apple Aesthetics, OLED Pure Black, Pure Monochrome Subgroups)
        ═════════════════════════════════════════════════════════════════════════ */
 
-    /* ─── 1. Topo Background Canvas (Crisp & Visibly Distinct) ─────────────── */
-    .topo-bg-canvas {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 0;
-      opacity: 1;
-    }
-
     /* ─── 2. Theme Toggle Button (Silver Moon in Dark, Warm Sun in Light) ──── */
     .kokonut-switch-btn {
       position: relative;
@@ -992,57 +985,116 @@
       opacity: 0.8;
     }
 
-    /* ─── 4. Status Indicator (Live Lesson Capsule) ────────────────────────── */
+    /* ─── 4. Full-Width Activity Status Bar (Apple Liquid Gauge Aesthetic) ─── */
+    .kokonut-status-bar,
     .kokonut-status-island {
-      display: inline-flex;
-      align-items: center;
+      width: 100%;
+      background: var(--glass-card-subtle);
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: 14px;
+      padding: 7px 12px 8px;
+      margin-top: 3px;
+      margin-bottom: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       cursor: pointer;
       user-select: none;
       -webkit-user-select: none;
-      transition: transform 0.15s ease;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
+    .kokonut-status-bar:active,
     .kokonut-status-island:active {
-      transform: scale(0.96);
+      transform: scale(0.99);
+      background: var(--glass-card-hover);
     }
-    .island-capsule {
-      display: inline-flex;
+    .status-bar-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
+      width: 100%;
+    }
+    .status-bar-left {
+      display: flex;
       align-items: center;
       gap: 6px;
-      background: var(--glass-card-subtle);
-      border: 1px solid var(--border-color);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: 9999px;
-      padding: 3.5px 10px;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
-      transition: all 0.25s ease;
+      min-width: 0;
+      flex: 1;
     }
+    .status-dot,
     .island-dot {
-      width: 6px;
-      height: 6px;
+      width: 7px;
+      height: 7px;
       border-radius: 9999px;
       flex-shrink: 0;
     }
+    .status-text-title,
     .island-text-title {
-      font-size: 11px;
-      font-weight: 700;
+      font-size: 11.5px;
+      font-weight: 750;
       color: var(--text-main);
+      white-space: nowrap;
+      flex-shrink: 0;
     }
-    .island-separator {
-      font-size: 10px;
+    .status-text-subject {
+      font-size: 11px;
+      font-weight: 500;
       color: var(--text-sub);
-      opacity: 0.5;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0.85;
+      min-width: 0;
     }
+    .status-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .status-text-timer,
     .island-text-timer {
       font-size: 11px;
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-weight: 600;
+      font-weight: 700;
+      white-space: nowrap;
     }
+    .status-chevron,
     .island-chevron {
-      width: 11px;
-      height: 11px;
+      width: 12px;
+      height: 12px;
       color: var(--text-sub);
       opacity: 0.6;
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
+    }
+    .kokonut-status-bar:hover .status-chevron {
+      opacity: 0.95;
+      transform: translateX(1px);
+    }
+    /* Liquid Gauge Progress Track */
+    .status-progress-track {
+      width: 100%;
+      height: 3.5px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      position: relative;
+    }
+    html:not(.dark) .status-progress-track {
+      background: rgba(0, 0, 0, 0.07);
+    }
+    .status-progress-fill {
+      height: 100%;
+      border-radius: 9999px;
+      width: 0%;
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
     }
     .island-modal-overlay {
       position: fixed;
@@ -1281,8 +1333,6 @@
   </style>
 </head>
 <body>
-  <!-- Kokonut UI Topo Background (Interactive Elevation Contour Lines) -->
-  <canvas id="topoCanvas" class="topo-bg-canvas"></canvas>
 
 
   <header class="header-bar">
@@ -1435,7 +1485,6 @@
                 Приложение ещё в разработке. Рекомендуется сверять расписание со стандартным в <a href="https://www.dropbox.com/scl/fo/ltk4mvd0monarv8c9k70a/h?rlkey=yp9pp95tget8jo9oct0yppp7n&dl=0" target="_blank" rel="noopener noreferrer" class="text-amber-500 font-bold underline hover:opacity-80">Dropbox</a>.
               </p>
             </div>
-            <button type="button" onclick="dismissStackCard('dropbox', event)" class="notif-close-btn" aria-label="Закрыть">✕</button>
           </div>
           <!-- Kokonut UI Slide To Confirm -->
           <div class="slide-to-confirm-bar" id="slideToConfirmBar">
@@ -1468,24 +1517,32 @@
 
       <div id="calendarSelector" class="calendar-selector"></div>
 
-      <div id="dayHeaderRow" style="display: flex; align-items: center; justify-content: space-between; margin-top: 1px; padding: 0 2px; min-height: 32px; gap: 8px;">
-        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; flex: 1;">
+      <div id="dayHeaderRow" style="display: flex; align-items: center; justify-content: space-between; margin-top: 1px; padding: 0 4px; min-height: 28px; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
           <h2 id="dayFullTitle" style="font-size: 15px; font-weight: 800; letter-spacing: -0.2px; margin: 0;">...</h2>
           <div id="dayStatusBadge"></div>
-          <!-- Kokonut UI Status Island (Dynamic Island Capsule) -->
-          <div id="kokonutStatusIsland" class="kokonut-status-island" onclick="openStatusIslandModal()" title="Нажмите для просмотра подробностей пары">
-            <div class="island-capsule">
-              <span id="islandDot" class="island-dot bg-emerald-400 animate-pulse"></span>
-              <span id="islandTitle" class="island-text-title">Идёт пара</span>
-              <span class="island-separator">•</span>
-              <span id="islandTimer" class="island-text-timer">до перерыва — ...</span>
-              <svg class="island-chevron" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-          </div>
-          <div id="dayLiveTimer" style="display:none;"></div>
         </div>
         <div id="dayLessonsCount" style="font-size: 11.5px; font-weight: 700; color: var(--text-sub); flex-shrink: 0;"></div>
       </div>
+
+      <!-- Kokonut UI Full-Width Activity Status Bar with Liquid Gauge Progress -->
+      <div id="kokonutStatusIsland" class="kokonut-status-bar" onclick="openStatusIslandModal()" title="Подробности расписания">
+        <div class="status-bar-top">
+          <div class="status-bar-left">
+            <span id="islandDot" class="status-dot"></span>
+            <span id="islandTitle" class="status-text-title">Идёт пара</span>
+            <span id="islandSubject" class="status-text-subject"></span>
+          </div>
+          <div class="status-bar-right">
+            <span id="islandTimer" class="status-text-timer">до перерыва — ...</span>
+            <svg class="status-chevron" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </div>
+        </div>
+        <div class="status-progress-track">
+          <div id="islandProgressBar" class="status-progress-fill"></div>
+        </div>
+      </div>
+      <div id="dayLiveTimer" style="display:none;"></div>
 
       <!-- Kokonut UI Status Island Expanded Sheet Modal -->
       <div id="statusIslandModal" class="island-modal-overlay" onclick="closeStatusIslandModal(event)">
@@ -2348,22 +2405,17 @@
       return `<span class="countdown font-mono"><span style="--value:${m};"></span></span> мин`;
     }
 
-    function updateLiveStatusBanner(todayActiveSlots) {
-      const liveTimerBox = document.getElementById('dayLiveTimer');
-      if (!liveTimerBox) return;
-
-      const todayIdx = currentDaysList.findIndex(d => d.isToday);
-      const isViewingToday = (selectedDayIndex === todayIdx && todayIdx !== -1);
-
-      if (!isViewingToday || !todayActiveSlots || !todayActiveSlots.length) {
-        liveTimerBox.innerHTML = '';
-        return;
-      }
-
+    function calculateLiveScheduleStatus(daysList, groupSchedule) {
       const now = new Date();
       const curMin = now.getHours() * 60 + now.getMinutes();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).getTime();
 
-      const dayLessonSlots = todayActiveSlots
+      const todayEntry = (daysList || []).find(d => d.isToday || (d.date && d.date.getTime() === todayStart));
+      const todaySlots = (todayEntry && todayEntry.rawKey)
+        ? getProcessedDaySlots(todayEntry.rawKey, groupSchedule)
+        : [];
+
+      const todayLessonSlots = todaySlots
         .filter(s => s.items && s.items.length > 0)
         .map(s => {
           const parsed = parseTimeSlotMinutes(s.timeStr);
@@ -2378,70 +2430,153 @@
         .filter(Boolean)
         .sort((a, b) => a.startMin - b.startMin);
 
-      if (!dayLessonSlots.length) {
-        liveTimerBox.innerHTML = '';
-        return;
+      // 1. Идёт занятие прямо сейчас
+      if (todayLessonSlots.length > 0) {
+        const liveLesson = todayLessonSlots.find(s => curMin >= s.startMin && curMin < s.endMin);
+        if (liveLesson) {
+          const minsLeft = Math.max(0, liveLesson.endMin - curMin);
+          const total = Math.max(1, liveLesson.endMin - liveLesson.startMin);
+          const elapsed = curMin - liveLesson.startMin;
+          const pct = Math.min(100, Math.max(3, (elapsed / total) * 100));
+          const itemTitle = liveLesson.items[0]?.title || '';
+          return {
+            state: 'live',
+            lesson: liveLesson,
+            timeStr: liveLesson.timeStr,
+            minsLeft,
+            totalMins: total,
+            elapsedMins: elapsed,
+            progressPercent: pct,
+            title: 'Идёт пара',
+            timerText: `до перерыва — ${formatMinutesLeft(minsLeft)}`,
+            subject: itemTitle
+          };
+        }
+
+        // 2. Перемена или окно между парами сегодня
+        const nextLessonToday = todayLessonSlots.find(s => s.startMin > curMin);
+        const prevLessonToday = [...todayLessonSlots].reverse().find(s => s.endMin <= curMin);
+
+        if (nextLessonToday && prevLessonToday) {
+          const minsLeft = Math.max(0, nextLessonToday.startMin - curMin);
+          const isWindow = (minsLeft >= 35);
+          const totalBreak = Math.max(1, nextLessonToday.startMin - prevLessonToday.endMin);
+          const elapsedBreak = Math.max(0, curMin - prevLessonToday.endMin);
+          const pct = Math.min(100, Math.max(3, (elapsedBreak / totalBreak) * 100));
+          const nextTitle = nextLessonToday.items[0]?.title || '';
+          return {
+            state: 'break',
+            lesson: nextLessonToday,
+            timeStr: nextLessonToday.timeStr,
+            minsLeft,
+            totalMins: totalBreak,
+            elapsedMins: elapsedBreak,
+            progressPercent: pct,
+            isWindow,
+            title: isWindow ? 'Окно' : 'Перемена',
+            timerText: `до пары — ${formatMinutesLeft(minsLeft)}`,
+            subject: nextTitle ? `след: ${nextTitle}` : ''
+          };
+        }
+
+        // 3. До начала первой пары сегодня
+        const firstLesson = todayLessonSlots[0];
+        if (curMin < firstLesson.startMin) {
+          const minsLeft = Math.max(0, firstLesson.startMin - curMin);
+          const windowStart = Math.max(0, firstLesson.startMin - 180);
+          const totalSpan = Math.max(1, firstLesson.startMin - windowStart);
+          const elapsed = Math.max(0, curMin - windowStart);
+          const pct = Math.min(100, Math.max(3, (elapsed / totalSpan) * 100));
+          const firstTitle = firstLesson.items[0]?.title || '';
+          const startClock = firstLesson.timeStr.split('—')[0].trim();
+          return {
+            state: 'before',
+            lesson: firstLesson,
+            timeStr: firstLesson.timeStr,
+            minsLeft,
+            totalMins: totalSpan,
+            elapsedMins: elapsed,
+            progressPercent: pct,
+            title: 'Скоро пара',
+            timerText: `до пары — ${formatMinutesLeft(minsLeft)}`,
+            subject: firstTitle ? `в ${startClock} (${firstTitle})` : ''
+          };
+        }
       }
 
-      const firstLesson = dayLessonSlots[0];
-      const lastLesson = dayLessonSlots[dayLessonSlots.length - 1];
+      // 4. Пары на сегодня завершены ИЛИ сегодня выходной / пар нет
+      // Ищем ближайший следующий день с парами в текущем расписании
+      let foundFuture = null;
+      const lastTodayLesson = todayLessonSlots[todayLessonSlots.length - 1];
+      const referenceEndMin = lastTodayLesson ? lastTodayLesson.endMin : 840;
 
-      // 1. Пары ещё не начались
-      if (curMin < firstLesson.startMin) {
-        const minsLeft = Math.max(0, firstLesson.startMin - curMin);
-        updateKokonutStatusIsland({
-          state: 'before',
-          lesson: firstLesson,
-          timeStr: firstLesson.timeStr,
-          minsLeft: minsLeft
-        });
-        return;
+      for (let i = 0; i < (daysList || []).length; i++) {
+        const d = daysList[i];
+        if (!d.date || d.date.getTime() <= todayStart) continue;
+        if (!d.rawKey) continue;
+
+        const fSlots = getProcessedDaySlots(d.rawKey, groupSchedule);
+        const parsedSlots = fSlots
+          .filter(s => s.items && s.items.length > 0)
+          .map(s => {
+            const p = parseTimeSlotMinutes(s.timeStr);
+            return p ? { timeStr: s.timeStr, startMin: p.startMin, endMin: p.endMin, items: s.items } : null;
+          })
+          .filter(Boolean)
+          .sort((a, b) => a.startMin - b.startMin);
+
+        if (parsedSlots.length > 0) {
+          const nextFirst = parsedSlots[0];
+          const daysDiff = Math.max(1, Math.round((d.date.getTime() - todayStart) / 86400000));
+          const minsToday = Math.max(0, 1440 - curMin);
+          const intermediateMins = (daysDiff - 1) * 1440;
+          const totalMinsLeft = minsToday + intermediateMins + nextFirst.startMin;
+
+          const totalPeriod = (1440 - Math.min(1439, referenceEndMin)) + intermediateMins + nextFirst.startMin;
+          const elapsed = Math.max(0, totalPeriod - totalMinsLeft);
+          const pct = Math.min(100, Math.max(3, Math.round((elapsed / Math.max(1, totalPeriod)) * 100)));
+
+          const dayLabel = (daysDiff === 1) ? 'Завтра' : (d.dayDef?.short || 'След. день');
+          const nextTitle = nextFirst.items[0]?.title || '';
+          const startClock = nextFirst.timeStr.split('—')[0].trim();
+
+          foundFuture = {
+            state: 'upcoming',
+            lesson: nextFirst,
+            timeStr: nextFirst.timeStr,
+            minsLeft: totalMinsLeft,
+            totalMins: totalPeriod,
+            elapsedMins: elapsed,
+            progressPercent: pct,
+            nextDayName: dayLabel,
+            title: (daysDiff === 1) ? 'Завтра 1-я пара' : `${dayLabel} 1-я пара`,
+            timerText: `до пары — ${formatMinutesLeft(totalMinsLeft)}`,
+            subject: `в ${startClock} (${nextTitle})`
+          };
+          break;
+        }
       }
 
-      // 2. Пары на сегодня завершены
-      if (curMin >= lastLesson.endMin) {
-        updateKokonutStatusIsland({
-          state: 'finished',
-          minsLeft: 0
-        });
-        return;
-      }
+      if (foundFuture) return foundFuture;
 
-      // 3. Идёт пара прямо сейчас
-      const liveLesson = dayLessonSlots.find(s => curMin >= s.startMin && curMin < s.endMin);
-      if (liveLesson) {
-        const minsLeft = Math.max(0, liveLesson.endMin - curMin);
-        const total = Math.max(1, liveLesson.endMin - liveLesson.startMin);
-        const elapsed = curMin - liveLesson.startMin;
-        const pct = (elapsed / total) * 100;
-        updateKokonutStatusIsland({
-          state: 'live',
-          lesson: liveLesson,
-          timeStr: liveLesson.timeStr,
-          minsLeft: minsLeft,
-          totalMins: total,
-          elapsedMins: elapsed,
-          progressPercent: pct
-        });
-        return;
-      }
+      return {
+        state: 'finished',
+        lesson: null,
+        timeStr: '',
+        minsLeft: 0,
+        totalMins: 100,
+        elapsedMins: 100,
+        progressPercent: 100,
+        title: 'Пары завершены',
+        timerText: 'Отдых ✓',
+        subject: ''
+      };
+    }
 
-      // 4. Перемена или окно между парами
-      const nextLesson = dayLessonSlots.find(s => s.startMin > curMin);
-      if (nextLesson) {
-        const minsLeft = Math.max(0, nextLesson.startMin - curMin);
-        const isWindow = (minsLeft >= 35);
-        updateKokonutStatusIsland({
-          state: 'break',
-          lesson: nextLesson,
-          timeStr: nextLesson.timeStr,
-          minsLeft: minsLeft,
-          isWindow: isWindow
-        });
-        return;
-      }
-
-      liveTimerBox.innerHTML = '';
+    function updateLiveStatusBanner() {
+      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
+      const statusData = calculateLiveScheduleStatus(currentDaysList, groupSchedule);
+      updateKokonutStatusIsland(statusData);
     }
 
     function startLiveStatusTimer(groupSchedule) {
@@ -2449,19 +2584,13 @@
       if (_liveTimeoutTimer) { clearTimeout(_liveTimeoutTimer); _liveTimeoutTimer = null; }
 
       function tick() {
-        const todayIdx = currentDaysList.findIndex(d => d.isToday);
-        if (todayIdx === -1) {
-          const liveTimerBox = document.getElementById('dayLiveTimer');
-          if (liveTimerBox) liveTimerBox.innerHTML = '';
-          return;
-        }
-
-        const todayDay = currentDaysList[todayIdx];
-        const slots = todayDay.rawKey ? getProcessedDaySlots(todayDay.rawKey, groupSchedule) : [];
-        updateLiveStatusBanner(slots);
+        updateLiveStatusBanner();
 
         // Если открыт день «Сегодня», проверяем, не сменилась ли текущая пара
-        if (selectedDayIndex === todayIdx) {
+        const todayIdx = currentDaysList.findIndex(d => d.isToday);
+        if (selectedDayIndex === todayIdx && todayIdx !== -1) {
+          const todayDay = currentDaysList[todayIdx];
+          const slots = todayDay.rawKey ? getProcessedDaySlots(todayDay.rawKey, groupSchedule) : [];
           const activeLiveSlot = slots.find(s => s.items?.length && isLessonLive(s.timeStr))?.timeStr || null;
           if (activeLiveSlot !== _lastLiveSlotKey) {
             _lastLiveSlotKey = activeLiveSlot;
@@ -2706,37 +2835,37 @@
       body.innerHTML = `
         <div class="setting-group-card flex flex-col gap-2">
           <div class="section-title">Курс</div>
-          <div class="grid grid-cols-4 gap-2">
+          <div id="settingsCourseGrid" class="grid grid-cols-4 gap-2">
             ${['1','2','3','4'].map(c => {
               const sel = currentProfile.course === c;
-              return `<button type="button" onclick="selectCourseSettingsTab('${c}')" class="btn btn-md rounded-2xl font-black text-lg border border-base-content/10 transition-all ${sel ? 'btn-primary shadow-md scale-[1.02]' : 'btn-ghost bg-base-200/50'}">${c}</button>`;
+              return `<button type="button" data-course="${c}" onclick="selectCourseSettingsTab('${c}')" class="btn btn-md rounded-2xl font-bold text-lg border border-base-content/10 transition-colors duration-150 ${sel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">${c}</button>`;
             }).join('')}
           </div>
         </div>
 
         <div class="setting-group-card flex flex-col gap-2">
-          <div class="section-title">Группа (${currentProfile.course} курс)</div>
-          <div class="grid grid-cols-4 gap-2">
+          <div id="settingsGroupSectionTitle" class="section-title">Группа (${currentProfile.course} курс)</div>
+          <div id="settingsGroupsGrid" class="grid grid-cols-4 gap-2 min-h-[40px]">
             ${groups.map(g => {
               const num = g.replace(/^ГРУППА\s*/i, '');
               const sel = currentProfile.group_name === g;
-              return `<button type="button" onclick="selectGroupSettingsTab('${g}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-all ${sel ? 'btn-primary shadow-md scale-[1.02]' : 'btn-ghost bg-base-200/50'}">${num}</button>`;
+              return `<button type="button" data-group="${g}" onclick="selectGroupSettingsTab('${g}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-colors duration-150 ${sel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">${num}</button>`;
             }).join('')}
           </div>
         </div>
 
         <div class="setting-group-card flex flex-col gap-2">
           <div class="section-title">Изучаемый иностранный язык</div>
-          <div class="grid grid-cols-2 gap-2">
+          <div id="settingsLangsGrid" class="grid grid-cols-2 gap-2">
             ${langs.map(l => {
               const sel = currentProfile.foreign_lang === l.id;
-              return `<button type="button" onclick="toggleLangSettingsTab('${l.id}')" class="btn h-11 min-h-[44px] px-2 py-2 rounded-xl font-bold text-[13px] border border-base-content/10 flex items-center justify-center gap-1.5 transition-all ${sel ? 'btn-primary shadow-md scale-[1.02]' : 'btn-ghost bg-base-200/50'}">
+              return `<button type="button" data-lang="${l.id}" onclick="toggleLangSettingsTab('${l.id}')" class="btn h-11 min-h-[44px] px-2 py-2 rounded-xl font-bold text-[13px] border border-base-content/10 flex items-center justify-center gap-1.5 transition-colors duration-150 ${sel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">
                 <span>${l.label}</span>
-                ${sel ? '<span class="text-xs font-bold">✓</span>' : ''}
+                <span class="lang-check text-xs font-bold ${sel ? '' : 'hidden'}">✓</span>
               </button>`;
             }).join('')}
           </div>
-          <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px; line-height: 1.4;">${langHint}</div>
+          <div id="settingsLangHint" style="font-size: 11px; color: var(--text-sub); margin-top: 4px; line-height: 1.4;">${langHint}</div>
         </div>
       `;
     }
@@ -2749,14 +2878,44 @@
         currentProfile.group_name = availGroups[0] || '';
       }
       localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
-      renderSettingsTab();
+
+      // 1. Update course buttons in-place
+      const courseGrid = document.getElementById('settingsCourseGrid');
+      if (courseGrid) {
+        courseGrid.querySelectorAll('button').forEach(btn => {
+          const isSel = btn.getAttribute('data-course') === course;
+          btn.className = `btn btn-md rounded-2xl font-bold text-lg border border-base-content/10 transition-colors duration-150 ${isSel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}`;
+        });
+      }
+
+      // 2. Update group title
+      const title = document.getElementById('settingsGroupSectionTitle');
+      if (title) title.textContent = `Группа (${course} курс)`;
+
+      // 3. Update groups grid in-place
+      const groupsGrid = document.getElementById('settingsGroupsGrid');
+      if (groupsGrid) {
+        groupsGrid.innerHTML = availGroups.map(g => {
+          const num = g.replace(/^ГРУППА\s*/i, '');
+          const sel = currentProfile.group_name === g;
+          return `<button type="button" data-group="${g}" onclick="selectGroupSettingsTab('${g}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-colors duration-150 ${sel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">${num}</button>`;
+        }).join('');
+      }
     }
 
     function selectGroupSettingsTab(group) {
       triggerHaptic('light');
       currentProfile.group_name = group;
       localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
-      renderSettingsTab();
+
+      // Update group buttons in-place without rebuilding DOM
+      const groupsGrid = document.getElementById('settingsGroupsGrid');
+      if (groupsGrid) {
+        groupsGrid.querySelectorAll('button').forEach(btn => {
+          const isSel = btn.getAttribute('data-group') === group;
+          btn.className = `btn btn-sm rounded-xl font-bold border border-base-content/10 transition-colors duration-150 ${isSel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}`;
+        });
+      }
     }
 
     function toggleLangSettingsTab(langId) {
@@ -2767,7 +2926,32 @@
         currentProfile.foreign_lang = langId;
       }
       localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
-      renderSettingsTab();
+
+      const langs = [
+        { id: 'EN', label: 'Английский' },
+        { id: 'DE', label: 'Немецкий' },
+        { id: 'FR', label: 'Французский' },
+        { id: 'RKI', label: 'Русский (РКИ)' }
+      ];
+
+      // Update lang buttons in-place without rebuilding DOM
+      const langsGrid = document.getElementById('settingsLangsGrid');
+      if (langsGrid) {
+        langsGrid.querySelectorAll('button').forEach(btn => {
+          const isSel = btn.getAttribute('data-lang') === currentProfile.foreign_lang;
+          btn.className = `btn h-11 min-h-[44px] px-2 py-2 rounded-xl font-bold text-[13px] border border-base-content/10 flex items-center justify-center gap-1.5 transition-colors duration-150 ${isSel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}`;
+          const check = btn.querySelector('.lang-check');
+          if (check) check.classList.toggle('hidden', !isSel);
+        });
+      }
+
+      const activeLangObj = langs.find(l => l.id === currentProfile.foreign_lang);
+      const hint = document.getElementById('settingsLangHint');
+      if (hint) {
+        hint.innerHTML = activeLangObj
+          ? `Выбран <b>${activeLangObj.label}</b>. Нажмите повторно для сброса (будут показаны все языки).`
+          : `Язык не выбран • в расписании показываются все языки. Нажмите на язык, чтобы скрыть остальные.`;
+      }
     }
 
     function saveSettingsTabAndOpenSchedule() {
@@ -3930,260 +4114,6 @@
     // KOKONUT UI INTERACTIVE RUNTIME ENGINES
     // ═════════════════════════════════════════════════════════════════════════
 
-    // ─── 1. Authentic Kokonut UI Topo Background (Marching Squares) ──────────
-    let topoCanvas, topoCtx, topoW, topoH;
-    let topoNoise = null;
-    let topoDrift = 0;
-    let topoHill = { x: 0, y: 0, targetX: 0, targetY: 0, amount: 0, on: false };
-    let topoRipples = [];
-    let topoAnimFrame = null;
-
-    const TOPO_CELL = 18;
-    const TOPO_INDEX_EVERY = 4;
-    const TOPO_SCALE = 320;
-    const TOPO_INTERVAL = 0.085;
-
-    function createNoise(seed) {
-      const p = Array.from({ length: 256 }, (_, i) => i);
-      let state = seed >>> 0 || 1;
-      const random = () => {
-        state = (state * 1664525 + 1013904223) >>> 0;
-        return state / 4294967296;
-      };
-      for (let i = 255; i > 0; i--) {
-        const j = Math.floor(random() * (i + 1));
-        [p[i], p[j]] = [p[j], p[i]];
-      }
-      const perm = new Uint8Array(512);
-      for (let i = 0; i < 512; i++) perm[i] = p[i & 255];
-      const fade = t => t * t * t * (t * (t * 6 - 15) + 10);
-      const lerp = (a, b, t) => a + (b - a) * t;
-      const grad = (hash, x, y, z) => {
-        const h = hash & 15;
-        const u = h < 8 ? x : y;
-        const v = h < 4 ? y : (h === 12 || h === 14 ? x : z);
-        return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
-      };
-      return (x, y, z) => {
-        const X = Math.floor(x) & 255;
-        const Y = Math.floor(y) & 255;
-        const Z = Math.floor(z) & 255;
-        const fx = x - Math.floor(x);
-        const fy = y - Math.floor(y);
-        const fz = z - Math.floor(z);
-        const u = fade(fx);
-        const v = fade(fy);
-        const w = fade(fz);
-        const A = perm[X] + Y;
-        const AA = perm[A] + Z;
-        const AB = perm[A + 1] + Z;
-        const B = perm[X + 1] + Y;
-        const BA = perm[B] + Z;
-        const BB = perm[B + 1] + Z;
-        return lerp(
-          lerp(
-            lerp(grad(perm[AA], fx, fy, fz), grad(perm[BA], fx - 1, fy, fz), u),
-            lerp(grad(perm[AB], fx, fy - 1, fz), grad(perm[BB], fx - 1, fy - 1, fz), u),
-            v
-          ),
-          lerp(
-            lerp(grad(perm[AA + 1], fx, fy, fz - 1), grad(perm[BA + 1], fx - 1, fy, fz - 1), u),
-            lerp(grad(perm[AB + 1], fx, fy - 1, fz - 1), grad(perm[BB + 1], fx - 1, fy - 1, fz - 1), u),
-            v
-          ),
-          w
-        );
-      };
-    }
-
-    function cellSegments(path, index, box, cross) {
-      const { x0, y0, x1, y1 } = box;
-      const { top, right, bottom, left } = cross;
-      const line = (ax, ay, bx, by) => {
-        path.moveTo(ax, ay);
-        path.lineTo(bx, by);
-      };
-      switch (index) {
-        case 1:
-        case 14:
-          line(x0, left, bottom, y1);
-          break;
-        case 2:
-        case 13:
-          line(bottom, y1, x1, right);
-          break;
-        case 3:
-        case 12:
-          line(x0, left, x1, right);
-          break;
-        case 4:
-        case 11:
-          line(top, y0, x1, right);
-          break;
-        case 6:
-        case 9:
-          line(top, y0, bottom, y1);
-          break;
-        case 7:
-        case 8:
-          line(x0, left, top, y0);
-          break;
-        case 5:
-          line(x0, left, top, y0);
-          line(bottom, y1, x1, right);
-          break;
-        case 10:
-          line(top, y0, x1, right);
-          line(x0, left, bottom, y1);
-          break;
-      }
-    }
-
-    function traceContours(field, cols, rows, interval, minor, major) {
-      for (let j = 0; j < rows - 1; j++) {
-        for (let i = 0; i < cols - 1; i++) {
-          const a = field[j * cols + i];
-          const b = field[j * cols + i + 1];
-          const c = field[(j + 1) * cols + i + 1];
-          const d = field[(j + 1) * cols + i];
-          const x0 = i * TOPO_CELL;
-          const y0 = j * TOPO_CELL;
-          const first = Math.ceil(Math.min(a, b, c, d) / interval);
-          const last = Math.floor(Math.max(a, b, c, d) / interval);
-          if (first > last) continue;
-
-          const box = { x0, y0, x1: x0 + TOPO_CELL, y1: y0 + TOPO_CELL };
-          for (let level = first; level <= last; level++) {
-            const t = level * interval;
-            const index = (a > t ? 8 : 0) | (b > t ? 4 : 0) | (c > t ? 2 : 0) | (d > t ? 1 : 0);
-            if (index === 0 || index === 15) continue;
-            const isIndex = level % TOPO_INDEX_EVERY === 0;
-            const cross = {
-              top: x0 + TOPO_CELL * ((t - a) / (b - a || 1e-6)),
-              right: y0 + TOPO_CELL * ((t - b) / (c - b || 1e-6)),
-              bottom: x0 + TOPO_CELL * ((t - d) / (c - d || 1e-6)),
-              left: y0 + TOPO_CELL * ((t - a) / (d - a || 1e-6))
-            };
-            cellSegments(isIndex ? major : minor, index, box, cross);
-          }
-        }
-      }
-    }
-
-    function initTopoCanvas() {
-      topoCanvas = document.getElementById('topoCanvas');
-      if (!topoCanvas) return;
-      topoCtx = topoCanvas.getContext('2d');
-      topoNoise = createNoise(42);
-
-      function resize() {
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        topoW = window.innerWidth;
-        topoH = window.innerHeight;
-        topoCanvas.width = topoW * dpr;
-        topoCanvas.height = topoH * dpr;
-        topoCtx.scale(dpr, dpr);
-      }
-      window.addEventListener('resize', resize, { passive: true });
-      resize();
-
-      window.addEventListener('pointermove', (e) => {
-        topoHill.targetX = e.clientX;
-        topoHill.targetY = e.clientY;
-        topoHill.on = true;
-      }, { passive: true });
-
-      window.addEventListener('pointerleave', () => {
-        topoHill.on = false;
-      }, { passive: true });
-
-      window.addEventListener('pointerdown', (e) => {
-        if (e.target.closest('button, a, input, select, .modal-sheet, .card-glass, .island-capsule')) {
-          return;
-        }
-        topoRipples.push({
-          x: e.clientX,
-          y: e.clientY,
-          start: performance.now()
-        });
-        if (topoRipples.length > 4) topoRipples.shift();
-      }, { passive: true });
-
-      function drawTopoLoop() {
-        if (document.hidden) {
-          topoAnimFrame = requestAnimationFrame(drawTopoLoop);
-          return;
-        }
-        topoDrift += 0.0018;
-
-        const follow = 0.08;
-        topoHill.x += (topoHill.targetX - topoHill.x) * follow;
-        topoHill.y += (topoHill.targetY - topoHill.y) * follow;
-        const goal = topoHill.on ? 1 : 0;
-        topoHill.amount += (goal - topoHill.amount) * 0.05;
-
-        const cols = Math.ceil(topoW / TOPO_CELL) + 1;
-        const rows = Math.ceil(topoH / TOPO_CELL) + 1;
-        const field = new Float32Array(cols * rows);
-
-        const now = performance.now();
-        for (let j = 0; j < rows; j++) {
-          const y = j * TOPO_CELL;
-          for (let i = 0; i < cols; i++) {
-            const x = i * TOPO_CELL;
-            let val = topoNoise(x / TOPO_SCALE, y / TOPO_SCALE, topoDrift);
-
-            if (topoHill.amount > 0.01) {
-              const dx = x - topoHill.x;
-              const dy = y - topoHill.y;
-              const d2 = dx * dx + dy * dy;
-              if (d2 < 14400) {
-                val += (1 - Math.sqrt(d2) / 120) * 0.45 * topoHill.amount;
-              }
-            }
-
-            for (let r = 0; r < topoRipples.length; r++) {
-              const rip = topoRipples[r];
-              const age = now - rip.start;
-              const rad = age * 0.22;
-              const dx = x - rip.x;
-              const dy = y - rip.y;
-              const d = Math.sqrt(dx * dx + dy * dy);
-              if (Math.abs(d - rad) < 40) {
-                const wave = Math.sin((d - rad) * 0.16);
-                const fade = Math.max(0, 1 - age / 1800);
-                val += wave * 0.3 * fade;
-              }
-            }
-            field[j * cols + i] = val;
-          }
-        }
-
-        topoRipples = topoRipples.filter(r => (now - r.start) < 1800);
-
-        topoCtx.clearRect(0, 0, topoW, topoH);
-        const minorPath = new Path2D();
-        const majorPath = new Path2D();
-
-        traceContours(field, cols, rows, TOPO_INTERVAL, minorPath, majorPath);
-
-        const isDark = document.documentElement.classList.contains('dark');
-
-        topoCtx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.14)' : 'rgba(0, 0, 0, 0.11)';
-        topoCtx.lineWidth = 0.85;
-        topoCtx.stroke(minorPath);
-
-        topoCtx.strokeStyle = isDark ? 'rgba(16, 185, 129, 0.45)' : 'rgba(16, 185, 129, 0.38)';
-        topoCtx.lineWidth = 1.6;
-        topoCtx.stroke(majorPath);
-
-        topoAnimFrame = requestAnimationFrame(drawTopoLoop);
-      }
-
-      drawTopoLoop();
-    }
-
-
     // ─── 2. Kokonut UI Switch Button Theme Controller ─────────────────────────
     function toggleKokonutTheme(event) {
       triggerHaptic('light');
@@ -4254,33 +4184,56 @@
       const island = document.getElementById('kokonutStatusIsland');
       const dot = document.getElementById('islandDot');
       const title = document.getElementById('islandTitle');
+      const subject = document.getElementById('islandSubject');
       const timer = document.getElementById('islandTimer');
+      const progressBar = document.getElementById('islandProgressBar');
       if (!island || !dot || !title || !timer) return;
 
+      island.style.display = 'flex';
+
       if (data.state === 'live') {
-        island.style.display = 'inline-flex';
-        dot.className = 'island-dot bg-emerald-400 animate-pulse';
-        title.textContent = 'Идёт пара';
-        timer.textContent = `до перерыва — ${formatMinutesLeft(data.minsLeft)}`;
-        timer.className = 'island-text-timer text-emerald-400 font-mono';
+        dot.className = 'status-dot bg-emerald-400 animate-pulse';
+        title.textContent = data.title || 'Идёт пара';
+        if (subject) subject.textContent = data.subject ? `• ${data.subject}` : '';
+        timer.textContent = data.timerText || `до перерыва — ${formatMinutesLeft(data.minsLeft)}`;
+        timer.className = 'status-text-timer text-emerald-400 font-mono';
+        if (progressBar) {
+          const pct = Math.min(100, Math.max(3, Math.round(data.progressPercent || 0)));
+          progressBar.style.width = `${pct}%`;
+          progressBar.style.background = 'linear-gradient(90deg, #10b981, #34d399)';
+        }
       } else if (data.state === 'break') {
-        island.style.display = 'inline-flex';
-        dot.className = 'island-dot bg-amber-400 animate-pulse';
-        title.textContent = data.isWindow ? 'Окно' : 'Перемена';
-        timer.textContent = `до пары — ${formatMinutesLeft(data.minsLeft)}`;
-        timer.className = 'island-text-timer text-amber-400 font-mono';
-      } else if (data.state === 'before') {
-        island.style.display = 'inline-flex';
-        dot.className = 'island-dot bg-sky-400';
-        title.textContent = 'До начала пар';
-        timer.textContent = formatMinutesLeft(data.minsLeft);
-        timer.className = 'island-text-timer text-sky-400 font-mono';
+        dot.className = 'status-dot bg-amber-400 animate-pulse';
+        title.textContent = data.title || (data.isWindow ? 'Окно' : 'Перемена');
+        if (subject) subject.textContent = data.subject ? `• ${data.subject}` : '';
+        timer.textContent = data.timerText || `до пары — ${formatMinutesLeft(data.minsLeft)}`;
+        timer.className = 'status-text-timer text-amber-400 font-mono';
+        if (progressBar) {
+          const pct = Math.min(100, Math.max(3, Math.round(data.progressPercent || 0)));
+          progressBar.style.width = `${pct}%`;
+          progressBar.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
+        }
+      } else if (data.state === 'before' || data.state === 'upcoming') {
+        dot.className = 'status-dot bg-sky-400';
+        title.textContent = data.title || 'Скоро пара';
+        if (subject) subject.textContent = data.subject ? `• ${data.subject}` : '';
+        timer.textContent = data.timerText || `до пары — ${formatMinutesLeft(data.minsLeft)}`;
+        timer.className = 'status-text-timer text-sky-400 font-mono';
+        if (progressBar) {
+          const pct = Math.min(100, Math.max(3, Math.round(data.progressPercent || 0)));
+          progressBar.style.width = `${pct}%`;
+          progressBar.style.background = 'linear-gradient(90deg, #0284c7, #38bdf8)';
+        }
       } else if (data.state === 'finished') {
-        island.style.display = 'inline-flex';
-        dot.className = 'island-dot bg-emerald-500';
+        dot.className = 'status-dot bg-emerald-500';
         title.textContent = 'Пары завершены';
+        if (subject) subject.textContent = '';
         timer.textContent = 'Отдых ✓';
-        timer.className = 'island-text-timer text-emerald-400 font-mono';
+        timer.className = 'status-text-timer text-emerald-400 font-mono';
+        if (progressBar) {
+          progressBar.style.width = '100%';
+          progressBar.style.background = '#10b981';
+        }
       } else {
         island.style.display = 'none';
       }
@@ -4330,11 +4283,11 @@
         teacher.textContent = item.details?.teacher || item.subgroups?.[0]?.teacher || '—';
         room.textContent = item.room || item.subgroups?.[0]?.room || '—';
 
-        progressPercent.textContent = `До пары: ${_islandData.minsLeft} мин`;
-        progressBar.style.width = `100%`;
+        progressPercent.textContent = `До пары: ${formatMinutesLeft(_islandData.minsLeft)}`;
+        progressBar.style.width = `${Math.min(100, Math.max(3, Math.round(_islandData.progressPercent)))}%`;
         progressBar.className = 'h-full bg-amber-400 rounded-full transition-all duration-500';
         elapsed.textContent = 'Перерыв';
-        remaining.textContent = `Звонок через ${_islandData.minsLeft} мин`;
+        remaining.textContent = `Звонок через ${formatMinutesLeft(_islandData.minsLeft)}`;
       } else if (_islandData.state === 'before' && _islandData.lesson) {
         dot.className = 'w-2.5 h-2.5 rounded-full bg-sky-400';
         statusLabel.textContent = 'Скоро начало занятий';
@@ -4346,11 +4299,28 @@
         teacher.textContent = item.details?.teacher || item.subgroups?.[0]?.teacher || '—';
         room.textContent = item.room || item.subgroups?.[0]?.room || '—';
 
-        progressPercent.textContent = `До начала: ${_islandData.minsLeft} мин`;
-        progressBar.style.width = '100%';
+        progressPercent.textContent = `До начала: ${formatMinutesLeft(_islandData.minsLeft)}`;
+        progressBar.style.width = `${Math.min(100, Math.max(3, Math.round(_islandData.progressPercent)))}%`;
         progressBar.className = 'h-full bg-sky-400 rounded-full';
-        elapsed.textContent = 'До занятий';
-        remaining.textContent = `Начало через ${_islandData.minsLeft} мин`;
+        elapsed.textContent = 'Ожидание до занятий';
+        remaining.textContent = `Начало через ${formatMinutesLeft(_islandData.minsLeft)}`;
+      } else if (_islandData.state === 'upcoming' && _islandData.lesson) {
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-sky-400';
+        statusLabel.textContent = _islandData.nextDayName ? `${_islandData.nextDayName}: первая пара` : 'Следующее занятие';
+        statusLabel.className = 'text-xs font-bold uppercase tracking-wider text-sky-400';
+        timeRange.textContent = _islandData.timeStr || 'Первая пара';
+
+        const item = _islandData.lesson.items?.[0] || {};
+        lessonTitle.textContent = item.title || 'Учебное занятие';
+        teacher.textContent = item.details?.teacher || item.subgroups?.[0]?.teacher || 'Преподаватель не указан';
+        room.textContent = item.room || item.subgroups?.[0]?.room || '—';
+
+        const pct = Math.min(100, Math.max(3, Math.round(_islandData.progressPercent)));
+        progressPercent.textContent = `${pct}%`;
+        progressBar.style.width = `${pct}%`;
+        progressBar.className = 'h-full bg-gradient-to-r from-sky-500 to-indigo-400 rounded-full transition-all duration-500';
+        elapsed.textContent = 'Ожидание до пары';
+        remaining.textContent = `Звонок через ${formatMinutesLeft(_islandData.minsLeft)}`;
       } else {
         dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
         statusLabel.textContent = 'Занятия окончены';
@@ -4361,6 +4331,7 @@
         room.textContent = '✓';
         progressPercent.textContent = '100%';
         progressBar.style.width = '100%';
+        progressBar.className = 'h-full bg-emerald-500 rounded-full';
         elapsed.textContent = 'Все занятия окончены';
         remaining.textContent = 'До завтра!';
       }
@@ -4477,7 +4448,6 @@
 
     async function init() {
       initTheme();
-      initTopoCanvas();
       initKokonutSwipeTabs();
       initSlideToConfirm();
       checkDevWarningVisibility();
@@ -4519,14 +4489,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v3') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v5') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=3')
+        navigator.serviceWorker.register('./sw-preview.js?v=5')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
