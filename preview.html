@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>Расписание Геофак БГУ [BETA]</title>
+  <title>Расписание Геофак БГУ</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <!-- Tailwind CSS & daisyUI (Component Library) -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -65,8 +65,8 @@
       --bg-gradient: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
       --text-main: #09090b;
       --text-sub: #71717a;
-      --glass-card: rgba(255, 255, 255, 0.75);
-      --glass-card-subtle: rgba(255, 255, 255, 0.52);
+      --glass-card: rgba(255, 255, 255, 0.82);
+      --glass-card-subtle: rgba(255, 255, 255, 0.60);
       --glass-border: rgba(0, 0, 0, 0.08);
       --glass-inner-bevel: inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
       --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
@@ -85,8 +85,8 @@
       --bg-gradient: #000000;
       --text-main: #f4f4f5;
       --text-sub: #a1a1aa;
-      --glass-card: rgba(14, 14, 16, 0.76);
-      --glass-card-subtle: rgba(22, 22, 26, 0.56);
+      --glass-card: rgba(14, 14, 16, 0.88);
+      --glass-card-subtle: rgba(24, 24, 27, 0.68);
       --glass-border: rgba(255, 255, 255, 0.09);
       --glass-inner-bevel: inset 0 1px 1px 0 rgba(255, 255, 255, 0.06);
       --card-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.95);
@@ -567,16 +567,12 @@
 
     /* Disable bounce/scale jumps on modal option and parameter selection buttons */
     .modal-sheet button:not(.modal-close-btn),
-    .modal-sheet .btn:not(.modal-close-btn),
-    #settingsView button,
-    #settingsView .btn {
+    .modal-sheet .btn:not(.modal-close-btn) {
       transform: none !important;
       transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease !important;
     }
     .modal-sheet button:not(.modal-close-btn):active,
-    .modal-sheet .btn:not(.modal-close-btn):active,
-    #settingsView button:active,
-    #settingsView .btn:active {
+    .modal-sheet .btn:not(.modal-close-btn):active {
       transform: none !important;
       opacity: 0.88;
     }
@@ -872,359 +868,63 @@
     .no-theme-transition *::after {
       transition: none !important;
     }
-
-    /* ═════════════════════════════════════════════════════════════════════════
-       REFINED KOKONUT UI SYSTEM (Subtle Apple Aesthetics, OLED Pure Black, Pure Monochrome Subgroups)
-       ═════════════════════════════════════════════════════════════════════════ */
-
-    /* ─── 2. Theme Toggle Button (Silver Moon in Dark, Warm Sun in Light) ──── */
-    .kokonut-switch-btn {
-      position: relative;
-      width: 36px;
-      height: 36px;
-      border-radius: 9999px;
-      background: var(--glass-card-subtle);
-      border: 1px solid var(--border-color);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--text-main);
-      transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
-      flex-shrink: 0;
-      outline: none;
-      overflow: hidden;
-    }
-    .kokonut-switch-btn:hover {
-      background: var(--glass-card-hover);
-      border-color: rgba(255, 255, 255, 0.25);
-    }
-    .theme-icon-sun {
-      position: absolute;
-      color: #f59e0b;
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
-    }
-    .theme-icon-moon {
-      position: absolute;
-      color: #f4f4f5;
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
-    }
-    html.dark .theme-icon-sun {
-      transform: rotate(90deg) scale(0.3);
-      opacity: 0;
-      pointer-events: none;
-    }
-    html.dark .theme-icon-moon {
-      transform: rotate(0deg) scale(1);
-      opacity: 1;
-    }
-    html:not(.dark) .theme-icon-sun {
-      transform: rotate(0deg) scale(1);
-      opacity: 1;
-    }
-    html:not(.dark) .theme-icon-moon {
-      transform: rotate(-90deg) scale(0.3);
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    /* ─── 3. Header Swipe Tabs (Monochrome & Discreet) ─────────────────────── */
-    .kokonut-swipe-tabs {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      background: var(--glass-card-subtle);
-      border: 1px solid var(--border-color);
-      border-radius: 9999px;
-      padding: 3px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-      user-select: none;
-      -webkit-user-select: none;
-    }
-    .swipe-tab-indicator {
-      position: absolute;
-      top: 3px;
-      bottom: 3px;
-      left: 3px;
-      width: calc(50% - 3px);
-      background: var(--glass-card);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      border-radius: 9999px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-      pointer-events: none;
-      z-index: 1;
-    }
-    html:not(.dark) .swipe-tab-indicator {
-      background: #ffffff;
-      border-color: rgba(0, 0, 0, 0.08);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    }
-    .swipe-tab-btn {
-      position: relative;
-      z-index: 2;
+  
+    /* ─── Prominent High-Contrast Subgroup Badges ───────────────────────── */
+    .subgroup-pill {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 5px 13px;
-      border-radius: 9999px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-sub);
-      transition: color 0.2s ease, opacity 0.2s ease;
-      cursor: pointer;
-      border: none;
-      background: transparent;
-      outline: none;
-    }
-    .swipe-tab-btn.active {
-      color: var(--text-main);
-    }
-    .swipe-tab-btn:hover:not(.active) {
-      color: var(--text-main);
-      opacity: 0.8;
-    }
-
-    /* ─── 4. Full-Width Activity Status Bar (Apple Liquid Gauge Aesthetic) ─── */
-    .kokonut-status-bar,
-    .kokonut-status-island {
-      width: 100%;
-      background: var(--glass-card-subtle);
-      border: 1px solid var(--border-color);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border-radius: 14px;
-      padding: 7px 12px 8px;
-      margin-top: 3px;
-      margin-bottom: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-      user-select: none;
-      -webkit-user-select: none;
-      transition: background 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .kokonut-status-bar:active,
-    .kokonut-status-island:active {
-      transform: scale(0.99);
-      background: var(--glass-card-hover);
-    }
-    .status-bar-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      min-width: 0;
-      width: 100%;
-    }
-    .status-bar-left {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-width: 0;
-      flex: 1;
-    }
-    .status-dot,
-    .island-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 9999px;
-      flex-shrink: 0;
-    }
-    .status-text-title,
-    .island-text-title {
-      font-size: 11.5px;
+      padding: 2.5px 8.5px;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      color: #ffffff;
+      font-size: 11px;
       font-weight: 750;
-      color: var(--text-main);
-      white-space: nowrap;
+      letter-spacing: 0.25px;
+      line-height: 1.2;
       flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
     }
-    .status-text-subject {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-sub);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      opacity: 0.85;
-      min-width: 0;
+    html:not(.dark) .subgroup-pill {
+      background: rgba(0, 0, 0, 0.08);
+      border-color: rgba(0, 0, 0, 0.22);
+      color: #09090b;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
     }
-    .status-bar-right {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      flex-shrink: 0;
-    }
-    .status-text-timer,
-    .island-text-timer {
-      font-size: 11px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    .status-chevron,
-    .island-chevron {
-      width: 12px;
-      height: 12px;
-      color: var(--text-sub);
-      opacity: 0.6;
-      flex-shrink: 0;
-      transition: transform 0.2s ease;
-    }
-    .kokonut-status-bar:hover .status-chevron {
+    .subgroup-pill .sg-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 9999px;
+      background: #ffffff;
       opacity: 0.95;
-      transform: translateX(1px);
-    }
-    /* Liquid Gauge Progress Track */
-    .status-progress-track {
-      width: 100%;
-      height: 3.5px;
-      border-radius: 9999px;
-      background: rgba(255, 255, 255, 0.08);
-      overflow: hidden;
-      position: relative;
-    }
-    html:not(.dark) .status-progress-track {
-      background: rgba(0, 0, 0, 0.07);
-    }
-    .status-progress-fill {
-      height: 100%;
-      border-radius: 9999px;
-      width: 0%;
-      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
-    }
-    .island-modal-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-    }
-    .island-modal-overlay.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .island-modal-sheet {
-      width: 100%;
-      max-width: 440px;
-      background: var(--glass-card);
-      border: 1px solid var(--border-color);
-      border-bottom: none;
-      border-radius: 26px 26px 0 0;
-      padding: 16px 20px 24px;
-      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
-      transform: translateY(100%);
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .island-modal-overlay.open .island-modal-sheet {
-      transform: translateY(0);
-    }
-    .island-sheet-grabber {
-      width: 36px;
-      height: 4px;
-      border-radius: 9999px;
-      background: var(--border-color);
-      margin: 0 auto 12px;
-      opacity: 0.7;
-    }
-
-    /* ─── 5. Notification Stack (Zero Space Left When Closed) ──────────────── */
-    .kokonut-notification-stack {
-      position: relative;
-      width: 100%;
-      margin-bottom: 6px;
-      transition: margin 0.25s ease, opacity 0.25s ease;
-    }
-    .kokonut-notification-stack:empty {
-      display: none !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      height: 0 !important;
-      min-height: 0 !important;
-    }
-    .kokonut-stack-card {
-      position: relative;
-      width: 100%;
-      background: var(--glass-card);
-      border: 1px solid var(--border-color);
-      border-radius: 18px;
-      padding: 10px 13px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-      transition: transform 0.25s ease, opacity 0.25s ease;
-      box-sizing: border-box;
-    }
-    .notif-card-warning {
-      border-color: rgba(245, 158, 11, 0.25);
-      background: rgba(245, 158, 11, 0.06);
-    }
-    .notif-card-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       flex-shrink: 0;
     }
-    .notif-close-btn {
-      width: 20px;
-      height: 20px;
-      border-radius: 9999px;
-      border: none;
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-sub);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      cursor: pointer;
-      transition: background 0.15s ease, color 0.15s ease;
-      flex-shrink: 0;
-    }
-    .notif-close-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      color: var(--text-main);
-    }
-    .kokonut-micro-badge {
-      font-size: 9px;
-      font-weight: 700;
-      font-family: ui-monospace, monospace;
-      letter-spacing: 0.3px;
-      padding: 1px 5px;
-      border-radius: 4px;
-      background: rgba(245, 158, 11, 0.15);
-      color: #f59e0b;
-      border: 1px solid rgba(245, 158, 11, 0.25);
+    html:not(.dark) .subgroup-pill .sg-dot {
+      background: #09090b;
+      opacity: 0.85;
     }
 
-    /* Slide to confirm bar */
+    /* ─── Slide to Confirm (Swipe to dismiss beta banner) ─────────────────── */
     .slide-to-confirm-bar {
       position: relative;
       margin-top: 8px;
       width: 100%;
-      height: 28px;
+      height: 30px;
       border-radius: 9999px;
-      background: rgba(0, 0, 0, 0.22);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.24);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       align-items: center;
       padding: 2px;
       overflow: hidden;
       touch-action: pan-y;
+      user-select: none;
+      -webkit-user-select: none;
     }
     html:not(.dark) .slide-to-confirm-bar {
-      background: rgba(0, 0, 0, 0.05);
-      border-color: rgba(0, 0, 0, 0.08);
+      background: rgba(0, 0, 0, 0.06);
+      border-color: rgba(0, 0, 0, 0.12);
     }
     .slide-track-text {
       position: absolute;
@@ -1232,108 +932,37 @@
       text-align: center;
       font-size: 10px;
       font-weight: 700;
+      letter-spacing: 0.2px;
       color: var(--text-sub);
       pointer-events: none;
+      opacity: 0.75;
+      padding-left: 20px;
+      box-sizing: border-box;
     }
     .slide-thumb {
-      position: relative;
-      z-index: 2;
-      width: 24px;
-      height: 24px;
+      position: absolute;
+      left: 2px;
+      width: 26px;
+      height: 26px;
       border-radius: 9999px;
-      background: #f59e0b;
-      color: #000;
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: grab;
-      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4);
+      touch-action: none;
+      z-index: 2;
+      transition: transform 0.05s linear;
     }
-
-    /* ─── 6. Smooth Tab Indicator on Days Strip ───────────────────────────── */
-    .calendar-momentum-pill {
-      position: absolute;
-      top: 6px;
-      bottom: 6px;
-      border-radius: 14px;
-      background: var(--glass-card);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-      pointer-events: none;
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 1;
-    }
-    html:not(.dark) .calendar-momentum-pill {
-      background: #ffffff;
-      border-color: rgba(0, 0, 0, 0.1);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    }
-    .calendar-day-btn {
-      position: relative;
-      z-index: 2 !important;
-      background: transparent !important;
-      border-color: transparent !important;
-      box-shadow: none !important;
-    }
-    .calendar-day-btn.active .calendar-day-name {
-      color: #10b981 !important;
-      font-weight: 800 !important;
-    }
-    .calendar-day-btn.active .calendar-day-date {
-      color: var(--text-main) !important;
-      font-weight: 800 !important;
-    }
-
-    /* ─── 7. PURE MONOCHROME SUBGROUP TAGS (Clean & Calm) ─────────────────── */
-    .kokonut-subgroup-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 1.5px 6.5px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #e4e4e7;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-      flex-shrink: 0;
-    }
-    html:not(.dark) .kokonut-subgroup-pill {
-      background: rgba(0, 0, 0, 0.05);
-      border-color: rgba(0, 0, 0, 0.1);
-      color: #3f3f46;
-    }
-    .kokonut-subgroup-pill .sg-dot {
-      width: 4px;
-      height: 4px;
-      border-radius: 9999px;
-      background: var(--text-sub);
-      opacity: 0.65;
-    }
-    .kokonut-time-capsule {
-      display: inline-flex;
-      align-items: center;
-      padding: 1.5px 7px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-main);
-      flex-shrink: 0;
-    }
-    .kokonut-time-capsule.is-live {
-      background: rgba(16, 185, 129, 0.14);
-      border-color: rgba(16, 185, 129, 0.35);
-      color: #10b981;
+    .slide-thumb:active {
+      cursor: grabbing;
+      transform: scale(1.08);
     }
 
   </style>
 </head>
 <body>
-
 
   <header class="header-bar">
     <div class="header-glass">
@@ -1345,7 +974,7 @@
           </svg>
         </div>
         <div style="min-width: 0; flex: 1;">
-          <div style="display: flex; align-items: center; gap: 6px;"><div id="headerTitle" style="font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">Загрузка...</div><span class="badge badge-warning badge-xs font-mono font-bold text-[9px] px-1 py-0 h-3.5" title="Staging Beta">BETA</span></div>
+          <div style="display: flex; align-items: center; gap: 6px;"><div id="headerTitle" style="font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">Загрузка...</div><span class="badge badge-warning badge-xs font-mono font-bold text-[9px] px-1 py-0 h-3.5" title="Preview Beta">PREVIEW</span></div>
           <div style="display: flex; align-items: center; gap: 4px; margin-top: 1.5px; min-width: 0;">
             <span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; animation: pulseAura 2s infinite; flex-shrink: 0;"></span>
             <span id="headerSync" style="font-size: 10px; color: var(--text-sub); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;">Загрузка...</span>
@@ -1353,54 +982,54 @@
         </div>
       </div>
 
-      <!-- Kokonut UI Swipe Tabs (Schedule vs Settings) -->
-      <nav class="kokonut-swipe-tabs" role="tablist" aria-label="Основное меню">
-        <div id="swipeTabIndicator" class="swipe-tab-indicator"></div>
+      <!-- daisyUI Dock Component (Schedule [Main], Settings) -->
+      <nav class="dock header-dock" role="tablist" aria-label="Основное меню">
+        <!-- Физический плавающий тумблер (Motion Indicator Pill) -->
+        <div id="dockIndicator" class="dock-indicator" aria-hidden="true"></div>
+
+        <!-- Schedule (Main) -->
         <button
           type="button"
           id="dockBtnSchedule"
           onclick="handleDockAction('schedule')"
-          class="swipe-tab-btn active"
+          class="dock-btn dock-btn-main dock-active"
           title="Расписание"
           aria-label="Расписание"
         >
-          <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <rect x="3" y="4" width="18" height="18" rx="2.5"></rect>
+          <svg style="width: 19px; height: 19px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2.5" ry="2.5"></rect>
             <line x1="16" y1="2" x2="16" y2="6"></line>
             <line x1="8" y1="2" x2="8" y2="6"></line>
             <line x1="3" y1="10" x2="21" y2="10"></line>
+            <circle cx="8" cy="14" r="1.1" fill="currentColor"></circle>
+            <circle cx="12" cy="14" r="1.1" fill="currentColor"></circle>
+            <circle cx="16" cy="14" r="1.1" fill="currentColor"></circle>
+            <circle cx="8" cy="17.5" r="1.1" fill="currentColor"></circle>
+            <circle cx="12" cy="17.5" r="1.1" fill="currentColor"></circle>
           </svg>
-          <span>Пары</span>
         </button>
 
+        <!-- Settings -->
         <button
           type="button"
           id="dockBtnSettings"
           onclick="handleDockAction('settings')"
-          class="swipe-tab-btn"
+          class="dock-btn"
           title="Настройки"
           aria-label="Настройки"
         >
-          <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
-          <span>Опции</span>
         </button>
       </nav>
 
-      <!-- Sleek Theme Toggle Button (Crisp Silver Moon in Dark, Warm Sun in Light) -->
-      <button
-        type="button"
-        id="kokonutThemeSwitch"
-        class="kokonut-switch-btn tap-scale"
-        onclick="toggleKokonutTheme(event)"
-        title="Сменить тему"
-        aria-label="Сменить тему"
-      >
-        <!-- Sun Icon (Light Mode) -->
-        <svg class="theme-icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="5"></circle>
+      <!-- daisyUI Theme Controller (fluid, circular reveal from icon) -->
+      <label id="headerThemeLabel" class="swap btn btn-ghost btn-circle btn-sm border border-base-content/10 bg-base-200/50 flex-shrink-0" title="Сменить тему">
+        <input type="checkbox" class="theme-controller" id="headerThemeToggle" onchange="toggleThemeFromController(this.checked, event)" />
+        <svg class="swap-on w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4" fill="currentColor"></circle>
           <line x1="12" y1="1" x2="12" y2="3"></line>
           <line x1="12" y1="21" x2="12" y2="23"></line>
           <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
@@ -1410,11 +1039,8 @@
           <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
         </svg>
-        <!-- Moon Icon (Dark Mode - High-contrast white/silver) -->
-        <svg class="theme-icon-moon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-      </button>
+        <svg class="swap-off fill-current w-4 h-4 text-zinc-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Z"/></svg>
+      </label>
     </div>
   </header>
 
@@ -1468,25 +1094,23 @@
         </button>
       </div>
 
-      <!-- Kokonut UI Notification Stack (Interactive Stack with Fan-out & Slide-To-Confirm) -->
-      <div id="kokonutNotificationStack" class="kokonut-notification-stack">
-        <!-- Card 1: Dropbox warning with Slide-to-confirm -->
-        <div id="notifCardDropbox" class="kokonut-stack-card notif-card-warning" onclick="fanNotificationStack()">
-          <div class="flex items-start gap-2.5">
-            <div class="notif-card-icon bg-amber-500/20 text-amber-500">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-            </div>
-            <div class="flex-1 min-w-0 pr-3">
-              <div class="flex items-center gap-1.5 text-[11.5px] font-bold text-amber-500">
-                <span>Внимание: бета-версия</span>
-                <span class="kokonut-micro-badge">DROPBOX</span>
-              </div>
-              <p class="text-[11px] leading-relaxed text-base-content/85 mt-0.5">
-                Приложение ещё в разработке. Рекомендуется сверять расписание со стандартным в <a href="https://www.dropbox.com/scl/fo/ltk4mvd0monarv8c9k70a/h?rlkey=yp9pp95tget8jo9oct0yppp7n&dl=0" target="_blank" rel="noopener noreferrer" class="text-amber-500 font-bold underline hover:opacity-80">Dropbox</a>.
-              </p>
-            </div>
+      <!-- Development Alert Banner -->
+      <div id="devWarningBanner" class="card-glass flex items-start gap-2.5 p-3 rounded-2xl w-full box-border border border-amber-500/30 bg-amber-500/10 text-base-content shadow-sm relative overflow-hidden" role="alert">
+        <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-500 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="text-[11.5px] font-bold text-amber-500 mb-0.5 tracking-wide flex items-center gap-1.5">
+            <span>Внимание: бета-версия</span>
+            <span class="badge badge-warning badge-xs font-bold text-[9px] px-1 py-0 h-4">BETA</span>
           </div>
-          <!-- Kokonut UI Slide To Confirm -->
+          <p class="text-[11px] leading-relaxed text-base-content/85 font-medium m-0">
+            Приложение ещё в разработке, и очень рекомендуется сверять расписание со стандартным расписанием в <a href="https://www.dropbox.com/scl/fo/ltk4mvd0monarv8c9k70a/h?rlkey=yp9pp95tget8jo9oct0yppp7n&dl=0" target="_blank" rel="noopener noreferrer" class="text-amber-500 font-bold underline underline-offset-2 hover:opacity-80">Dropbox</a>. Когда я буду точно уверен в достоверности расписания в приложении, это оповещение пропадёт.
+          </p>
+        </div>
+          <!-- Slide To Confirm Widget -->
           <div class="slide-to-confirm-bar" id="slideToConfirmBar">
             <div class="slide-track-text">Смахни бегунок вправо для скрытия</div>
             <div class="slide-thumb" id="slideThumb">
@@ -1494,93 +1118,17 @@
             </div>
           </div>
         </div>
-
-        <!-- Card 2: Decanat update alert (dynamically updated) -->
-        <div id="notifCardUpdate" class="kokonut-stack-card notif-card-success hidden" onclick="fanNotificationStack()">
-          <div class="flex items-start gap-2.5">
-            <div class="notif-card-icon bg-emerald-500/20 text-emerald-400">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            </div>
-            <div class="flex-1 min-w-0 pr-3">
-              <div class="flex items-center gap-1.5 text-[11.5px] font-bold text-emerald-400">
-                <span>Обновление расписания</span>
-                <span class="kokonut-micro-badge badge-emerald">ДЕКАНАТ</span>
-              </div>
-              <p id="notifUpdateText" class="text-[11px] leading-relaxed text-base-content/85 mt-0.5">
-                Появились свежие изменения в расписании вашей группы.
-              </p>
-            </div>
-            <button type="button" onclick="dismissStackCard('update', event)" class="notif-close-btn" aria-label="Закрыть">✕</button>
-          </div>
-        </div>
       </div>
 
       <div id="calendarSelector" class="calendar-selector"></div>
 
-      <div id="dayHeaderRow" style="display: flex; align-items: center; justify-content: space-between; margin-top: 1px; padding: 0 4px; min-height: 28px; gap: 8px;">
-        <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
-          <h2 id="dayFullTitle" style="font-size: 15px; font-weight: 800; letter-spacing: -0.2px; margin: 0;">...</h2>
+      <div id="dayHeaderRow" style="display: flex; align-items: center; justify-content: space-between; margin-top: 1px; padding: 0 2px; min-height: 28px;">
+        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0;">
+          <h2 id="dayFullTitle" style="font-size: 15px; font-weight: 800; letter-spacing: -0.2px;">...</h2>
           <div id="dayStatusBadge"></div>
+          <div id="dayLiveTimer"></div>
         </div>
         <div id="dayLessonsCount" style="font-size: 11.5px; font-weight: 700; color: var(--text-sub); flex-shrink: 0;"></div>
-      </div>
-
-      <!-- Kokonut UI Full-Width Activity Status Bar with Liquid Gauge Progress -->
-      <div id="kokonutStatusIsland" class="kokonut-status-bar" onclick="openStatusIslandModal()" title="Подробности расписания">
-        <div class="status-bar-top">
-          <div class="status-bar-left">
-            <span id="islandDot" class="status-dot"></span>
-            <span id="islandTitle" class="status-text-title">Идёт пара</span>
-            <span id="islandSubject" class="status-text-subject"></span>
-          </div>
-          <div class="status-bar-right">
-            <span id="islandTimer" class="status-text-timer">до перерыва — ...</span>
-            <svg class="status-chevron" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </div>
-        </div>
-        <div class="status-progress-track">
-          <div id="islandProgressBar" class="status-progress-fill"></div>
-        </div>
-      </div>
-      <div id="dayLiveTimer" style="display:none;"></div>
-
-      <!-- Kokonut UI Status Island Expanded Sheet Modal -->
-      <div id="statusIslandModal" class="island-modal-overlay" onclick="closeStatusIslandModal(event)">
-        <div class="island-modal-sheet" onclick="event.stopPropagation()">
-          <div class="island-sheet-grabber"></div>
-          <div class="flex items-center justify-between pb-2.5 border-b border-base-content/10">
-            <div class="flex items-center gap-2">
-              <span id="islandModalDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span id="islandModalStatusLabel" class="text-xs font-bold uppercase tracking-wider text-emerald-400">Идёт пара</span>
-            </div>
-            <span id="islandModalTimeRange" class="font-mono text-xs text-base-content/60 font-bold">10:00 — 11:20</span>
-          </div>
-          <div class="py-3.5">
-            <h3 id="islandModalLessonTitle" class="text-base font-extrabold text-base-content leading-tight">Предмет</h3>
-            <div class="flex items-center gap-2 mt-1.5 text-xs text-base-content/70">
-              <span id="islandModalTeacher">Преподаватель</span>
-              <span>•</span>
-              <span id="islandModalRoom" class="font-mono font-bold text-base-content">Ауд. ...</span>
-            </div>
-            <!-- Animated fluid progress bar -->
-            <div class="mt-4 space-y-1.5">
-              <div class="flex items-center justify-between text-[11px] font-mono text-base-content/50">
-                <span>Прогресс занятия</span>
-                <span id="islandModalProgressPercent" class="text-emerald-400 font-bold">50%</span>
-              </div>
-              <div class="w-full bg-base-content/10 h-2 rounded-full overflow-hidden">
-                <div id="islandModalProgressBar" class="h-full bg-gradient-to-r from-emerald-500 to-sky-400 rounded-full transition-all duration-500" style="width: 50%;"></div>
-              </div>
-              <div class="flex items-center justify-between text-[10.5px] text-base-content/40 pt-0.5">
-                <span id="islandModalElapsed">Прошло 40 мин</span>
-                <span id="islandModalRemaining" class="text-emerald-400 font-semibold">Осталось 40 мин</span>
-              </div>
-            </div>
-          </div>
-          <button type="button" onclick="closeStatusIslandModal()" class="btn btn-ghost btn-sm w-full rounded-2xl text-xs font-bold border border-base-content/10 mt-1">
-            Закрыть
-          </button>
-        </div>
       </div>
 
       <div id="scheduleViewport" class="schedule-viewport">
@@ -2405,17 +1953,22 @@
       return `<span class="countdown font-mono"><span style="--value:${m};"></span></span> мин`;
     }
 
-    function calculateLiveScheduleStatus(daysList, groupSchedule) {
+    function updateLiveStatusBanner(todayActiveSlots) {
+      const liveTimerBox = document.getElementById('dayLiveTimer');
+      if (!liveTimerBox) return;
+
+      const todayIdx = currentDaysList.findIndex(d => d.isToday);
+      const isViewingToday = (selectedDayIndex === todayIdx && todayIdx !== -1);
+
+      if (!isViewingToday || !todayActiveSlots || !todayActiveSlots.length) {
+        liveTimerBox.innerHTML = '';
+        return;
+      }
+
       const now = new Date();
       const curMin = now.getHours() * 60 + now.getMinutes();
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).getTime();
 
-      const todayEntry = (daysList || []).find(d => d.isToday || (d.date && d.date.getTime() === todayStart));
-      const todaySlots = (todayEntry && todayEntry.rawKey)
-        ? getProcessedDaySlots(todayEntry.rawKey, groupSchedule)
-        : [];
-
-      const todayLessonSlots = todaySlots
+      const dayLessonSlots = todayActiveSlots
         .filter(s => s.items && s.items.length > 0)
         .map(s => {
           const parsed = parseTimeSlotMinutes(s.timeStr);
@@ -2430,153 +1983,59 @@
         .filter(Boolean)
         .sort((a, b) => a.startMin - b.startMin);
 
-      // 1. Идёт занятие прямо сейчас
-      if (todayLessonSlots.length > 0) {
-        const liveLesson = todayLessonSlots.find(s => curMin >= s.startMin && curMin < s.endMin);
-        if (liveLesson) {
-          const minsLeft = Math.max(0, liveLesson.endMin - curMin);
-          const total = Math.max(1, liveLesson.endMin - liveLesson.startMin);
-          const elapsed = curMin - liveLesson.startMin;
-          const pct = Math.min(100, Math.max(3, (elapsed / total) * 100));
-          const itemTitle = liveLesson.items[0]?.title || '';
-          return {
-            state: 'live',
-            lesson: liveLesson,
-            timeStr: liveLesson.timeStr,
-            minsLeft,
-            totalMins: total,
-            elapsedMins: elapsed,
-            progressPercent: pct,
-            title: 'Идёт пара',
-            timerText: `до перерыва — ${formatMinutesLeft(minsLeft)}`,
-            subject: itemTitle
-          };
-        }
-
-        // 2. Перемена или окно между парами сегодня
-        const nextLessonToday = todayLessonSlots.find(s => s.startMin > curMin);
-        const prevLessonToday = [...todayLessonSlots].reverse().find(s => s.endMin <= curMin);
-
-        if (nextLessonToday && prevLessonToday) {
-          const minsLeft = Math.max(0, nextLessonToday.startMin - curMin);
-          const isWindow = (minsLeft >= 35);
-          const totalBreak = Math.max(1, nextLessonToday.startMin - prevLessonToday.endMin);
-          const elapsedBreak = Math.max(0, curMin - prevLessonToday.endMin);
-          const pct = Math.min(100, Math.max(3, (elapsedBreak / totalBreak) * 100));
-          const nextTitle = nextLessonToday.items[0]?.title || '';
-          return {
-            state: 'break',
-            lesson: nextLessonToday,
-            timeStr: nextLessonToday.timeStr,
-            minsLeft,
-            totalMins: totalBreak,
-            elapsedMins: elapsedBreak,
-            progressPercent: pct,
-            isWindow,
-            title: isWindow ? 'Окно' : 'Перемена',
-            timerText: `до пары — ${formatMinutesLeft(minsLeft)}`,
-            subject: nextTitle ? `след: ${nextTitle}` : ''
-          };
-        }
-
-        // 3. До начала первой пары сегодня
-        const firstLesson = todayLessonSlots[0];
-        if (curMin < firstLesson.startMin) {
-          const minsLeft = Math.max(0, firstLesson.startMin - curMin);
-          const windowStart = Math.max(0, firstLesson.startMin - 180);
-          const totalSpan = Math.max(1, firstLesson.startMin - windowStart);
-          const elapsed = Math.max(0, curMin - windowStart);
-          const pct = Math.min(100, Math.max(3, (elapsed / totalSpan) * 100));
-          const firstTitle = firstLesson.items[0]?.title || '';
-          const startClock = firstLesson.timeStr.split('—')[0].trim();
-          return {
-            state: 'before',
-            lesson: firstLesson,
-            timeStr: firstLesson.timeStr,
-            minsLeft,
-            totalMins: totalSpan,
-            elapsedMins: elapsed,
-            progressPercent: pct,
-            title: 'Скоро пара',
-            timerText: `до пары — ${formatMinutesLeft(minsLeft)}`,
-            subject: firstTitle ? `в ${startClock} (${firstTitle})` : ''
-          };
-        }
+      if (!dayLessonSlots.length) {
+        liveTimerBox.innerHTML = '';
+        return;
       }
 
-      // 4. Пары на сегодня завершены ИЛИ сегодня выходной / пар нет
-      // Ищем ближайший следующий день с парами в текущем расписании
-      let foundFuture = null;
-      const lastTodayLesson = todayLessonSlots[todayLessonSlots.length - 1];
-      const referenceEndMin = lastTodayLesson ? lastTodayLesson.endMin : 840;
+      const firstLesson = dayLessonSlots[0];
+      const lastLesson = dayLessonSlots[dayLessonSlots.length - 1];
 
-      for (let i = 0; i < (daysList || []).length; i++) {
-        const d = daysList[i];
-        if (!d.date || d.date.getTime() <= todayStart) continue;
-        if (!d.rawKey) continue;
-
-        const fSlots = getProcessedDaySlots(d.rawKey, groupSchedule);
-        const parsedSlots = fSlots
-          .filter(s => s.items && s.items.length > 0)
-          .map(s => {
-            const p = parseTimeSlotMinutes(s.timeStr);
-            return p ? { timeStr: s.timeStr, startMin: p.startMin, endMin: p.endMin, items: s.items } : null;
-          })
-          .filter(Boolean)
-          .sort((a, b) => a.startMin - b.startMin);
-
-        if (parsedSlots.length > 0) {
-          const nextFirst = parsedSlots[0];
-          const daysDiff = Math.max(1, Math.round((d.date.getTime() - todayStart) / 86400000));
-          const minsToday = Math.max(0, 1440 - curMin);
-          const intermediateMins = (daysDiff - 1) * 1440;
-          const totalMinsLeft = minsToday + intermediateMins + nextFirst.startMin;
-
-          const totalPeriod = (1440 - Math.min(1439, referenceEndMin)) + intermediateMins + nextFirst.startMin;
-          const elapsed = Math.max(0, totalPeriod - totalMinsLeft);
-          const pct = Math.min(100, Math.max(3, Math.round((elapsed / Math.max(1, totalPeriod)) * 100)));
-
-          const dayLabel = (daysDiff === 1) ? 'Завтра' : (d.dayDef?.short || 'След. день');
-          const nextTitle = nextFirst.items[0]?.title || '';
-          const startClock = nextFirst.timeStr.split('—')[0].trim();
-
-          foundFuture = {
-            state: 'upcoming',
-            lesson: nextFirst,
-            timeStr: nextFirst.timeStr,
-            minsLeft: totalMinsLeft,
-            totalMins: totalPeriod,
-            elapsedMins: elapsed,
-            progressPercent: pct,
-            nextDayName: dayLabel,
-            title: (daysDiff === 1) ? 'Завтра 1-я пара' : `${dayLabel} 1-я пара`,
-            timerText: `до пары — ${formatMinutesLeft(totalMinsLeft)}`,
-            subject: `в ${startClock} (${nextTitle})`
-          };
-          break;
-        }
+      // 1. Пары ещё не начались
+      if (curMin < firstLesson.startMin) {
+        const minsLeft = Math.max(0, firstLesson.startMin - curMin);
+        liveTimerBox.innerHTML = `
+          <span class="badge badge-ghost badge-sm font-bold border border-base-content/20 gap-1.5" title="До начала пар">
+            <svg class="w-3 h-3 opacity-70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>
+            <span>до пары — ${formatMinutesLeft(minsLeft)}</span>
+          </span>
+        `;
+        return;
       }
 
-      if (foundFuture) return foundFuture;
+      // 2. Пары на сегодня завершены — блок вообще не нужен
+      if (curMin >= lastLesson.endMin) {
+        liveTimerBox.innerHTML = '';
+        return;
+      }
 
-      return {
-        state: 'finished',
-        lesson: null,
-        timeStr: '',
-        minsLeft: 0,
-        totalMins: 100,
-        elapsedMins: 100,
-        progressPercent: 100,
-        title: 'Пары завершены',
-        timerText: 'Отдых ✓',
-        subject: ''
-      };
-    }
+      // 3. Идёт пара прямо сейчас
+      const liveLesson = dayLessonSlots.find(s => curMin >= s.startMin && curMin < s.endMin);
+      if (liveLesson) {
+        const minsLeft = Math.max(0, liveLesson.endMin - curMin);
+        liveTimerBox.innerHTML = `
+          <span class="badge badge-accent badge-sm font-bold gap-1.5 text-white shadow-sm" title="Идёт пара">
+            <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+            <span>до перерыва — ${formatMinutesLeft(minsLeft)}</span>
+          </span>
+        `;
+        return;
+      }
 
-    function updateLiveStatusBanner() {
-      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
-      const statusData = calculateLiveScheduleStatus(currentDaysList, groupSchedule);
-      updateKokonutStatusIsland(statusData);
+      // 4. Перемена или окно между парами
+      const nextLesson = dayLessonSlots.find(s => s.startMin > curMin);
+      if (nextLesson) {
+        const minsLeft = Math.max(0, nextLesson.startMin - curMin);
+        liveTimerBox.innerHTML = `
+          <span class="badge badge-warning badge-sm font-bold gap-1.5 shadow-sm" title="Перемена">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>
+            <span>до пары — ${formatMinutesLeft(minsLeft)}</span>
+          </span>
+        `;
+        return;
+      }
+
+      liveTimerBox.innerHTML = '';
     }
 
     function startLiveStatusTimer(groupSchedule) {
@@ -2584,13 +2043,19 @@
       if (_liveTimeoutTimer) { clearTimeout(_liveTimeoutTimer); _liveTimeoutTimer = null; }
 
       function tick() {
-        updateLiveStatusBanner();
+        const todayIdx = currentDaysList.findIndex(d => d.isToday);
+        if (todayIdx === -1) {
+          const liveTimerBox = document.getElementById('dayLiveTimer');
+          if (liveTimerBox) liveTimerBox.innerHTML = '';
+          return;
+        }
+
+        const todayDay = currentDaysList[todayIdx];
+        const slots = todayDay.rawKey ? getProcessedDaySlots(todayDay.rawKey, groupSchedule) : [];
+        updateLiveStatusBanner(slots);
 
         // Если открыт день «Сегодня», проверяем, не сменилась ли текущая пара
-        const todayIdx = currentDaysList.findIndex(d => d.isToday);
-        if (selectedDayIndex === todayIdx && todayIdx !== -1) {
-          const todayDay = currentDaysList[todayIdx];
-          const slots = todayDay.rawKey ? getProcessedDaySlots(todayDay.rawKey, groupSchedule) : [];
+        if (selectedDayIndex === todayIdx) {
           const activeLiveSlot = slots.find(s => s.items?.length && isLessonLive(s.timeStr))?.timeStr || null;
           if (activeLiveSlot !== _lastLiveSlotKey) {
             _lastLiveSlotKey = activeLiveSlot;
@@ -2643,14 +2108,12 @@
 
     // ─── Development Warning Banner ──────────────────────────────────────────
     function dismissDevWarning() {
-      if (window.Telegram?.WebApp?.HapticFeedback) {
-        window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-      }
+      triggerHaptic('medium');
       const banner = document.getElementById('devWarningBanner');
       if (banner) {
-        banner.style.transition = 'opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        banner.style.transition = 'opacity 0.25s ease, transform 0.25s ease, max-height 0.3s ease, margin 0.3s ease, padding 0.3s ease';
         banner.style.opacity = '0';
-        banner.style.transform = 'scale(0.96)';
+        banner.style.transform = 'translate3d(120%, 0, 0)';
         banner.style.maxHeight = banner.offsetHeight + 'px';
         setTimeout(() => {
           banner.style.maxHeight = '0px';
@@ -2668,13 +2131,73 @@
       } catch (e) {}
     }
 
+    function initSlideToConfirm() {
+      const bar = document.getElementById('slideToConfirmBar');
+      const thumb = document.getElementById('slideThumb');
+      if (!bar || !thumb) return;
+
+      let isDragging = false;
+      let startX = 0;
+      let maxTranslate = 0;
+
+      function onStart(clientX) {
+        isDragging = true;
+        startX = clientX;
+        maxTranslate = bar.clientWidth - thumb.clientWidth - 4;
+        thumb.style.transition = 'none';
+      }
+
+      function onMove(clientX) {
+        if (!isDragging) return;
+        const dx = clientX - startX;
+        const boundedX = Math.max(0, Math.min(dx, maxTranslate));
+        thumb.style.transform = 'translateX(' + boundedX + 'px)';
+        const progress = boundedX / Math.max(1, maxTranslate);
+        const trackText = bar.querySelector('.slide-track-text');
+        if (trackText) {
+          trackText.style.opacity = Math.max(0, 0.75 - progress * 1.5);
+        }
+      }
+
+      function onEnd() {
+        if (!isDragging) return;
+        isDragging = false;
+        const currentTransform = thumb.style.transform;
+        const match = currentTransform.match(/translateX\(([\d.]+)px\)/);
+        const currentX = match ? parseFloat(match[1]) : 0;
+
+        if (currentX >= maxTranslate * 0.72) {
+          thumb.style.transition = 'transform 0.15s ease-out';
+          thumb.style.transform = 'translateX(' + maxTranslate + 'px)';
+          dismissDevWarning();
+        } else {
+          thumb.style.transition = 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+          thumb.style.transform = 'translateX(0px)';
+          const trackText = bar.querySelector('.slide-track-text');
+          if (trackText) {
+            trackText.style.opacity = '0.75';
+          }
+        }
+      }
+
+      thumb.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX), { passive: true });
+      window.addEventListener('touchmove', (e) => {
+        if (isDragging && e.touches.length === 1) onMove(e.touches[0].clientX);
+      }, { passive: true });
+      window.addEventListener('touchend', onEnd, { passive: true });
+
+      thumb.addEventListener('mousedown', (e) => onStart(e.clientX));
+      window.addEventListener('mousemove', (e) => {
+        if (isDragging) onMove(e.clientX);
+      });
+      window.addEventListener('mouseup', onEnd);
+    }
+
     function checkDevWarningVisibility() {
       try {
         if (sessionStorage.getItem('devWarningDismissed') === 'true') {
-          const stack = document.getElementById('kokonutNotificationStack');
-          if (stack) stack.style.display = 'none';
-          const card = document.getElementById('notifCardDropbox');
-          if (card) card.remove();
+          const banner = document.getElementById('devWarningBanner');
+          if (banner) banner.style.display = 'none';
         }
       } catch (e) {}
     }
@@ -2684,7 +2207,6 @@
     const MAIN_TABS = ['schedule', 'settings'];
 
     function updateDockPill(tab, animate = true) {
-      updateKokonutSwipeTabs(tab, animate);
       const dock = document.querySelector('.header-dock');
       const indicator = document.getElementById('dockIndicator');
       const btnSchedule = document.getElementById('dockBtnSchedule');
@@ -2835,37 +2357,37 @@
       body.innerHTML = `
         <div class="setting-group-card flex flex-col gap-2">
           <div class="section-title">Курс</div>
-          <div id="settingsCourseGrid" class="grid grid-cols-4 gap-2">
+          <div class="grid grid-cols-4 gap-2">
             ${['1','2','3','4'].map(c => {
               const sel = currentProfile.course === c;
-              return `<button type="button" data-course="${c}" onclick="selectCourseSettingsTab('${c}')" class="btn btn-md rounded-2xl font-bold text-lg border border-base-content/10 transition-colors duration-150 ${sel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">${c}</button>`;
+              return `<button type="button" onclick="selectCourseSettingsTab('${c}')" class="btn btn-md rounded-2xl font-black text-lg border border-base-content/10 transition-all ${sel ? 'btn-primary shadow-md scale-[1.02]' : 'btn-ghost bg-base-200/50'}">${c}</button>`;
             }).join('')}
           </div>
         </div>
 
         <div class="setting-group-card flex flex-col gap-2">
-          <div id="settingsGroupSectionTitle" class="section-title">Группа (${currentProfile.course} курс)</div>
-          <div id="settingsGroupsGrid" class="grid grid-cols-4 gap-2 min-h-[40px]">
+          <div class="section-title">Группа (${currentProfile.course} курс)</div>
+          <div class="grid grid-cols-4 gap-2">
             ${groups.map(g => {
               const num = g.replace(/^ГРУППА\s*/i, '');
               const sel = currentProfile.group_name === g;
-              return `<button type="button" data-group="${g}" onclick="selectGroupSettingsTab('${g}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-colors duration-150 ${sel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">${num}</button>`;
+              return `<button type="button" onclick="selectGroupSettingsTab('${g}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-all ${sel ? 'btn-primary shadow-md scale-[1.02]' : 'btn-ghost bg-base-200/50'}">${num}</button>`;
             }).join('')}
           </div>
         </div>
 
         <div class="setting-group-card flex flex-col gap-2">
           <div class="section-title">Изучаемый иностранный язык</div>
-          <div id="settingsLangsGrid" class="grid grid-cols-2 gap-2">
+          <div class="grid grid-cols-2 gap-2">
             ${langs.map(l => {
               const sel = currentProfile.foreign_lang === l.id;
-              return `<button type="button" data-lang="${l.id}" onclick="toggleLangSettingsTab('${l.id}')" class="btn h-11 min-h-[44px] px-2 py-2 rounded-xl font-bold text-[13px] border border-base-content/10 flex items-center justify-center gap-1.5 transition-colors duration-150 ${sel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">
+              return `<button type="button" onclick="toggleLangSettingsTab('${l.id}')" class="btn h-11 min-h-[44px] px-2 py-2 rounded-xl font-bold text-[13px] border border-base-content/10 flex items-center justify-center gap-1.5 transition-all ${sel ? 'btn-primary shadow-md scale-[1.02]' : 'btn-ghost bg-base-200/50'}">
                 <span>${l.label}</span>
-                <span class="lang-check text-xs font-bold ${sel ? '' : 'hidden'}">✓</span>
+                ${sel ? '<span class="text-xs font-bold">✓</span>' : ''}
               </button>`;
             }).join('')}
           </div>
-          <div id="settingsLangHint" style="font-size: 11px; color: var(--text-sub); margin-top: 4px; line-height: 1.4;">${langHint}</div>
+          <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px; line-height: 1.4;">${langHint}</div>
         </div>
       `;
     }
@@ -2878,44 +2400,14 @@
         currentProfile.group_name = availGroups[0] || '';
       }
       localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
-
-      // 1. Update course buttons in-place
-      const courseGrid = document.getElementById('settingsCourseGrid');
-      if (courseGrid) {
-        courseGrid.querySelectorAll('button').forEach(btn => {
-          const isSel = btn.getAttribute('data-course') === course;
-          btn.className = `btn btn-md rounded-2xl font-bold text-lg border border-base-content/10 transition-colors duration-150 ${isSel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}`;
-        });
-      }
-
-      // 2. Update group title
-      const title = document.getElementById('settingsGroupSectionTitle');
-      if (title) title.textContent = `Группа (${course} курс)`;
-
-      // 3. Update groups grid in-place
-      const groupsGrid = document.getElementById('settingsGroupsGrid');
-      if (groupsGrid) {
-        groupsGrid.innerHTML = availGroups.map(g => {
-          const num = g.replace(/^ГРУППА\s*/i, '');
-          const sel = currentProfile.group_name === g;
-          return `<button type="button" data-group="${g}" onclick="selectGroupSettingsTab('${g}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-colors duration-150 ${sel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">${num}</button>`;
-        }).join('');
-      }
+      renderSettingsTab();
     }
 
     function selectGroupSettingsTab(group) {
       triggerHaptic('light');
       currentProfile.group_name = group;
       localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
-
-      // Update group buttons in-place without rebuilding DOM
-      const groupsGrid = document.getElementById('settingsGroupsGrid');
-      if (groupsGrid) {
-        groupsGrid.querySelectorAll('button').forEach(btn => {
-          const isSel = btn.getAttribute('data-group') === group;
-          btn.className = `btn btn-sm rounded-xl font-bold border border-base-content/10 transition-colors duration-150 ${isSel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}`;
-        });
-      }
+      renderSettingsTab();
     }
 
     function toggleLangSettingsTab(langId) {
@@ -2926,32 +2418,7 @@
         currentProfile.foreign_lang = langId;
       }
       localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
-
-      const langs = [
-        { id: 'EN', label: 'Английский' },
-        { id: 'DE', label: 'Немецкий' },
-        { id: 'FR', label: 'Французский' },
-        { id: 'RKI', label: 'Русский (РКИ)' }
-      ];
-
-      // Update lang buttons in-place without rebuilding DOM
-      const langsGrid = document.getElementById('settingsLangsGrid');
-      if (langsGrid) {
-        langsGrid.querySelectorAll('button').forEach(btn => {
-          const isSel = btn.getAttribute('data-lang') === currentProfile.foreign_lang;
-          btn.className = `btn h-11 min-h-[44px] px-2 py-2 rounded-xl font-bold text-[13px] border border-base-content/10 flex items-center justify-center gap-1.5 transition-colors duration-150 ${isSel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}`;
-          const check = btn.querySelector('.lang-check');
-          if (check) check.classList.toggle('hidden', !isSel);
-        });
-      }
-
-      const activeLangObj = langs.find(l => l.id === currentProfile.foreign_lang);
-      const hint = document.getElementById('settingsLangHint');
-      if (hint) {
-        hint.innerHTML = activeLangObj
-          ? `Выбран <b>${activeLangObj.label}</b>. Нажмите повторно для сброса (будут показаны все языки).`
-          : `Язык не выбран • в расписании показываются все языки. Нажмите на язык, чтобы скрыть остальные.`;
-      }
+      renderSettingsTab();
     }
 
     function saveSettingsTabAndOpenSchedule() {
@@ -3426,7 +2893,7 @@
         ` : '';
 
         const commonTypeBadge = commonType ? `
-          <span class="badge badge-ghost badge-sm text-[11px] font-semibold opacity-75 border border-base-content/10 flex-shrink-0">${commonType.label}</span>
+          <span class="badge badge-sm font-bold flex-shrink-0" style="color: ${commonType.color}; background: ${commonType.bg}; border: 1px solid ${commonType.border};">${commonType.label}</span>
         ` : '';
 
         // Room badge at the top-right ONLY if there is exactly 1 item and it has no subgroups
@@ -3436,7 +2903,7 @@
         let innerContent = `
           <div class="flex items-center justify-between gap-2 mb-2">
             <div class="flex items-center gap-1.5 flex-wrap min-w-0">
-              <span class="kokonut-time-capsule ${isLive ? 'is-live' : ''}">${timeStr}</span>
+              <span class="badge ${isLive ? 'badge-accent font-bold text-white shadow-sm' : 'badge-ghost font-bold font-mono'} badge-sm flex-shrink-0">${timeStr}</span>
               ${commonTypeBadge}
               ${liveBadgeHTML}
             </div>
@@ -3451,7 +2918,7 @@
             : '';
 
           const subgroupBadge = item.subgroup ? `
-            <span class="kokonut-subgroup-pill">
+            <span class="subgroup-pill">
               <span class="sg-dot"></span>
               <span>${item.subgroup}</span>
             </span>
@@ -3459,7 +2926,7 @@
 
           // Плашка типа занятия выводится на строке предмета ТОЛЬКО если она не вынесена общей в заголовок
           const itemTypeBadge = (!commonType && item.type) ? `
-            <span class="badge badge-ghost badge-sm text-[11px] font-semibold opacity-75 border border-base-content/10 flex-shrink-0">${item.type.label}</span>
+            <span class="badge badge-sm font-bold flex-shrink-0" style="color: ${item.type.color}; background: ${item.type.bg}; border: 1px solid ${item.type.border};">${item.type.label}</span>
           ` : '';
 
           innerContent += `
@@ -3489,8 +2956,11 @@
                     return `
                       <div class="subgroup-box min-w-0 h-full flex flex-col justify-between">
                         <div>
-                          <div class="flex items-center justify-between text-[10px] font-extrabold text-base-content/60 uppercase pb-1 border-b border-base-content/5">
-                            <span class="truncate">${sgIdx + 1} подгруппа</span>
+                          <div class="flex items-center justify-between pb-1.5 border-b border-base-content/10">
+                            <span class="subgroup-pill text-[10px] py-0.5 px-2">
+                              <span class="sg-dot" style="width: 4px; height: 4px;"></span>
+                              <span>${sgIdx + 1} подгруппа</span>
+                            </span>
                             ${sg.room ? `<span class="badge badge-ghost badge-xs font-mono font-bold flex-shrink-0">${sg.room}</span>` : ''}
                           </div>
                           <div class="text-[10px] text-base-content/55 truncate h-4 leading-4 font-medium mt-1">
@@ -3566,12 +3036,6 @@
       const isToday = selectedDayIndex === todayIdx;
       const behavior = smooth ? 'smooth' : 'auto';
 
-      const momentumPill = document.getElementById('calendarMomentumPill');
-      if (momentumPill && activeBtn) {
-        momentumPill.style.transform = `translate3d(${activeBtn.offsetLeft}px, 0, 0)`;
-        momentumPill.style.width = `${activeBtn.offsetWidth}px`;
-      }
-
       if (isToday && todayIdx > 0) {
         // Оставляем вчерашний день отчетливо торчащим слева (~54px)
         const targetLeft = Math.max(0, activeBtn.offsetLeft - 54);
@@ -3611,10 +3075,6 @@
       // Render Continuous Timeline Carousel (Past on left, Today in center, Future on right)
       const selectorBox = document.getElementById('calendarSelector');
       selectorBox.innerHTML = '';
-      const momentumPill = document.createElement('div');
-      momentumPill.id = 'calendarMomentumPill';
-      momentumPill.className = 'calendar-momentum-pill';
-      selectorBox.appendChild(momentumPill);
 
       currentDaysList.forEach((d, idx) => {
         const isActive = idx === selectedDayIndex;
@@ -4109,346 +3569,8 @@
       });
     }
 
-
-    // ═════════════════════════════════════════════════════════════════════════
-    // KOKONUT UI INTERACTIVE RUNTIME ENGINES
-    // ═════════════════════════════════════════════════════════════════════════
-
-    // ─── 2. Kokonut UI Switch Button Theme Controller ─────────────────────────
-    function toggleKokonutTheme(event) {
-      triggerHaptic('light');
-      const isDark = document.documentElement.classList.contains('dark');
-      const targetTheme = isDark ? 'light' : 'dark';
-      const btn = document.getElementById('kokonutThemeSwitch') || event?.currentTarget;
-      let x = window.innerWidth - 32;
-      let y = 32;
-      if (btn) {
-        const rect = btn.getBoundingClientRect();
-        x = rect.left + rect.width / 2;
-        y = rect.top + rect.height / 2;
-      }
-      applyThemeWithReveal(targetTheme, x, y);
-    }
-
-
-    // ─── 3. Kokonut UI Swipe Tabs Controller (Schedule <-> Settings) ──────────
-    function initKokonutSwipeTabs() {
-      updateKokonutSwipeTabs(currentMainTab, false);
-    }
-
-    function updateKokonutSwipeTabs(tab, animate = true) {
-      const indicator = document.getElementById('swipeTabIndicator');
-      const btnSchedule = document.getElementById('dockBtnSchedule');
-      const btnSettings = document.getElementById('dockBtnSettings');
-      if (!indicator || !btnSchedule || !btnSettings) return;
-
-      const isSettings = (tab === 'settings');
-      btnSchedule.classList.toggle('active', !isSettings);
-      btnSettings.classList.toggle('active', isSettings);
-
-      const targetBtn = isSettings ? btnSettings : btnSchedule;
-      const targetLeft = targetBtn.offsetLeft;
-      const targetWidth = targetBtn.offsetWidth;
-
-      if (animate && window.Motion?.animate) {
-        Motion.animate(indicator, {
-          transform: [`translate3d(${indicator._currentX || 0}px, 0, 0)`, `translate3d(${targetLeft - 3}px, 0, 0)`],
-          width: [`${indicator._currentWidth || targetWidth}px`, `${targetWidth}px`]
-        }, {
-          duration: 0.32,
-          ease: [0.16, 1, 0.3, 1]
-        });
-      } else {
-        indicator.style.transform = `translate3d(${targetLeft - 3}px, 0, 0)`;
-        indicator.style.width = `${targetWidth}px`;
-      }
-      indicator._currentX = targetLeft - 3;
-      indicator._currentWidth = targetWidth;
-    }
-
-
-    // ─── 4. Kokonut UI Status Island (Dynamic Island) ─────────────────────────
-    let _islandData = {
-      state: 'idle',
-      lesson: null,
-      title: 'Расписание',
-      timeStr: '',
-      minsLeft: 0,
-      totalMins: 80,
-      elapsedMins: 0,
-      progressPercent: 0
-    };
-
-    function updateKokonutStatusIsland(data) {
-      _islandData = Object.assign(_islandData, data);
-      const island = document.getElementById('kokonutStatusIsland');
-      const dot = document.getElementById('islandDot');
-      const title = document.getElementById('islandTitle');
-      const subject = document.getElementById('islandSubject');
-      const timer = document.getElementById('islandTimer');
-      const progressBar = document.getElementById('islandProgressBar');
-      if (!island || !dot || !title || !timer) return;
-
-      island.style.display = 'flex';
-
-      if (data.state === 'live') {
-        dot.className = 'status-dot bg-emerald-400 animate-pulse';
-        title.textContent = data.title || 'Идёт пара';
-        if (subject) subject.textContent = data.subject ? `• ${data.subject}` : '';
-        timer.textContent = data.timerText || `до перерыва — ${formatMinutesLeft(data.minsLeft)}`;
-        timer.className = 'status-text-timer text-emerald-400 font-mono';
-        if (progressBar) {
-          const pct = Math.min(100, Math.max(3, Math.round(data.progressPercent || 0)));
-          progressBar.style.width = `${pct}%`;
-          progressBar.style.background = 'linear-gradient(90deg, #10b981, #34d399)';
-        }
-      } else if (data.state === 'break') {
-        dot.className = 'status-dot bg-amber-400 animate-pulse';
-        title.textContent = data.title || (data.isWindow ? 'Окно' : 'Перемена');
-        if (subject) subject.textContent = data.subject ? `• ${data.subject}` : '';
-        timer.textContent = data.timerText || `до пары — ${formatMinutesLeft(data.minsLeft)}`;
-        timer.className = 'status-text-timer text-amber-400 font-mono';
-        if (progressBar) {
-          const pct = Math.min(100, Math.max(3, Math.round(data.progressPercent || 0)));
-          progressBar.style.width = `${pct}%`;
-          progressBar.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
-        }
-      } else if (data.state === 'before' || data.state === 'upcoming') {
-        dot.className = 'status-dot bg-sky-400';
-        title.textContent = data.title || 'Скоро пара';
-        if (subject) subject.textContent = data.subject ? `• ${data.subject}` : '';
-        timer.textContent = data.timerText || `до пары — ${formatMinutesLeft(data.minsLeft)}`;
-        timer.className = 'status-text-timer text-sky-400 font-mono';
-        if (progressBar) {
-          const pct = Math.min(100, Math.max(3, Math.round(data.progressPercent || 0)));
-          progressBar.style.width = `${pct}%`;
-          progressBar.style.background = 'linear-gradient(90deg, #0284c7, #38bdf8)';
-        }
-      } else if (data.state === 'finished') {
-        dot.className = 'status-dot bg-emerald-500';
-        title.textContent = 'Пары завершены';
-        if (subject) subject.textContent = '';
-        timer.textContent = 'Отдых ✓';
-        timer.className = 'status-text-timer text-emerald-400 font-mono';
-        if (progressBar) {
-          progressBar.style.width = '100%';
-          progressBar.style.background = '#10b981';
-        }
-      } else {
-        island.style.display = 'none';
-      }
-    }
-
-    function openStatusIslandModal() {
-      triggerHaptic('medium');
-      const modal = document.getElementById('statusIslandModal');
-      if (!modal) return;
-
-      const dot = document.getElementById('islandModalDot');
-      const statusLabel = document.getElementById('islandModalStatusLabel');
-      const timeRange = document.getElementById('islandModalTimeRange');
-      const lessonTitle = document.getElementById('islandModalLessonTitle');
-      const teacher = document.getElementById('islandModalTeacher');
-      const room = document.getElementById('islandModalRoom');
-      const progressPercent = document.getElementById('islandModalProgressPercent');
-      const progressBar = document.getElementById('islandModalProgressBar');
-      const elapsed = document.getElementById('islandModalElapsed');
-      const remaining = document.getElementById('islandModalRemaining');
-
-      if (_islandData.state === 'live' && _islandData.lesson) {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse';
-        statusLabel.textContent = 'Идёт занятие';
-        statusLabel.className = 'text-xs font-bold uppercase tracking-wider text-emerald-400';
-        timeRange.textContent = _islandData.timeStr || '10:00 — 11:20';
-
-        const item = _islandData.lesson.items?.[0] || {};
-        lessonTitle.textContent = item.title || 'Учебное занятие';
-        teacher.textContent = item.details?.teacher || item.subgroups?.[0]?.teacher || 'Преподаватель не указан';
-        room.textContent = item.room || item.subgroups?.[0]?.room || '—';
-
-        const pct = Math.min(100, Math.max(0, Math.round(_islandData.progressPercent)));
-        progressPercent.textContent = `${pct}%`;
-        progressBar.style.width = `${pct}%`;
-        progressBar.className = 'h-full bg-gradient-to-r from-emerald-500 to-sky-400 rounded-full transition-all duration-500';
-        elapsed.textContent = `Прошло ${_islandData.elapsedMins} мин`;
-        remaining.textContent = `Осталось ${_islandData.minsLeft} мин`;
-      } else if (_islandData.state === 'break' && _islandData.lesson) {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse';
-        statusLabel.textContent = _islandData.isWindow ? 'Окно между парами' : 'Перемена';
-        statusLabel.className = 'text-xs font-bold uppercase tracking-wider text-amber-400';
-        timeRange.textContent = _islandData.timeStr || 'Перерыв';
-
-        const item = _islandData.lesson.items?.[0] || {};
-        lessonTitle.textContent = `Следующая: ${item.title || 'Пара'}`;
-        teacher.textContent = item.details?.teacher || item.subgroups?.[0]?.teacher || '—';
-        room.textContent = item.room || item.subgroups?.[0]?.room || '—';
-
-        progressPercent.textContent = `До пары: ${formatMinutesLeft(_islandData.minsLeft)}`;
-        progressBar.style.width = `${Math.min(100, Math.max(3, Math.round(_islandData.progressPercent)))}%`;
-        progressBar.className = 'h-full bg-amber-400 rounded-full transition-all duration-500';
-        elapsed.textContent = 'Перерыв';
-        remaining.textContent = `Звонок через ${formatMinutesLeft(_islandData.minsLeft)}`;
-      } else if (_islandData.state === 'before' && _islandData.lesson) {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-sky-400';
-        statusLabel.textContent = 'Скоро начало занятий';
-        statusLabel.className = 'text-xs font-bold uppercase tracking-wider text-sky-400';
-        timeRange.textContent = _islandData.timeStr || 'Первая пара';
-
-        const item = _islandData.lesson.items?.[0] || {};
-        lessonTitle.textContent = `Первая пара: ${item.title || 'Пара'}`;
-        teacher.textContent = item.details?.teacher || item.subgroups?.[0]?.teacher || '—';
-        room.textContent = item.room || item.subgroups?.[0]?.room || '—';
-
-        progressPercent.textContent = `До начала: ${formatMinutesLeft(_islandData.minsLeft)}`;
-        progressBar.style.width = `${Math.min(100, Math.max(3, Math.round(_islandData.progressPercent)))}%`;
-        progressBar.className = 'h-full bg-sky-400 rounded-full';
-        elapsed.textContent = 'Ожидание до занятий';
-        remaining.textContent = `Начало через ${formatMinutesLeft(_islandData.minsLeft)}`;
-      } else if (_islandData.state === 'upcoming' && _islandData.lesson) {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-sky-400';
-        statusLabel.textContent = _islandData.nextDayName ? `${_islandData.nextDayName}: первая пара` : 'Следующее занятие';
-        statusLabel.className = 'text-xs font-bold uppercase tracking-wider text-sky-400';
-        timeRange.textContent = _islandData.timeStr || 'Первая пара';
-
-        const item = _islandData.lesson.items?.[0] || {};
-        lessonTitle.textContent = item.title || 'Учебное занятие';
-        teacher.textContent = item.details?.teacher || item.subgroups?.[0]?.teacher || 'Преподаватель не указан';
-        room.textContent = item.room || item.subgroups?.[0]?.room || '—';
-
-        const pct = Math.min(100, Math.max(3, Math.round(_islandData.progressPercent)));
-        progressPercent.textContent = `${pct}%`;
-        progressBar.style.width = `${pct}%`;
-        progressBar.className = 'h-full bg-gradient-to-r from-sky-500 to-indigo-400 rounded-full transition-all duration-500';
-        elapsed.textContent = 'Ожидание до пары';
-        remaining.textContent = `Звонок через ${formatMinutesLeft(_islandData.minsLeft)}`;
-      } else {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
-        statusLabel.textContent = 'Занятия окончены';
-        statusLabel.className = 'text-xs font-bold uppercase tracking-wider text-emerald-400';
-        timeRange.textContent = 'Отдых';
-        lessonTitle.textContent = 'Все пары на сегодня закончились!';
-        teacher.textContent = 'Отличного вечера и отдыха';
-        room.textContent = '✓';
-        progressPercent.textContent = '100%';
-        progressBar.style.width = '100%';
-        progressBar.className = 'h-full bg-emerald-500 rounded-full';
-        elapsed.textContent = 'Все занятия окончены';
-        remaining.textContent = 'До завтра!';
-      }
-
-      modal.classList.add('open');
-    }
-
-    function closeStatusIslandModal(event) {
-      if (event && event.target && event.target.closest('.island-modal-sheet') && !event.target.closest('button')) {
-        return;
-      }
-      triggerHaptic('light');
-      const modal = document.getElementById('statusIslandModal');
-      if (modal) modal.classList.remove('open');
-    }
-
-
-    // ─── 5. Kokonut UI Notification Stack & Slide-To-Confirm ──────────────────
-    let isNotifStackFanned = false;
-
-    function fanNotificationStack() {
-      const stack = document.getElementById('kokonutNotificationStack');
-      if (!stack) return;
-      isNotifStackFanned = !isNotifStackFanned;
-      triggerHaptic('light');
-      stack.classList.toggle('is-fanned', isNotifStackFanned);
-    }
-
-    function dismissStackCard(type, event) {
-      if (event) {
-        event.stopPropagation();
-      }
-      triggerHaptic('medium');
-      const stack = document.getElementById('kokonutNotificationStack');
-      if (type === 'dropbox') {
-        const card = document.getElementById('notifCardDropbox');
-        if (card) {
-          card.style.transform = 'translate3d(120%, 0, 0) scale(0.9)';
-          card.style.opacity = '0';
-          setTimeout(() => {
-            card.remove();
-            sessionStorage.setItem('devWarningDismissed', 'true');
-            if (stack && stack.children.length === 0) {
-              stack.style.display = 'none';
-            }
-          }, 240);
-        }
-      } else if (type === 'update') {
-        const card = document.getElementById('notifCardUpdate');
-        if (card) {
-          card.style.transform = 'translate3d(120%, 0, 0) scale(0.9)';
-          card.style.opacity = '0';
-          setTimeout(() => {
-            card.remove();
-            if (stack && stack.children.length === 0) {
-              stack.style.display = 'none';
-            }
-          }, 240);
-        }
-      }
-    }
-
-    function initSlideToConfirm() {
-      const bar = document.getElementById('slideToConfirmBar');
-      const thumb = document.getElementById('slideThumb');
-      if (!bar || !thumb) return;
-
-      let startX = 0;
-      let currentX = 0;
-      let isDragging = false;
-      let maxDrag = 0;
-
-      function onStart(clientX) {
-        isDragging = true;
-        startX = clientX;
-        maxDrag = bar.offsetWidth - thumb.offsetWidth - 4;
-        thumb.style.transition = 'none';
-      }
-
-      function onMove(clientX) {
-        if (!isDragging) return;
-        const diff = Math.max(0, Math.min(clientX - startX, maxDrag));
-        currentX = diff;
-        thumb.style.transform = `translate3d(${diff}px, 0, 0)`;
-      }
-
-      function onEnd() {
-        if (!isDragging) return;
-        isDragging = false;
-        thumb.style.transition = 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
-        if (currentX >= maxDrag * 0.72) {
-          // Confirmed!
-          thumb.style.transform = `translate3d(${maxDrag}px, 0, 0)`;
-          triggerHaptic('heavy');
-          dismissStackCard('dropbox');
-        } else {
-          // Snap back
-          thumb.style.transform = 'translate3d(0, 0, 0)';
-        }
-      }
-
-      thumb.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX), { passive: true });
-      window.addEventListener('touchmove', (e) => {
-        if (isDragging) onMove(e.touches[0].clientX);
-      }, { passive: true });
-      window.addEventListener('touchend', onEnd, { passive: true });
-
-      thumb.addEventListener('mousedown', (e) => onStart(e.clientX));
-      window.addEventListener('mousemove', (e) => {
-        if (isDragging) onMove(e.clientX);
-      });
-      window.addEventListener('mouseup', onEnd);
-    }
-
     async function init() {
       initTheme();
-      initKokonutSwipeTabs();
       initSlideToConfirm();
       checkDevWarningVisibility();
       setupCalendarDragHandling();
@@ -4489,14 +3611,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v5') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v6') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=5')
+        navigator.serviceWorker.register('./sw-preview.js?v=6')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
