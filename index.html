@@ -748,6 +748,15 @@
       }
     }
 
+    @keyframes badgePopIn {
+      from { opacity: 0; transform: scale(0.65); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .day-update-badge {
+      animation: badgePopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
     .calendar-day-btn.is-today-btn {
       border: 1.5px solid rgba(16, 185, 129, 0.85) !important;
       animation: pulseAuraRing 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
@@ -2282,10 +2291,12 @@
       if (currentProfile && currentProfile.group_name) {
         headerTitle.textContent = `${currentProfile.course} курс • ${currentProfile.group_name.replace('ГРУППА ', 'Группа ')}`;
         if (headerSync) {
-          const rawTime = facultyData?.updated_times?.[currentProfile.course] || Object.values(facultyData?.updated_times || {})[0];
-          const text = rawTime ? `Деканат: ${rawTime}` : 'Синхронизировано';
+          const groupTime = facultyData?.group_updated_times?.[currentProfile.course]?.[currentProfile.group_name]
+            || facultyData?.updated_times?.[currentProfile.course]
+            || Object.values(facultyData?.updated_times || {})[0];
+          const text = groupTime ? `Деканат: ${groupTime}` : 'Синхронизировано';
           headerSync.textContent = text;
-          headerSync.title = rawTime ? `Расписание от деканата обновлено: ${rawTime}` : 'Расписание синхронизировано';
+          headerSync.title = groupTime ? `Расписание для ${currentProfile.group_name} обновлено деканатом: ${groupTime}` : 'Расписание синхронизировано';
         }
       }
     }
@@ -2405,6 +2416,61 @@
       return `${count} пар`;
     }
 
+    function computeClientDayHash(slots) {
+      if (!slots) return 'empty';
+      try {
+        const str = JSON.stringify(slots);
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          hash = ((hash << 5) - hash) + str.charCodeAt(i);
+          hash |= 0;
+        }
+        return Math.abs(hash).toString(16);
+      } catch (e) {
+        return 'hash_err';
+      }
+    }
+
+    function isDayUpdateUnseen(dayKey) {
+      if (!dayKey || !currentProfile || !facultyData) return false;
+      const course = currentProfile.course;
+      const group = currentProfile.group_name;
+      if (!course || !group) return false;
+
+      const groupTime = facultyData?.group_updated_times?.[course]?.[group]
+        || facultyData?.updated_times?.[course];
+      if (!groupTime) return false;
+
+      const dayUpdateTime = facultyData?.day_updated_times?.[course]?.[group]?.[dayKey];
+      if (!dayUpdateTime || dayUpdateTime !== groupTime) return false;
+
+      const groupSchedule = facultyData?.courses?.[course]?.[group] || {};
+      const currentHash = facultyData?.day_hashes?.[course]?.[group]?.[dayKey]
+        || computeClientDayHash(groupSchedule[dayKey]);
+      if (!currentHash) return false;
+
+      const storageKey = `bsu_seen_day_${course}_${group}_${dayKey}`;
+      const seenHash = localStorage.getItem(storageKey);
+      return seenHash !== currentHash;
+    }
+
+    function markDayAsViewed(dayKey) {
+      if (!dayKey || !currentProfile || !facultyData) return;
+      const course = currentProfile.course;
+      const group = currentProfile.group_name;
+      if (!course || !group) return;
+
+      const groupSchedule = facultyData?.courses?.[course]?.[group] || {};
+      const dayHash = facultyData?.day_hashes?.[course]?.[group]?.[dayKey]
+        || computeClientDayHash(groupSchedule[dayKey]);
+      if (!dayHash) return;
+
+      const storageKey = `bsu_seen_day_${course}_${group}_${dayKey}`;
+      try {
+        localStorage.setItem(storageKey, dayHash);
+      } catch (e) {}
+    }
+
     let currentSlideDirection = 'none';
 
     function selectDayIndex(index, hapticType = 'medium') {
@@ -2422,6 +2488,12 @@
       }
 
       selectedDayIndex = index;
+      if (index >= 0 && index < currentDaysList.length) {
+        const selectedDay = currentDaysList[index];
+        if (selectedDay && selectedDay.rawKey) {
+          markDayAsViewed(selectedDay.rawKey);
+        }
+      }
       triggerHaptic(hapticType);
 
       // Tactile soft feedback on active timeline day button
@@ -2523,7 +2595,15 @@
       if (currentDay.isPast) {
         badgeBox.innerHTML = '<span class="badge badge-neutral badge-sm font-bold opacity-70">Архив</span>';
       } else {
-        badgeBox.innerHTML = '';
+        const course = currentProfile?.course;
+        const group = currentProfile?.group_name;
+        const groupTime = facultyData?.group_updated_times?.[course]?.[group] || facultyData?.updated_times?.[course];
+        const dayTime = facultyData?.day_updated_times?.[course]?.[group]?.[currentDay.rawKey];
+        if (dayTime && groupTime && dayTime === groupTime) {
+          badgeBox.innerHTML = `<span class="badge badge-primary badge-sm font-bold gap-1 shadow-sm"><svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>Обновлено</span>`;
+        } else {
+          badgeBox.innerHTML = '';
+        }
       }
 
       if (!currentDay.rawKey) {
@@ -2789,12 +2869,21 @@
         selectedDayIndex = 0;
       }
 
+      // Automatically mark the currently viewed day as seen
+      if (selectedDayIndex >= 0 && selectedDayIndex < currentDaysList.length) {
+        const activeDay = currentDaysList[selectedDayIndex];
+        if (activeDay && activeDay.rawKey) {
+          markDayAsViewed(activeDay.rawKey);
+        }
+      }
+
       // Render Continuous Timeline Carousel (Past on left, Today in center, Future on right)
       const selectorBox = document.getElementById('calendarSelector');
       selectorBox.innerHTML = '';
 
       currentDaysList.forEach((d, idx) => {
         const isActive = idx === selectedDayIndex;
+        const hasUnseenUpdate = isDayUpdateUnseen(d.rawKey);
 
         const btn = document.createElement('button');
         btn.className = `calendar-day-btn tap-scale ${isActive ? 'active' : ''} ${d.isToday ? 'is-today-btn' : ''} ${d.isPast ? 'past-day' : ''}`;
@@ -2809,8 +2898,17 @@
           selectDayIndex(idx, 'medium');
         };
 
+        const todayDotHTML = (d.isToday && !hasUnseenUpdate) ? '<span class="calendar-today-dot"></span>' : '';
+        const updateBadgeHTML = hasUnseenUpdate ? `
+          <span class="day-update-badge badge badge-primary badge-xs font-extrabold text-[8px] px-1 py-0 h-3.5 absolute top-1 right-1 shadow-sm flex items-center gap-0.5 leading-none z-10" title="Расписание дня обновлено деканатом">
+            <span class="w-1 h-1 rounded-full bg-white animate-pulse"></span>
+            <span>upd</span>
+          </span>
+        ` : '';
+
         btn.innerHTML = `
-          ${d.isToday ? '<span class="calendar-today-dot"></span>' : ''}
+          ${todayDotHTML}
+          ${updateBadgeHTML}
           <span class="calendar-day-name">${d.short}</span>
           <span class="calendar-day-date">${d.dateText}</span>
         `;
@@ -3322,14 +3420,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'bsu-schedule-v22') caches.delete(k);
+          if (k !== 'bsu-schedule-v23') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=22')
+        navigator.serviceWorker.register('./sw.js?v=23')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {

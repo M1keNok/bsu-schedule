@@ -666,6 +666,53 @@ def merge_schedule_history(new_data, existing_path="schedule_data.json", max_his
         "updated_times": merged_updated_times
     }
 
+def compute_day_hash(slots_dict):
+    canonical = json.dumps(slots_dict, sort_keys=True, ensure_ascii=False)
+    return hashlib.md5(canonical.encode('utf-8')).hexdigest()[:12]
+
+def finalize_schedule_metadata(final_courses, decanat_times, old_data):
+    old_grp_times = old_data.get("group_updated_times", {})
+    old_day_times = old_data.get("day_updated_times", {})
+    old_day_hashes = old_data.get("day_hashes", {})
+
+    merged_group_updated_times = {}
+    merged_day_updated_times = {}
+    merged_day_hashes = {}
+
+    for cid, groups in final_courses.items():
+        merged_group_updated_times[cid] = {}
+        merged_day_updated_times[cid] = {}
+        merged_day_hashes[cid] = {}
+        course_decanat_time = decanat_times.get(cid, "")
+
+        for g_name, days in groups.items():
+            merged_day_updated_times[cid][g_name] = {}
+            merged_day_hashes[cid][g_name] = {}
+            group_has_changed = False
+            prev_grp_time = old_grp_times.get(cid, {}).get(g_name)
+
+            for day_key, slots in days.items():
+                cur_h = compute_day_hash(slots)
+                merged_day_hashes[cid][g_name][day_key] = cur_h
+
+                old_h = old_day_hashes.get(cid, {}).get(g_name, {}).get(day_key)
+                old_dt = old_day_times.get(cid, {}).get(g_name, {}).get(day_key)
+
+                if old_h is None or old_h != cur_h:
+                    day_time = course_decanat_time or old_dt or "Обновлено"
+                    group_has_changed = True
+                else:
+                    day_time = old_dt or course_decanat_time or "Обновлено"
+
+                merged_day_updated_times[cid][g_name][day_key] = day_time
+
+            if group_has_changed or not prev_grp_time:
+                merged_group_updated_times[cid][g_name] = course_decanat_time or prev_grp_time or "Обновлено"
+            else:
+                merged_group_updated_times[cid][g_name] = prev_grp_time
+
+    return merged_group_updated_times, merged_day_updated_times, merged_day_hashes
+
 def build_all():
     print("Загрузка файлов деканата...")
     to_convert = []
@@ -691,12 +738,30 @@ def build_all():
 
     propagate_stream_languages(full_data["courses"])
 
+    # Load previous schedule_data.json to compare hashes and track per-group/per-day changes
+    old_data = {}
+    if os.path.exists("schedule_data.json"):
+        try:
+            with open("schedule_data.json", "r", encoding="utf-8") as f:
+                old_data = json.load(f)
+        except Exception:
+            pass
+
     final_data = merge_schedule_history(full_data, "schedule_data.json", max_history_days=7)
     if "ГРУППА 9" in final_data["courses"].get("1", {}):
         normalize_course1_group9_days(final_data["courses"]["1"]["ГРУППА 9"])
     propagate_stream_languages(final_data["courses"])
     if "ГРУППА 9" in final_data["courses"].get("1", {}):
         normalize_course1_group9_days(final_data["courses"]["1"]["ГРУППА 9"])
+
+    grp_times, day_times, day_hashes = finalize_schedule_metadata(
+        final_data["courses"],
+        final_data["updated_times"],
+        old_data
+    )
+    final_data["group_updated_times"] = grp_times
+    final_data["day_updated_times"] = day_times
+    final_data["day_hashes"] = day_hashes
 
     with open("schedule_data.json", "w", encoding="utf-8") as f:
         json.dump(final_data, f, ensure_ascii=False, indent=2)
