@@ -3452,7 +3452,7 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'bsu-schedule-v25') caches.delete(k);
+          if (k.startsWith('bsu-schedule-v') && k !== 'bsu-schedule-v25') caches.delete(k);
         });
       });
     }
