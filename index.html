@@ -748,13 +748,17 @@
       }
     }
 
-    @keyframes badgePopIn {
-      from { opacity: 0; transform: scale(0.65); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    .day-update-badge {
-      animation: badgePopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+    .calendar-update-dot {
+      position: absolute;
+      top: 4px;
+      right: 4.5px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #38bdf8;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.95);
+      animation: pulseAura 1.8s ease-in-out infinite;
+      z-index: 5;
     }
 
     .calendar-day-btn.is-today-btn {
@@ -2437,21 +2441,28 @@
       const group = currentProfile.group_name;
       if (!course || !group) return false;
 
-      const groupTime = facultyData?.group_updated_times?.[course]?.[group]
-        || facultyData?.updated_times?.[course];
-      if (!groupTime) return false;
-
-      const dayUpdateTime = facultyData?.day_updated_times?.[course]?.[group]?.[dayKey];
-      if (!dayUpdateTime || dayUpdateTime !== groupTime) return false;
-
+      // Baseline initialization: on first load, memorize all currently existing days as seen
+      // so NO dots appear on existing days, only on days that update in the future!
+      const initKey = `bsu_seen_init_baseline_${course}_${group}`;
       const groupSchedule = facultyData?.courses?.[course]?.[group] || {};
+      if (!localStorage.getItem(initKey)) {
+        Object.keys(groupSchedule).forEach(k => {
+          const h = facultyData?.day_hashes?.[course]?.[group]?.[k] || computeClientDayHash(groupSchedule[k]);
+          if (h) {
+            try { localStorage.setItem(`bsu_seen_day_${course}_${group}_${k}`, h); } catch(e) {}
+          }
+        });
+        try { localStorage.setItem(initKey, 'true'); } catch(e) {}
+        return false;
+      }
+
       const currentHash = facultyData?.day_hashes?.[course]?.[group]?.[dayKey]
         || computeClientDayHash(groupSchedule[dayKey]);
       if (!currentHash) return false;
 
       const storageKey = `bsu_seen_day_${course}_${group}_${dayKey}`;
       const seenHash = localStorage.getItem(storageKey);
-      return seenHash !== currentHash;
+      return seenHash !== null && seenHash !== currentHash;
     }
 
     function markDayAsViewed(dayKey) {
@@ -2595,15 +2606,7 @@
       if (currentDay.isPast) {
         badgeBox.innerHTML = '<span class="badge badge-neutral badge-sm font-bold opacity-70">Архив</span>';
       } else {
-        const course = currentProfile?.course;
-        const group = currentProfile?.group_name;
-        const groupTime = facultyData?.group_updated_times?.[course]?.[group] || facultyData?.updated_times?.[course];
-        const dayTime = facultyData?.day_updated_times?.[course]?.[group]?.[currentDay.rawKey];
-        if (dayTime && groupTime && dayTime === groupTime) {
-          badgeBox.innerHTML = `<span class="badge badge-primary badge-sm font-bold gap-1 shadow-sm"><svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>Обновлено</span>`;
-        } else {
-          badgeBox.innerHTML = '';
-        }
+        badgeBox.innerHTML = '';
       }
 
       if (!currentDay.rawKey) {
@@ -2899,16 +2902,11 @@
         };
 
         const todayDotHTML = (d.isToday && !hasUnseenUpdate) ? '<span class="calendar-today-dot"></span>' : '';
-        const updateBadgeHTML = hasUnseenUpdate ? `
-          <span class="day-update-badge badge badge-primary badge-xs font-extrabold text-[8px] px-1 py-0 h-3.5 absolute top-1 right-1 shadow-sm flex items-center gap-0.5 leading-none z-10" title="Расписание дня обновлено деканатом">
-            <span class="w-1 h-1 rounded-full bg-white animate-pulse"></span>
-            <span>upd</span>
-          </span>
-        ` : '';
+        const updateDotHTML = hasUnseenUpdate ? '<span class="calendar-update-dot" title="Расписание дня обновлено"></span>' : '';
 
         btn.innerHTML = `
           ${todayDotHTML}
-          ${updateBadgeHTML}
+          ${updateDotHTML}
           <span class="calendar-day-name">${d.short}</span>
           <span class="calendar-day-date">${d.dateText}</span>
         `;
@@ -3420,14 +3418,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k !== 'bsu-schedule-v23') caches.delete(k);
+          if (k !== 'bsu-schedule-v24') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=23')
+        navigator.serviceWorker.register('./sw.js?v=24')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
