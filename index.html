@@ -486,6 +486,55 @@
       box-sizing: border-box;
     }
 
+    /* ─── Prominent High-Contrast Subgroup Badges ───────────────────────── */
+    .subgroup-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2.5px 8.5px;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.25px;
+      line-height: 1.2;
+      flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+    html:not(.dark) .subgroup-pill {
+      background: rgba(0, 0, 0, 0.10);
+      border-color: rgba(0, 0, 0, 0.26);
+      color: #09090b;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+    .subgroup-pill .sg-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 9999px;
+      background: #ffffff;
+      opacity: 0.95;
+      flex-shrink: 0;
+      box-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+    }
+    html:not(.dark) .subgroup-pill .sg-dot {
+      background: #09090b;
+      opacity: 0.9;
+      box-shadow: none;
+    }
+    .subgroup-pill-compact {
+      padding: 1px 5.5px !important;
+      font-size: 9.5px !important;
+      gap: 3px !important;
+      border-radius: 5.5px !important;
+      letter-spacing: 0.1px !important;
+    }
+    .subgroup-pill-compact .sg-dot {
+      width: 3.5px !important;
+      height: 3.5px !important;
+    }
+
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -2624,7 +2673,10 @@
     }
 
     function getLessonActualTime(rawTimeStr, items) {
-      if (items && items.some(it => /физическ|физкультур|физ-р|физвоспитан/i.test(it.title || it.raw || ''))) {
+      if (!items || !items.length) return rawTimeStr;
+
+      // 1. Физическая культура / Спорткомплекс (официальные сдвиги расписания геофака БГУ)
+      if (items.some(it => /физическ|физкультур|физ-р|физвоспитан/i.test(it.title || it.raw || ''))) {
         const parsed = parseTimeSlotMinutes(rawTimeStr);
         if (parsed) {
           // 14:20 -> 14:40–16:00 (1 курс)
@@ -2635,6 +2687,28 @@
           if (parsed.startMin >= 11 * 60 + 10 && parsed.startMin <= 11 * 60 + 35) return '10:50–12:10';
         }
       }
+
+      // 2. Лабораторные занятия по химии (Хим. Фак., ул. Ленинградская, 14: 11:50–14:50)
+      if (items.some(it => /хим\.?\s*фак|общая\s+химия/i.test(it.title || it.raw || ''))) {
+        const parsed = parseTimeSlotMinutes(rawTimeStr);
+        if (parsed && parsed.startMin >= 11 * 60 && parsed.startMin <= 12 * 60) {
+          return '11:50–14:50';
+        }
+      }
+
+      // 3. Явное время, указанное в тексте ячейки занятия (например, 1150-1450, 14:20–17:20, 11:20–12:40)
+      for (const it of items) {
+        const text = it.raw || it.title || '';
+        const m = text.match(/\b(0[89]|1[0-9]|2[01])[:.]([0-5]\d)\s*[-–—]\s*(0[89]|1[0-9]|2[02])[:.]([0-5]\d)\b/);
+        if (m) {
+          const sh = parseInt(m[1], 10), sm = parseInt(m[2], 10);
+          const eh = parseInt(m[3], 10), em = parseInt(m[4], 10);
+          if (sh >= 8 && eh <= 22 && (eh * 60 + em) > (sh * 60 + sm)) {
+            return `${String(sh).padStart(2, '0')}:${String(sm).padStart(2, '0')}–${String(eh).padStart(2, '0')}:${String(em).padStart(2, '0')}`;
+          }
+        }
+      }
+
       return rawTimeStr;
     }
 
@@ -2762,10 +2836,10 @@
             ? `<span class="badge badge-ghost badge-sm font-mono font-bold flex-shrink-0">${item.room}</span>`
             : '';
 
-          const isSg1 = item.subgroup && item.subgroup.includes('1');
           const subgroupBadge = item.subgroup ? `
-            <span class="badge ${isSg1 ? 'badge-info bg-sky-500/15 text-sky-400 border-sky-500/30' : 'badge-warning bg-amber-500/15 text-amber-400 border-amber-500/30'} badge-xs font-bold uppercase tracking-wider flex-shrink-0 py-0.5 px-1.5 h-auto text-[9.5px]">
-              ${item.subgroup}
+            <span class="subgroup-pill font-extrabold" title="${item.subgroup}">
+              <span class="sg-dot"></span>
+              <span>${item.subgroup}</span>
             </span>
           ` : '';
 
@@ -2801,9 +2875,12 @@
                     return `
                       <div class="subgroup-box min-w-0 h-full flex flex-col justify-between">
                         <div>
-                          <div class="flex items-center justify-between text-[10px] font-extrabold text-base-content/60 uppercase pb-1 border-b border-base-content/5">
-                            <span class="truncate">${sgIdx + 1} подгруппа</span>
-                            ${sg.room ? `<span class="badge badge-ghost badge-xs font-mono font-bold flex-shrink-0">${sg.room}</span>` : ''}
+                          <div class="flex items-center justify-between gap-1 pb-1.5 border-b border-base-content/10 min-w-0">
+                            <span class="subgroup-pill subgroup-pill-compact font-extrabold flex-shrink-0" title="${sgIdx + 1} подгруппа">
+                              <span class="sg-dot"></span>
+                              <span>${sgIdx + 1} п/г</span>
+                            </span>
+                            ${sg.room ? `<span class="badge badge-ghost badge-xs font-mono font-bold flex-shrink-0 text-[10px] px-1.5 py-0 h-4 leading-4 max-w-[85px] truncate" title="${sg.room}">${sg.room}</span>` : ''}
                           </div>
                           <div class="text-[10px] text-base-content/55 truncate h-4 leading-4 font-medium mt-1">
                             ${rank || '&nbsp;'}
@@ -3459,7 +3536,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=25')
+        navigator.serviceWorker.register('./sw.js?v=26')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {

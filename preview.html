@@ -3129,7 +3129,10 @@
     }
 
     function getLessonActualTime(rawTimeStr, items) {
-      if (items && items.some(it => /физическ|физкультур|физ-р|физвоспитан/i.test(it.title || it.raw || ''))) {
+      if (!items || !items.length) return rawTimeStr;
+
+      // 1. Физическая культура / Спорткомплекс (официальные сдвиги расписания геофака БГУ)
+      if (items.some(it => /физическ|физкультур|физ-р|физвоспитан/i.test(it.title || it.raw || ''))) {
         const parsed = parseTimeSlotMinutes(rawTimeStr);
         if (parsed) {
           // 14:20 -> 14:40–16:00 (1 курс)
@@ -3140,6 +3143,28 @@
           if (parsed.startMin >= 11 * 60 + 10 && parsed.startMin <= 11 * 60 + 35) return '10:50–12:10';
         }
       }
+
+      // 2. Лабораторные занятия по химии (Хим. Фак., ул. Ленинградская, 14: 11:50–14:50)
+      if (items.some(it => /хим\.?\s*фак|общая\s+химия/i.test(it.title || it.raw || ''))) {
+        const parsed = parseTimeSlotMinutes(rawTimeStr);
+        if (parsed && parsed.startMin >= 11 * 60 && parsed.startMin <= 12 * 60) {
+          return '11:50–14:50';
+        }
+      }
+
+      // 3. Явное время, указанное в тексте ячейки занятия (например, 1150-1450, 14:20–17:20, 11:20–12:40)
+      for (const it of items) {
+        const text = it.raw || it.title || '';
+        const m = text.match(/\b(0[89]|1[0-9]|2[01])[:.]([0-5]\d)\s*[-–—]\s*(0[89]|1[0-9]|2[02])[:.]([0-5]\d)\b/);
+        if (m) {
+          const sh = parseInt(m[1], 10), sm = parseInt(m[2], 10);
+          const eh = parseInt(m[3], 10), em = parseInt(m[4], 10);
+          if (sh >= 8 && eh <= 22 && (eh * 60 + em) > (sh * 60 + sm)) {
+            return `${String(sh).padStart(2, '0')}:${String(sm).padStart(2, '0')}–${String(eh).padStart(2, '0')}:${String(em).padStart(2, '0')}`;
+          }
+        }
+      }
+
       return rawTimeStr;
     }
 
@@ -3968,7 +3993,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=8')
+        navigator.serviceWorker.register('./sw-preview.js?v=9')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {

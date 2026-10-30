@@ -137,6 +137,40 @@ def extract_pe_time(raw_text, cur_time=None):
         return "10:50–12:10"
     return None
 
+def extract_custom_cell_time(raw_text, cur_time=None):
+    if not raw_text:
+        return None
+
+    # 1. Physical education / Sports complex shifts
+    if re.search(r"физическ.*культ|спорт\s*комплекс", raw_text, re.I):
+        pe_t = extract_pe_time(raw_text, cur_time)
+        if pe_t:
+            return pe_t
+
+    # 2. Chemistry faculty lab (e.g. Course 1 Group 8 Monday 11:50–14:50)
+    if re.search(r"хим\.?\s*фак", raw_text, re.I) and re.search(r"общая\s+химия|лаб", raw_text, re.I):
+        return "11:50–14:50"
+
+    # 3. Strip calendar date ranges (e.g. 05.10-09.11)
+    cleaned = re.sub(r"\b\d{1,2}\.(?:0[1-9]|1[0-2])\s*[-–—]\s*\d{1,2}\.(?:0[1-9]|1[0-2])\b", "", raw_text)
+
+    # 4. Check for explicit times like 11.50-14.50 or 14:20–17:20 or 14.25-17.15 or 15.00 – 16.20
+    m = re.search(r"\b(\d{1,2})[.:](\d{2})\s*[-–—]\s*(\d{1,2})[.:](\d{2})\b", cleaned)
+    if not m:
+        # Check for 4-digit format like 1150-1450 or 1600-1720 or 1120-1240 or 1730-1850 or 1930-2050
+        m = re.search(r"\b(0[89]|1[0-9]|2[01])([0-5]\d)\s*[-–—]\s*(0[89]|1[0-9]|2[02])([0-5]\d)\b", cleaned)
+
+    if m:
+        sh, sm = int(m.group(1)), int(m.group(2))
+        eh, em = int(m.group(3)), int(m.group(4))
+        start_min = sh * 60 + sm
+        end_min = eh * 60 + em
+        duration = end_min - start_min
+        if 8 <= sh <= 21 and 8 <= eh <= 22 and 40 <= duration <= 300:
+            return f"{sh:02d}:{sm:02d}–{eh:02d}:{em:02d}"
+
+    return None
+
 def clean_cell_text(text):
     if not text:
         return ""
@@ -270,7 +304,11 @@ def parse_docx(path):
                         if overlap >= 0.3 * g_width:
                             matching_groups.append(g_name)
 
-                    if not matching_groups or not is_cell_valid_for_slot(raw_cell, cur_time):
+                    if not matching_groups:
+                        continue
+
+                    custom_time = extract_custom_cell_time(raw_cell, cur_time)
+                    if not custom_time and not is_cell_valid_for_slot(raw_cell, cur_time):
                         continue
 
                     lesson = clean_cell_text(raw_cell)
@@ -295,10 +333,7 @@ def parse_docx(path):
 
                     tagged_lesson = (subgroup_prefix + lesson) if (subgroup_prefix and not lesson.startswith(subgroup_prefix)) else lesson
 
-                    slot_time = cur_time
-                    pe_time = extract_pe_time(raw_cell, cur_time)
-                    if pe_time:
-                        slot_time = pe_time
+                    slot_time = custom_time if custom_time else cur_time
 
                     for g_name in matching_groups:
                         res.setdefault(g_name, {}).setdefault(cur_day, {}).setdefault(slot_time, [])
@@ -567,13 +602,11 @@ def merge_schedule_history(new_data, existing_path="schedule_data.json", max_his
     def normalize_day_slots(slots_dict):
         normalized = {}
         for slot, lessons in slots_dict.items():
-            is_pe = any(re.search(r"физическ.*культ|спорт\s*комплекс", l, re.I) for l in lessons)
-            actual_slot = slot
-            if is_pe:
-                combined_pe = " ".join(lessons)
-                pe_time = extract_pe_time(combined_pe, slot)
-                if pe_time:
-                    actual_slot = pe_time
+            if not lessons:
+                continue
+            combined_text = " ".join(lessons)
+            custom_time = extract_custom_cell_time(combined_text, slot)
+            actual_slot = custom_time if custom_time else slot
             normalized.setdefault(actual_slot, []).extend([l for l in lessons if l not in normalized.get(actual_slot, [])])
 
         def sort_slot_key(slot_str):
@@ -620,6 +653,14 @@ def merge_schedule_history(new_data, existing_path="schedule_data.json", max_his
                                         ("ТОПОГРАФИЯ" in l.upper() and slot == "09:40–11:00") or
                                         ("ОБЩАЯ ЭКОЛОГИЯ" in l.upper() and slot == "11:20–12:40"))
                             ]
+
+            # Clean empty/redundant slots for Group 8 on Monday when 11:50–14:50 is present
+            if cid == "1" and g_name == "ГРУППА 8":
+                for day_key, slots in merged_days.items():
+                    if "ПОНЕДЕЛЬНИК" in day_key.upper():
+                        if "11:50–14:50" in slots:
+                            if "12:50–14:10" in slots and not slots["12:50–14:10"]:
+                                del slots["12:50–14:10"]
 
             # Subgroup tagging for historical slots:
             # 1. Group 6 Saturday Topography is exclusively for Subgroup 2
