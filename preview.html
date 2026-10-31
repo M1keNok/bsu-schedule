@@ -767,6 +767,12 @@
       position: relative;
     }
 
+    .calendar-day-btn.is-today-btn.is-today-evening {
+      border: 1.5px solid rgba(16, 185, 129, 0.35) !important;
+      animation: none !important;
+      box-shadow: none !important;
+    }
+
     .calendar-today-dot {
       position: absolute;
       top: 4px;
@@ -980,27 +986,33 @@
       padding: 7px 9px;
       background: var(--glass-card-subtle);
       transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .subgroup-box:active {
+      transform: scale(0.985);
     }
     .subgroup-box-focused {
-      border-color: rgba(16, 185, 129, 0.55) !important;
-      background: rgba(16, 185, 129, 0.08) !important;
-      box-shadow: 0 0 14px -2px rgba(16, 185, 129, 0.28);
+      border-color: rgba(16, 185, 129, 0.65) !important;
+      background: rgba(16, 185, 129, 0.12) !important;
+      box-shadow: 0 0 16px -2px rgba(16, 185, 129, 0.35), inset 0 0 0 1px rgba(16, 185, 129, 0.22);
     }
     html:not(.dark) .subgroup-box-focused {
-      border-color: rgba(5, 150, 105, 0.45) !important;
-      background: rgba(5, 150, 105, 0.07) !important;
-      box-shadow: 0 0 10px -2px rgba(5, 150, 105, 0.18);
+      border-color: rgba(5, 150, 105, 0.55) !important;
+      background: rgba(5, 150, 105, 0.09) !important;
+      box-shadow: 0 0 12px -2px rgba(5, 150, 105, 0.25), inset 0 0 0 1px rgba(5, 150, 105, 0.18);
     }
     .subgroup-box-dimmed {
-      opacity: 0.38;
-      filter: grayscale(0.5);
-      transform: scale(0.98);
+      opacity: 0.85;
+      filter: none;
+      transform: none;
       cursor: pointer;
     }
     .subgroup-box-dimmed:hover, .subgroup-box-dimmed:active {
-      opacity: 0.85;
-      filter: none;
-      transform: scale(1);
+      opacity: 1;
+      transform: none;
     }
 
     /* Live Progress Bar for ongoing lesson */
@@ -1436,7 +1448,6 @@
           <div id="dayLiveTimer"></div>
         </div>
         <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-          <div id="dayTodayJump"></div>
           <div id="dayLessonsCount" style="font-size: 11.5px; font-weight: 700; color: var(--text-sub); flex-shrink: 0;"></div>
         </div>
       </div>
@@ -1467,6 +1478,83 @@
       <div id="modalBody" class="no-scrollbar" style="overflow-y: auto; max-height: 60vh; display: flex; flex-direction: column; gap: 16px; padding-right: 2px;"></div>
 
       <div id="modalFooter" style="display: flex; gap: 8px; border-top: 1px solid var(--border-color); padding-top: 10px;"></div>
+    </div>
+  </div>
+
+  <!-- Onboarding / What's New Liquid Glass Bottom Sheet -->
+  <div id="onboardingModal" class="modal-overlay" onclick="handleOnboardingBackdropClick(event)">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+      <div class="modal-grabber"></div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+        <div>
+          <span class="badge badge-primary badge-outline text-[10px] font-black uppercase tracking-wider py-0.5 px-2">Обновление v2.5</span>
+          <h3 style="font-size: 17px; font-weight: 800; margin-top: 4px; letter-spacing: -0.3px;">Что нового в расписании</h3>
+        </div>
+        <button onclick="closeOnboardingModal()" class="modal-close-btn tap-scale" title="Закрыть" aria-label="Закрыть">
+          <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="no-scrollbar" style="overflow-y: auto; max-height: 60vh; display: flex; flex-direction: column; gap: 10px; padding-right: 2px;">
+        <!-- Feature 1: Subgroups -->
+        <div style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;">
+          <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+            🎯
+          </div>
+          <div>
+            <div style="font-size: 13px; font-weight: 750; color: var(--text-main);">Подсветка своей подгруппы</div>
+            <p style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px; line-height: 1.45;">
+              Обе подгруппы всегда видны в карточке (1-я сверху, 2-я снизу). Нажмите на свою подгруппу — бот запомнит и мягко подсветит её. Повторный тап сбрасывает выбор.
+            </p>
+          </div>
+        </div>
+
+        <!-- Feature 2: Split Flap Countdown with seconds -->
+        <div style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;">
+          <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+            ⏱
+          </div>
+          <div>
+            <div style="font-size: 13px; font-weight: 750; color: var(--text-main);">Таймер до пары с секундами</div>
+            <p style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px; line-height: 1.45;">
+              Механическое табло в реальном времени отсчитывает часы, минуты и живые секунды до следующей пары или перерыва.
+            </p>
+          </div>
+        </div>
+
+        <!-- Feature 3: Moodle / ЭУМК Links -->
+        <div style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;">
+          <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+            📚
+          </div>
+          <div>
+            <div style="font-size: 13px; font-weight: 750; color: var(--text-main);">Быстрый переход в Moodle и ЭУМК</div>
+            <p style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px; line-height: 1.45;">
+              По кнопке со ссылкой прямо из карточки предмета можно открыть учебные материалы курса в образовательном портале БГУ.
+            </p>
+          </div>
+        </div>
+
+        <!-- Feature 4: Swipes & Evening Calendar focus -->
+        <div style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;">
+          <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+            👆
+          </div>
+          <div>
+            <div style="font-size: 13px; font-weight: 750; color: var(--text-main);">Умный календарь и жесты свайпа</div>
+            <p style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px; line-height: 1.45;">
+              Листайте дни недели жестами влево и вправо. Днем сегодняшний день пульсирует, а вечером анимация затихает, помогая сфокусироваться на расписании завтрашнего дня.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top: 1px solid var(--border-color); padding-top: 10px;">
+        <button type="button" onclick="closeOnboardingModal()" class="btn btn-primary w-full rounded-2xl font-bold shadow-lg">
+          Понятно, к расписанию
+        </button>
+      </div>
     </div>
   </div>
 
@@ -2341,29 +2429,35 @@
           // 1a. Сейчас идёт пара
           const currentLesson = validSlots.find(s => curMin >= s.startMin && curMin < s.endMin);
           if (currentLesson) {
+            const targetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Math.floor(currentLesson.endMin / 60), currentLesson.endMin % 60, 0, 0);
+            const diffMs = targetDate.getTime() - now.getTime();
             return {
               type: 'lesson',
               label: 'до перерыва',
-              minsLeft: Math.max(1, currentLesson.endMin - curMin)
+              secsLeft: Math.max(0, Math.floor(diffMs / 1000))
             };
           }
 
           // 1b. Перемена между парами сегодня
           const nextBreakLesson = validSlots.find(s => s.startMin > curMin);
           if (nextBreakLesson && curMin >= firstLesson.startMin) {
+            const targetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Math.floor(nextBreakLesson.startMin / 60), nextBreakLesson.startMin % 60, 0, 0);
+            const diffMs = targetDate.getTime() - now.getTime();
             return {
               type: 'break',
               label: 'до пары',
-              minsLeft: Math.max(1, nextBreakLesson.startMin - curMin)
+              secsLeft: Math.max(0, Math.floor(diffMs / 1000))
             };
           }
 
           // 1c. Утро до первой пары сегодня
           if (curMin < firstLesson.startMin) {
+            const targetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Math.floor(firstLesson.startMin / 60), firstLesson.startMin % 60, 0, 0);
+            const diffMs = targetDate.getTime() - now.getTime();
             return {
               type: 'before_first',
               label: 'до пары',
-              minsLeft: Math.max(1, firstLesson.startMin - curMin)
+              secsLeft: Math.max(0, Math.floor(diffMs / 1000))
             };
           }
         }
@@ -2401,15 +2495,16 @@
               targetDate.getMonth(),
               targetDate.getDate(),
               Math.floor(firstStartMin / 60),
-              firstStartMin % 60
+              firstStartMin % 60,
+              0,
+              0
             );
             const diffMs = targetTime.getTime() - now.getTime();
             if (diffMs > 0) {
-              const totalMins = Math.max(1, Math.round(diffMs / 60000));
               return {
                 type: 'upcoming',
                 label: 'до пары',
-                minsLeft: totalMins
+                secsLeft: Math.max(0, Math.floor(diffMs / 1000))
               };
             }
           }
@@ -2419,18 +2514,21 @@
       return null;
     }
 
-    function formatSplitFlapTime(minsLeft) {
-      if (minsLeft >= 24 * 60) {
-        const days = Math.floor(minsLeft / (24 * 60));
-        const remH = Math.floor((minsLeft % (24 * 60)) / 60);
-        return days + 'д ' + (remH < 10 ? '0' : '') + remH + 'ч';
+    function formatSplitFlapTime(secsLeft) {
+      if (secsLeft <= 0) return '00с';
+      const days = Math.floor(secsLeft / 86400);
+      const hours = Math.floor((secsLeft % 86400) / 3600);
+      const mins = Math.floor((secsLeft % 3600) / 60);
+      const secs = secsLeft % 60;
+      const pad2 = n => (n < 10 ? '0' : '') + n;
+
+      if (days > 0) {
+        return `${days}д ${pad2(hours)}ч ${pad2(secs)}с`;
       }
-      if (minsLeft >= 60) {
-        const h = Math.floor(minsLeft / 60);
-        const m = minsLeft % 60;
-        return h + 'ч ' + (m < 10 ? '0' : '') + m + 'м';
+      if (hours > 0) {
+        return `${pad2(hours)}ч ${pad2(mins)}м ${pad2(secs)}с`;
       }
-      return (minsLeft < 10 ? '0' : '') + minsLeft + 'м';
+      return `${pad2(mins)}м ${pad2(secs)}с`;
     }
 
     function updateSplitFlapBoard(boardEl, timeStr) {
@@ -2444,7 +2542,7 @@
         boardEl.innerHTML = '';
         chars.forEach((c) => {
           const isSpace = (c === ' ');
-          const isUnit = ('чмд:'.indexOf(c) !== -1);
+          const isUnit = ('чмдс:'.indexOf(c) !== -1);
           const tile = document.createElement('span');
           if (isSpace) {
             tile.className = 'split-tile-space';
@@ -2472,7 +2570,7 @@
           const staticBottom = tile.querySelector('.flap-bottom .flap-glyph');
           if (staticTop) staticTop.textContent = c;
 
-          const delayMs = idx * 35;
+          const delayMs = idx * 15;
 
           const fallingTop = document.createElement('span');
           fallingTop.className = 'flap-half flap-top flap-anim-top';
@@ -2481,7 +2579,7 @@
 
           const landingBottom = document.createElement('span');
           landingBottom.className = 'flap-half flap-bottom flap-anim-bottom';
-          landingBottom.style.animationDelay = (delayMs + 70) + 'ms';
+          landingBottom.style.animationDelay = (delayMs + 45) + 'ms';
           landingBottom.innerHTML = '<span class="flap-glyph">' + c + '</span>';
 
           const shade = document.createElement('span');
@@ -2513,7 +2611,7 @@
         return;
       }
 
-      const timeStr = formatSplitFlapTime(event.minsLeft);
+      const timeStr = formatSplitFlapTime(event.secsLeft);
 
       let badge = liveTimerBox.querySelector('.split-flap-badge');
       if (!badge || _prevSplitFlapType !== event.type) {
@@ -2537,7 +2635,7 @@
     }
 
     function startLiveStatusTimer(groupSchedule) {
-      if (_liveStatusTimer) { clearInterval(_liveStatusTimer); _liveStatusTimer = null; }
+      if (_liveStatusTimer) { clearTimeout(_liveStatusTimer); _liveStatusTimer = null; }
       if (_liveTimeoutTimer) { clearTimeout(_liveTimeoutTimer); _liveTimeoutTimer = null; }
 
       function tick() {
@@ -2559,14 +2657,13 @@
             }
           }
         }
+
+        // Компенсация дрифта: планируем следующий тик строго на начало следующей секунды системных часов
+        const delay = 1000 - (Date.now() % 1000) + 4;
+        _liveTimeoutTimer = setTimeout(tick, delay);
       }
 
       tick();
-      const msToNextMin = (60 - new Date().getSeconds()) * 1000 - new Date().getMilliseconds() + 50;
-      _liveTimeoutTimer = setTimeout(() => {
-        tick();
-        _liveStatusTimer = setInterval(tick, 60_000);
-      }, msToNextMin);
     }
 
     // ─── «Кнопка старосты»: Копирование расписания в буфер обмена ──────────
@@ -2921,31 +3018,13 @@
         </div>
 
         <div class="setting-group-card flex flex-col gap-2">
-          <div class="section-title">Моя подгруппа (для лаб. и практик)</div>
-          <div class="grid grid-cols-3 gap-2">
-            ${[
-              { id: 'all', label: 'Обе (все)' },
-              { id: '1', label: '1 подгруппа' },
-              { id: '2', label: '2 подгруппа' }
-            ].map(sg => {
-              const sel = (currentProfile.subgroup || 'all') === sg.id;
-              return `<button type="button" onclick="selectSubgroupSettingsTab('${sg.id}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-all ${sel ? 'btn-primary shadow-md scale-[1.02]' : 'btn-ghost bg-base-200/50'}">${sg.label}</button>`;
-            }).join('')}
-          </div>
-          <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px; line-height: 1.4;">
-            ${(currentProfile.subgroup === '1' || currentProfile.subgroup === '2')
-              ? `Фокус на <b>${currentProfile.subgroup}-й подгруппе</b>: ваши занятия выделены, чужая подгруппа приглушена.`
-              : 'Отображаются обе подгруппы параллельно.'}
-          </div>
+          <div class="section-title">Обучение и подсказки</div>
+          <button type="button" onclick="openOnboardingModal()" class="btn btn-sm btn-ghost border border-base-content/10 rounded-xl justify-between font-semibold text-xs h-10 w-full px-3 transition-colors hover:bg-base-200/50">
+            <span class="flex items-center gap-2"><span>✨</span><span>Что нового и фичи расписания</span></span>
+            <span class="opacity-40">›</span>
+          </button>
         </div>
       `;
-    }
-
-    function selectSubgroupSettingsTab(sgId) {
-      triggerHaptic('light');
-      currentProfile.subgroup = sgId;
-      localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
-      renderSettingsTab();
     }
 
     function quickToggleSubgroup(sgNum) {
@@ -2957,6 +3036,7 @@
         currentProfile.subgroup = sgStr;
       }
       localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
+      localStorage.setItem('bsu_user_subgroup', currentProfile.subgroup);
       renderView();
     }
 
@@ -3311,17 +3391,6 @@
       return firstFuture !== -1 ? firstFuture : 0;
     }
 
-    function jumpToToday() {
-      triggerHaptic('light');
-      const todayIdx = currentDaysList.findIndex(d => d.isToday);
-      const isSundayToday = new Date().getDay() === 0;
-      if (todayIdx !== -1) {
-        selectDayIndex(todayIdx, 'medium');
-      } else if (isSundayToday) {
-        selectDayIndex(-1, 'medium');
-      }
-    }
-
     function updateDayHeader(dayIndex, groupSchedule) {
       const now = new Date();
       const dayFullTitle = document.getElementById('dayFullTitle');
@@ -3329,27 +3398,7 @@
       const lessonsCountBox = document.getElementById('dayLessonsCount');
       const dayHeaderRow = document.getElementById('dayHeaderRow');
       const liveTimerBox = document.getElementById('dayLiveTimer');
-      const todayJumpBox = document.getElementById('dayTodayJump');
       if (liveTimerBox) liveTimerBox.innerHTML = '';
-
-      // Кнопка возврата к «Сегодня»
-      if (todayJumpBox) {
-        const todayIdx = currentDaysList.findIndex(d => d.isToday);
-        const isViewingToday = (dayIndex === todayIdx);
-        const isSundayToday = (now.getDay() === 0);
-        const showTodayBtn = (!isViewingToday && (todayIdx !== -1 || isSundayToday));
-
-        if (showTodayBtn) {
-          todayJumpBox.innerHTML = `
-            <button type="button" onclick="jumpToToday()" class="btn btn-xs btn-ghost gap-1 font-bold text-emerald-400 bg-emerald-500/12 hover:bg-emerald-500/20 border border-emerald-500/25 rounded-lg px-2 h-6 flex-shrink-0 transition-transform active:scale-95" title="Вернуться к расписанию на сегодня">
-              <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
-              <span>Сегодня</span>
-            </button>
-          `;
-        } else {
-          todayJumpBox.innerHTML = '';
-        }
-      }
 
       if (dayHeaderRow && currentSlideDirection !== 'none') {
         if (window.Motion?.animate) {
@@ -3649,8 +3698,8 @@
                     }
 
                     const tooltipText = isMySg
-                      ? 'Ваша подгруппа (нажмите для сброса на все)'
-                      : (isOtherSg ? 'Нажмите, чтобы переключить фокус на эту подгруппу' : 'Нажмите для фокуса на этой подгруппе');
+                      ? 'Ваша подгруппа (нажмите для сброса)'
+                      : (isOtherSg ? 'Нажмите, чтобы выделить эту подгруппу' : 'Нажмите, чтобы выделить свою подгруппу');
 
                     return `
                       <div class="${boxClass}" onclick="quickToggleSubgroup(${sgNum})" title="${tooltipText}">
@@ -3659,6 +3708,7 @@
                             <span class="subgroup-pill subgroup-pill-compact font-extrabold flex-shrink-0" title="${sgNum} подгруппа">
                               <span class="sg-dot"></span>
                               <span>${sgNum} п/г</span>
+                              ${isMySg ? '<span class="text-[9px] font-black tracking-tight text-emerald-400 ml-1">✓ МОЯ</span>' : ''}
                             </span>
                             ${sg.room ? `<span class="badge ${isMySg ? 'badge-primary font-black' : 'badge-ghost font-bold'} badge-xs font-mono flex-shrink-0 text-[10px] px-1.5 py-0 h-4 leading-4 max-w-[85px] truncate" title="${sg.room}">${sg.room}</span>` : ''}
                           </div>
@@ -3799,6 +3849,22 @@
         }
       }
 
+      function isTodayEvening(schedule) {
+        const now = new Date();
+        const curMin = now.getHours() * 60 + now.getMinutes();
+        const todayIdx = currentDaysList.findIndex(d => d.isToday);
+        if (todayIdx === -1) return true;
+        const todayDay = currentDaysList[todayIdx];
+        if (!todayDay.rawKey) return true;
+        const slots = getProcessedDaySlots(todayDay.rawKey, schedule);
+        const validSlots = slots.filter(s => s.items && s.items.length > 0).map(s => parseTimeSlotMinutes(s.timeStr)).filter(Boolean);
+        if (!validSlots.length) return true;
+        const lastSlot = validSlots.sort((a,b) => b.endMin - a.endMin)[0];
+        return curMin >= (lastSlot.endMin + 15);
+      }
+
+      const todayIsEvening = isTodayEvening(groupSchedule);
+
       // Render Continuous Timeline Carousel (Past on left, Today in center, Future on right)
       const selectorBox = document.getElementById('calendarSelector');
       selectorBox.innerHTML = '';
@@ -3806,9 +3872,10 @@
       currentDaysList.forEach((d, idx) => {
         const isActive = idx === selectedDayIndex;
         const hasUnseenUpdate = isDayUpdateUnseen(d.rawKey);
+        const todayClass = d.isToday ? (todayIsEvening ? 'is-today-btn is-today-evening' : 'is-today-btn') : '';
 
         const btn = document.createElement('button');
-        btn.className = `calendar-day-btn tap-scale ${isActive ? 'active' : ''} ${d.isToday ? 'is-today-btn' : ''} ${d.isPast ? 'past-day' : ''}`;
+        btn.className = `calendar-day-btn tap-scale ${isActive ? 'active' : ''} ${todayClass} ${d.isPast ? 'past-day' : ''}`;
         btn.onclick = (e) => {
           if (isCalendarDragging) {
             if (e) {
@@ -3820,11 +3887,9 @@
           selectDayIndex(idx, 'medium');
         };
 
-        const todayDotHTML = (d.isToday && !hasUnseenUpdate) ? '<span class="calendar-today-dot"></span>' : '';
         const updateDotHTML = hasUnseenUpdate ? '<span class="calendar-update-dot" title="Расписание дня обновлено"></span>' : '';
 
         btn.innerHTML = `
-          ${todayDotHTML}
           ${updateDotHTML}
           <span class="calendar-day-name">${d.short}</span>
           <span class="calendar-day-date">${d.dateText}</span>
@@ -3962,6 +4027,40 @@
       document.getElementById('settingsModal').classList.remove('open');
     }
 
+    // ─── Onboarding & What's New Logic ────────────────────────────────────────
+    const ONBOARDING_VER = 'v2.5';
+
+    function checkOnboarding() {
+      const seenVer = localStorage.getItem('bsu_onboarding_ver');
+      if (seenVer !== ONBOARDING_VER) {
+        const isSetupDone = localStorage.getItem('bsu_setup_completed') === 'true';
+        if (isSetupDone) {
+          setTimeout(() => {
+            openOnboardingModal();
+          }, 450);
+        }
+      }
+    }
+
+    function openOnboardingModal() {
+      triggerHaptic('light');
+      const modal = document.getElementById('onboardingModal');
+      if (modal) modal.classList.add('open');
+    }
+
+    function closeOnboardingModal() {
+      triggerHaptic('light');
+      const modal = document.getElementById('onboardingModal');
+      if (modal) modal.classList.remove('open');
+      localStorage.setItem('bsu_onboarding_ver', ONBOARDING_VER);
+    }
+
+    function handleOnboardingBackdropClick(e) {
+      if (e.target.id === 'onboardingModal') {
+        closeOnboardingModal();
+      }
+    }
+
     function toggleLangUnified(langId) {
       if (draftProfile.foreign_lang === langId) {
         draftProfile.foreign_lang = null;
@@ -4033,25 +4132,6 @@
             }).join('')}
           </div>
           <div style="font-size: 11px; color: var(--text-sub); margin-top: 6px; line-height: 1.4;">${langHint}</div>
-        </div>
-
-        <div>
-          <div class="section-title">Моя подгруппа (для лаб. и практик)</div>
-          <div class="grid grid-cols-3 gap-2">
-            ${[
-              { id: 'all', label: 'Обе (все)' },
-              { id: '1', label: '1 подгруппа' },
-              { id: '2', label: '2 подгруппа' }
-            ].map(sg => {
-              const sel = (draftProfile.subgroup || 'all') === sg.id;
-              return `<button type="button" onclick="draftProfile.subgroup='${sg.id}'; renderUnifiedSettings();" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-colors ${sel ? 'btn-primary shadow-md' : 'btn-ghost bg-base-200/50'}">${sg.label}</button>`;
-            }).join('')}
-          </div>
-          <div style="font-size: 11px; color: var(--text-sub); margin-top: 6px; line-height: 1.4;">
-            ${(draftProfile.subgroup === '1' || draftProfile.subgroup === '2')
-              ? `Фокус на <b>${draftProfile.subgroup}-й подгруппе</b>: ваши занятия выделены.`
-              : 'Отображаются обе подгруппы параллельно.'}
-          </div>
         </div>
       `;
 
@@ -4173,6 +4253,7 @@
         const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
         selectedDayIndex = findInitialDayIndex(groupSchedule);
         renderView();
+        checkOnboarding();
       }
     }
 
@@ -4288,6 +4369,8 @@
 
         const modal = document.getElementById('settingsModal');
         if (modal && modal.classList.contains('open')) return;
+        const onboarding = document.getElementById('onboardingModal');
+        if (onboarding && onboarding.classList.contains('open')) return;
         if (currentMainTab !== 'schedule') return;
 
         const deltaX = e.changedTouches[0].clientX - touchStartX;
@@ -4318,6 +4401,7 @@
       window.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
           closeSettingsModal();
+          closeOnboardingModal();
           return;
         }
 
@@ -4381,6 +4465,7 @@
         openFirstLaunchWizard();
       } else {
         renderView();
+        checkOnboarding();
       }
 
       updateDockPill('schedule', false);
@@ -4393,14 +4478,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v11') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v12') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=11')
+        navigator.serviceWorker.register('./sw-preview.js?v=12')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
