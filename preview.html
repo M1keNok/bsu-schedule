@@ -567,12 +567,20 @@
 
     /* Disable bounce/scale jumps on modal option and parameter selection buttons */
     .modal-sheet button:not(.modal-close-btn),
-    .modal-sheet .btn:not(.modal-close-btn) {
+    .modal-sheet .btn:not(.modal-close-btn),
+    #settingsView button,
+    #settingsView .btn,
+    .setting-group-card button,
+    .setting-group-card .btn {
       transform: none !important;
-      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease !important;
+      transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease, opacity 0.12s ease !important;
     }
     .modal-sheet button:not(.modal-close-btn):active,
-    .modal-sheet .btn:not(.modal-close-btn):active {
+    .modal-sheet .btn:not(.modal-close-btn):active,
+    #settingsView button:active,
+    #settingsView .btn:active,
+    .setting-group-card button:active,
+    .setting-group-card .btn:active {
       transform: none !important;
       opacity: 0.88;
     }
@@ -1488,8 +1496,8 @@
 
       <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
         <div>
-          <span class="badge badge-primary badge-outline text-[10px] font-black uppercase tracking-wider py-0.5 px-2">Обновление v2.5</span>
-          <h3 style="font-size: 17px; font-weight: 800; margin-top: 4px; letter-spacing: -0.3px;">Что нового в расписании</h3>
+          <span class="badge badge-primary badge-outline text-[10px] font-black uppercase tracking-wider py-0.5 px-2">Руководство</span>
+          <h3 style="font-size: 17px; font-weight: 800; margin-top: 4px; letter-spacing: -0.3px;">Возможности расписания</h3>
         </div>
         <button onclick="closeOnboardingModal()" class="modal-close-btn tap-scale" title="Закрыть" aria-label="Закрыть">
           <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -1497,7 +1505,20 @@
       </div>
 
       <div class="no-scrollbar" style="overflow-y: auto; max-height: 60vh; display: flex; flex-direction: column; gap: 10px; padding-right: 2px;">
-        <!-- Feature 1: Subgroups -->
+        <!-- Feature 1: Primary Group -->
+        <div style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;">
+          <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+            ⭐
+          </div>
+          <div>
+            <div style="font-size: 13px; font-weight: 750; color: var(--text-main);">Основная группа</div>
+            <p style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px; line-height: 1.45;">
+              Выберите свою группу в настройках — бот закрепит её как основную и будет автоматически открывать ваше расписание при каждом запуске.
+            </p>
+          </div>
+        </div>
+
+        <!-- Feature 2: Subgroups -->
         <div style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;">
           <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
             🎯
@@ -1505,46 +1526,46 @@
           <div>
             <div style="font-size: 13px; font-weight: 750; color: var(--text-main);">Подсветка своей подгруппы</div>
             <p style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px; line-height: 1.45;">
-              Обе подгруппы всегда видны в карточке (1-я сверху, 2-я снизу). Нажмите на свою подгруппу — бот запомнит и мягко подсветит её. Повторный тап сбрасывает выбор.
+              Нажмите на 1-ю или 2-ю подгруппу в расписании — бот запомнит и подсветит ваши занятия. При просмотре других групп чужие подгруппы не подсвечиваются.
             </p>
           </div>
         </div>
 
-        <!-- Feature 2: Split Flap Countdown with seconds -->
+        <!-- Feature 3: Split Flap Countdown with seconds -->
         <div style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;">
           <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
             ⏱
           </div>
           <div>
-            <div style="font-size: 13px; font-weight: 750; color: var(--text-main);">Таймер до пары с секундами</div>
+            <div style="font-size: 13px; font-weight: 750; color: var(--text-main);">Счетчик времени до пары</div>
             <p style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px; line-height: 1.45;">
-              Механическое табло в реальном времени отсчитывает часы, минуты и живые секунды до следующей пары или перерыва.
+              Показывает время до начала занятий. Во время пары, перерыва или когда до пары осталось меньше часа — включаются точные минуты и секунды.
             </p>
           </div>
         </div>
 
-        <!-- Feature 3: Moodle / ЭУМК Links -->
+        <!-- Feature 4: Moodle / ЭУМК Links -->
         <div style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;">
           <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
             📚
           </div>
           <div>
-            <div style="font-size: 13px; font-weight: 750; color: var(--text-main);">Быстрый переход в Moodle и ЭУМК</div>
+            <div style="font-size: 13px; font-weight: 750; color: var(--text-main);">Материалы Moodle и ЭУМК</div>
             <p style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px; line-height: 1.45;">
-              По кнопке со ссылкой прямо из карточки предмета можно открыть учебные материалы курса в образовательном портале БГУ.
+              По кнопке со ссылкой прямо из карточки предмета можно перейти к учебным материалам, тестам и заданиям курса в портале БГУ.
             </p>
           </div>
         </div>
 
-        <!-- Feature 4: Swipes & Evening Calendar focus -->
+        <!-- Feature 5: Swipes -->
         <div style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;">
           <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
             👆
           </div>
           <div>
-            <div style="font-size: 13px; font-weight: 750; color: var(--text-main);">Умный календарь и жесты свайпа</div>
+            <div style="font-size: 13px; font-weight: 750; color: var(--text-main);">Навигация жестами</div>
             <p style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px; line-height: 1.45;">
-              Листайте дни недели жестами влево и вправо. Днем сегодняшний день пульсирует, а вечером анимация затихает, помогая сфокусироваться на расписании завтрашнего дня.
+              Листайте дни недели простыми свайпами влево и вправо в любой части экрана.
             </p>
           </div>
         </div>
@@ -1552,7 +1573,7 @@
 
       <div style="border-top: 1px solid var(--border-color); padding-top: 10px;">
         <button type="button" onclick="closeOnboardingModal()" class="btn btn-primary w-full rounded-2xl font-bold shadow-lg">
-          Понятно, к расписанию
+          Всё понятно, к расписанию
         </button>
       </div>
     </div>
@@ -1713,16 +1734,16 @@
     }
 
     function parseLessonRaw(raw) {
-      if (!raw) return { title: 'Пара', type: null, subgroup: null, lines: [], raw: '' };
+      if (!raw) return null;
       let lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-      if (!lines.length) return { title: 'Пара', type: null, subgroup: null, lines: [], raw };
+      if (!lines.length) return null;
 
       let startIdx = 0;
       let weekTag = null;
       let subgroupTag = null;
       while (startIdx < lines.length) {
         const l = lines[startIdx];
-        if (/^\d{1,2}[.:]\d{2}\s*[-–—]\s*\d{1,2}[.:]\d{2}$/.test(l)) {
+        if (/^\d{1,2}[.:]\d{2}\s*[-–—]\s*\d{1,2}[.:]\d{2}$/.test(l) || /^\d{4}\s*[-–—]\s*\d{4}$/.test(l)) {
           startIdx++;
           continue;
         }
@@ -1738,7 +1759,7 @@
         }
         break;
       }
-      if (startIdx >= lines.length) startIdx = 0;
+      if (startIdx >= lines.length) return null;
 
       let titleLine = lines[startIdx];
       titleLine = titleLine.replace(/^\d{1,2}[.:]\d{2}\s*[-–—]\s*\d{1,2}[.:]\d{2}\s*/, '');
@@ -2229,7 +2250,8 @@
       const kept = splitList.filter(l => filterByLang(l, currentProfile.foreign_lang));
       if (!kept.length) return [];
 
-      const parsedItems = kept.map(parseLessonRaw);
+      const parsedItems = kept.map(parseLessonRaw).filter(Boolean);
+      if (!parsedItems.length) return [];
 
       function normalizeSubjectTitle(str) {
         if (!str) return '';
@@ -2263,11 +2285,13 @@
         }];
       }
 
-      // Если в слоте 2 разных предмета и у них не проставлена подгруппа, назначаем верхнему 1, нижнему 2
+      // Если в слоте 2 разных предмета и у них не проставлена подгруппа, назначаем верхнему 1, нижнему 2 (если это не физкультура и не языки)
       if (parsedItems.length === 2 && !parsedItems[0].subgroup && !parsedItems[1].subgroup) {
         const isPE0 = /физическ.*культ|спорт\s*комплекс/i.test(parsedItems[0].raw || parsedItems[0].title);
         const isPE1 = /физическ.*культ|спорт\s*комплекс/i.test(parsedItems[1].raw || parsedItems[1].title);
-        if (!isPE0 && !isPE1) {
+        const isLang0 = detectLessonLanguage(parsedItems[0].raw || parsedItems[0].title) !== null;
+        const isLang1 = detectLessonLanguage(parsedItems[1].raw || parsedItems[1].title) !== null;
+        if (!isPE0 && !isPE1 && !isLang0 && !isLang1) {
           parsedItems[0].subgroup = '1 подгруппа';
           parsedItems[1].subgroup = '2 подгруппа';
         }
@@ -2514,20 +2538,24 @@
       return null;
     }
 
-    function formatSplitFlapTime(secsLeft) {
-      if (secsLeft <= 0) return '00с';
+    function formatSplitFlapTime(secsLeft, timerType) {
+      if (secsLeft <= 0) return '00м 00с';
       const days = Math.floor(secsLeft / 86400);
       const hours = Math.floor((secsLeft % 86400) / 3600);
       const mins = Math.floor((secsLeft % 3600) / 60);
       const secs = secsLeft % 60;
       const pad2 = n => (n < 10 ? '0' : '') + n;
 
+      // Если до события больше суток (days > 0): только дни и часы (без секунд)
       if (days > 0) {
-        return `${days}д ${pad2(hours)}ч ${pad2(secs)}с`;
+        return `${days}д ${pad2(hours)}ч`;
       }
+      // Если до события от 1 до 24 часов: только часы и минуты (без секунд)
       if (hours > 0) {
-        return `${pad2(hours)}ч ${pad2(mins)}м ${pad2(secs)}с`;
+        return `${pad2(hours)}ч ${pad2(mins)}м`;
       }
+      // Во время пары ('lesson'), перерыва ('break') или если до пары менее 60 минут:
+      // ТОЛЬКО здесь выводим живые минуты и секунды!
       return `${pad2(mins)}м ${pad2(secs)}с`;
     }
 
@@ -2611,7 +2639,7 @@
         return;
       }
 
-      const timeStr = formatSplitFlapTime(event.secsLeft);
+      const timeStr = formatSplitFlapTime(event.secsLeft, event.type);
 
       let badge = liveTimerBox.querySelector('.split-flap-badge');
       if (!badge || _prevSplitFlapType !== event.type) {
@@ -2940,13 +2968,11 @@
 
         if (targetTab === 'settings') {
           const blocks = Array.from(nextView.querySelectorAll('.setting-group-card'));
-          if (blocks.length > 0) {
+          if (blocks.length > 0 && window.Motion?.animate) {
             Motion.animate(blocks, {
-              opacity: [0, 1],
-              transform: ['translate3d(0, 14px, 0)', 'translate3d(0, 0, 0)']
+              opacity: [0.7, 1]
             }, {
-              delay: Motion.stagger(0.045, { startDelay: 0.08 }),
-              duration: 0.44,
+              duration: 0.22,
               ease: [0.16, 1, 0.3, 1]
             });
           }
@@ -2964,6 +2990,49 @@
     }
 
     // ─── Settings Tab Logic ───────────────────────────────────────────────────
+    function getSubgroupFor(course, group) {
+      return localStorage.getItem(`bsu_subgroup_${course}_${group}`) || 'all';
+    }
+
+    function setSubgroupFor(course, group, sg) {
+      if (sg === 'all') {
+        localStorage.removeItem(`bsu_subgroup_${course}_${group}`);
+      } else {
+        localStorage.setItem(`bsu_subgroup_${course}_${group}`, sg);
+      }
+    }
+
+    function setAsPrimaryGroup() {
+      triggerHaptic('medium');
+      const primary = {
+        course: currentProfile.course,
+        group_name: currentProfile.group_name,
+        foreign_lang: currentProfile.foreign_lang
+      };
+      localStorage.setItem('bsu_primary_profile', JSON.stringify(primary));
+      localStorage.setItem('bsu_primary_course', currentProfile.course);
+      localStorage.setItem('bsu_primary_group', currentProfile.group_name);
+      renderSettingsTab();
+      showToast(`Группа ${currentProfile.group_name.replace(/^ГРУППА\s*/i, '')} (${currentProfile.course} курс) теперь основная ⭐`, 'success');
+    }
+
+    function returnToPrimaryGroup() {
+      triggerHaptic('light');
+      const savedPrimary = localStorage.getItem('bsu_primary_profile');
+      if (savedPrimary) {
+        try {
+          const prim = JSON.parse(savedPrimary);
+          currentProfile.course = prim.course;
+          currentProfile.group_name = prim.group_name;
+          currentProfile.foreign_lang = prim.foreign_lang;
+          currentProfile.subgroup = getSubgroupFor(prim.course, prim.group_name);
+          localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
+        } catch(e) {}
+      }
+      renderSettingsTab();
+      renderView();
+    }
+
     function renderSettingsTab() {
       const body = document.getElementById('settingsViewBody');
       if (!body) return;
@@ -2981,13 +3050,49 @@
         ? `Выбран <b>${activeLangObj.label}</b>. Нажмите повторно для сброса (будут показаны все языки).`
         : `Язык не выбран • в расписании показываются все языки. Нажмите на язык, чтобы скрыть остальные.`;
 
+      let primaryCourse = currentProfile.course;
+      let primaryGroup = currentProfile.group_name;
+      const savedPrimary = localStorage.getItem('bsu_primary_profile');
+      if (savedPrimary) {
+        try {
+          const p = JSON.parse(savedPrimary);
+          if (p.course) primaryCourse = p.course;
+          if (p.group_name) primaryGroup = p.group_name;
+        } catch(e) {}
+      }
+
+      const isPrimary = (currentProfile.course === primaryCourse && currentProfile.group_name === primaryGroup);
+
       body.innerHTML = `
+        <div class="setting-group-card flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <div class="section-title">Основная группа</div>
+            ${isPrimary
+              ? '<span class="badge badge-success badge-sm font-bold gap-1 bg-emerald-500/15 border-emerald-500/30 text-emerald-400"><span>⭐</span> Ваша группа</span>'
+              : '<span class="badge badge-ghost badge-sm text-[10.5px] font-semibold text-base-content/60">Режим просмотра</span>'
+            }
+          </div>
+          ${!isPrimary ? `
+            <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-base-200/50 border border-base-content/10">
+              <span class="text-xs text-base-content/70">Вы просматриваете <b>${currentProfile.group_name.replace(/^ГРУППА\s*/i, '')} гр.</b> (${currentProfile.course} курс)</span>
+              <button type="button" onclick="setAsPrimaryGroup()" class="btn btn-xs btn-primary font-bold">Закрепить ⭐</button>
+            </div>
+            <button type="button" onclick="returnToPrimaryGroup()" class="btn btn-xs btn-ghost border border-base-content/10 w-full font-bold justify-center gap-1.5 h-8">
+              <span>Вернуться к основной (${primaryGroup.replace(/^ГРУППА\s*/i, '')} гр., ${primaryCourse} к.)</span>
+            </button>
+          ` : `
+            <div class="text-[11.5px] text-base-content/65">
+              Бот автоматически открывает эту группу при каждом запуске.
+            </div>
+          `}
+        </div>
+
         <div class="setting-group-card flex flex-col gap-2">
           <div class="section-title">Курс</div>
           <div class="grid grid-cols-4 gap-2">
             ${['1','2','3','4'].map(c => {
               const sel = currentProfile.course === c;
-              return `<button type="button" onclick="selectCourseSettingsTab('${c}')" class="btn btn-md rounded-2xl font-black text-lg border border-base-content/10 transition-all ${sel ? 'btn-primary shadow-md scale-[1.02]' : 'btn-ghost bg-base-200/50'}">${c}</button>`;
+              return `<button type="button" onclick="selectCourseSettingsTab('${c}')" class="btn btn-md rounded-2xl font-black text-lg border border-base-content/10 transition-colors ${sel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">${c}</button>`;
             }).join('')}
           </div>
         </div>
@@ -2998,7 +3103,7 @@
             ${groups.map(g => {
               const num = g.replace(/^ГРУППА\s*/i, '');
               const sel = currentProfile.group_name === g;
-              return `<button type="button" onclick="selectGroupSettingsTab('${g}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-all ${sel ? 'btn-primary shadow-md scale-[1.02]' : 'btn-ghost bg-base-200/50'}">${num}</button>`;
+              return `<button type="button" onclick="selectGroupSettingsTab('${g}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-colors ${sel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">${num}</button>`;
             }).join('')}
           </div>
         </div>
@@ -3008,7 +3113,7 @@
           <div class="grid grid-cols-2 gap-2">
             ${langs.map(l => {
               const sel = currentProfile.foreign_lang === l.id;
-              return `<button type="button" onclick="toggleLangSettingsTab('${l.id}')" class="btn h-11 min-h-[44px] px-2 py-2 rounded-xl font-bold text-[13px] border border-base-content/10 flex items-center justify-center gap-1.5 transition-all ${sel ? 'btn-primary shadow-md scale-[1.02]' : 'btn-ghost bg-base-200/50'}">
+              return `<button type="button" onclick="toggleLangSettingsTab('${l.id}')" class="btn h-11 min-h-[44px] px-2 py-2 rounded-xl font-bold text-[13px] border border-base-content/10 flex items-center justify-center gap-1.5 transition-colors ${sel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">
                 <span>${l.label}</span>
                 ${sel ? '<span class="text-xs font-bold">✓</span>' : ''}
               </button>`;
@@ -3020,7 +3125,7 @@
         <div class="setting-group-card flex flex-col gap-2">
           <div class="section-title">Обучение и подсказки</div>
           <button type="button" onclick="openOnboardingModal()" class="btn btn-sm btn-ghost border border-base-content/10 rounded-xl justify-between font-semibold text-xs h-10 w-full px-3 transition-colors hover:bg-base-200/50">
-            <span class="flex items-center gap-2"><span>✨</span><span>Что нового и фичи расписания</span></span>
+            <span class="flex items-center gap-2"><span>✨</span><span>Функции и возможности расписания</span></span>
             <span class="opacity-40">›</span>
           </button>
         </div>
@@ -3030,13 +3135,11 @@
     function quickToggleSubgroup(sgNum) {
       triggerHaptic('light');
       const sgStr = String(sgNum);
-      if (currentProfile.subgroup === sgStr) {
-        currentProfile.subgroup = 'all';
-      } else {
-        currentProfile.subgroup = sgStr;
-      }
+      const cur = getSubgroupFor(currentProfile.course, currentProfile.group_name);
+      const nextSg = (cur === sgStr) ? 'all' : sgStr;
+      currentProfile.subgroup = nextSg;
+      setSubgroupFor(currentProfile.course, currentProfile.group_name, nextSg);
       localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
-      localStorage.setItem('bsu_user_subgroup', currentProfile.subgroup);
       renderView();
     }
 
@@ -3047,6 +3150,7 @@
       if (!availGroups.includes(currentProfile.group_name)) {
         currentProfile.group_name = availGroups[0] || '';
       }
+      currentProfile.subgroup = getSubgroupFor(currentProfile.course, currentProfile.group_name);
       localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
       renderSettingsTab();
     }
@@ -3054,6 +3158,7 @@
     function selectGroupSettingsTab(group) {
       triggerHaptic('light');
       currentProfile.group_name = group;
+      currentProfile.subgroup = getSubgroupFor(currentProfile.course, currentProfile.group_name);
       localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
       renderSettingsTab();
     }
@@ -3094,12 +3199,28 @@
       }
 
       if (currentProfile && currentProfile.group_name) {
+        let primaryCourse = null;
+        let primaryGroup = null;
+        const savedPrimary = localStorage.getItem('bsu_primary_profile');
+        if (savedPrimary) {
+          try {
+            const p = JSON.parse(savedPrimary);
+            primaryCourse = p.course;
+            primaryGroup = p.group_name;
+          } catch(e) {}
+        }
+        const isGuest = primaryCourse && primaryGroup && (currentProfile.course !== primaryCourse || currentProfile.group_name !== primaryGroup);
+
+        const guestBadge = isGuest ? ' 👁️' : '';
         const sgTag = (currentProfile.subgroup === '1' || currentProfile.subgroup === '2') ? ` • ${currentProfile.subgroup} п/г` : '';
-        headerTitle.textContent = `${currentProfile.course} курс • ${currentProfile.group_name.replace('ГРУППА ', 'Группа ')}${sgTag}`;
+        headerTitle.textContent = `${currentProfile.course} курс • ${currentProfile.group_name.replace('ГРУППА ', 'Группа ')}${sgTag}${guestBadge}`;
         if (headerSync) {
           if (!navigator.onLine) {
             headerSync.textContent = 'Офлайн (кэш)';
             headerSync.title = 'Интернет отключен • отображаются данные из локального кэша';
+          } else if (isGuest) {
+            headerSync.textContent = 'Режим просмотра';
+            headerSync.title = 'Вы просматриваете другую группу. При новом запуске откроется ваша основная группа.';
           } else {
             const groupTime = facultyData?.group_updated_times?.[currentProfile.course]?.[currentProfile.group_name]
               || facultyData?.updated_times?.[currentProfile.course]
@@ -4152,6 +4273,7 @@
 
     function saveUnifiedProfile() {
       currentProfile = { ...draftProfile };
+      currentProfile.subgroup = getSubgroupFor(currentProfile.course, currentProfile.group_name);
       localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
       closeSettingsModal();
       const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
@@ -4247,7 +4369,16 @@
         renderWizardStep();
       } else {
         currentProfile = { ...draftProfile };
+        currentProfile.subgroup = getSubgroupFor(currentProfile.course, currentProfile.group_name);
         localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
+        const primary = {
+          course: currentProfile.course,
+          group_name: currentProfile.group_name,
+          foreign_lang: currentProfile.foreign_lang
+        };
+        localStorage.setItem('bsu_primary_profile', JSON.stringify(primary));
+        localStorage.setItem('bsu_primary_course', currentProfile.course);
+        localStorage.setItem('bsu_primary_group', currentProfile.group_name);
         localStorage.setItem('bsu_setup_completed', 'true');
         closeSettingsModal();
         const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
@@ -4432,12 +4563,34 @@
       setupCalendarDragHandling();
       setupSwipeGestures();
 
+      const savedPrimary = localStorage.getItem('bsu_primary_profile');
       const savedProfile = localStorage.getItem('bsu_profile');
-      if (savedProfile) {
+      if (savedPrimary) {
+        try {
+          const prim = JSON.parse(savedPrimary);
+          if (prim.course && prim.group_name) {
+            currentProfile.course = prim.course;
+            currentProfile.group_name = prim.group_name;
+            currentProfile.foreign_lang = prim.foreign_lang || null;
+            currentProfile.subgroup = getSubgroupFor(prim.course, prim.group_name);
+            localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
+          }
+        } catch(e) {}
+      } else if (savedProfile) {
         try {
           currentProfile = JSON.parse(savedProfile);
           if (currentProfile.foreign_lang === 'ALL') currentProfile.foreign_lang = null;
           if (!currentProfile.subgroup) currentProfile.subgroup = 'all';
+          if (currentProfile.course && currentProfile.group_name) {
+            const primary = {
+              course: currentProfile.course,
+              group_name: currentProfile.group_name,
+              foreign_lang: currentProfile.foreign_lang
+            };
+            localStorage.setItem('bsu_primary_profile', JSON.stringify(primary));
+            localStorage.setItem('bsu_primary_course', currentProfile.course);
+            localStorage.setItem('bsu_primary_group', currentProfile.group_name);
+          }
         } catch(e) {}
       }
 
@@ -4478,14 +4631,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v12') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v13') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=12')
+        navigator.serviceWorker.register('./sw-preview.js?v=13')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {

@@ -328,7 +328,7 @@ def parse_docx(path):
 
                     subgroup_prefix = ""
                     if num_rows == 2 and not is_vertically_merged:
-                        if not re.search(r'русск|немец|франц|англ|культ', lesson, re.I):
+                        if not re.search(r'русск|немец|франц|англ|иностранн|культ', lesson, re.I):
                             subgroup_prefix = f"{r_sub_idx + 1} подгруппа\n"
 
                     tagged_lesson = (subgroup_prefix + lesson) if (subgroup_prefix and not lesson.startswith(subgroup_prefix)) else lesson
@@ -342,6 +342,12 @@ def parse_docx(path):
                             sub_lessons = re.split(r"\n(?=(?:Немецкий язык|Русский язык как иностранный|ИНОСТРАННЫЙ ЯЗЫК|Французский язык))", tagged_lesson, flags=re.I)
                             for sub in sub_lessons:
                                 sub = sub.strip()
+                                # Ignore phantom entries consisting only of subgroup prefix or time
+                                clean_sub = re.sub(r"^[12]\s*подгруппа\s*", "", sub, flags=re.I).strip()
+                                clean_sub = re.sub(r"^\d{1,2}[.:]\d{2}\s*[-–—]\s*\d{1,2}[.:]\d{2}\s*", "", clean_sub).strip()
+                                clean_sub = re.sub(r"^\d{4}\s*[-–—]\s*\d{4}\s*", "", clean_sub).strip()
+                                if not clean_sub:
+                                    continue
                                 if sub and sub not in res[g_name][cur_day][slot_time]:
                                     res[g_name][cur_day][slot_time].append(sub)
     return res
@@ -676,10 +682,21 @@ def merge_schedule_history(new_data, existing_path="schedule_data.json", max_his
 
             # 2. When a slot has 2 distinct academic items, slot 0 is 1st subgroup, slot 1 is 2nd subgroup
             for day_key, slots in merged_days.items():
-                for slot, lessons in slots.items():
+                for slot, lessons in list(slots.items()):
+                    # Purge any phantom entries that have no content besides subgroup prefix
+                    valid_lessons = []
+                    for l in lessons:
+                        clean_l = re.sub(r"^[12]\s*подгруппа\s*", "", l, flags=re.I).strip()
+                        clean_l = re.sub(r"^\d{1,2}[.:]\d{2}\s*[-–—]\s*\d{1,2}[.:]\d{2}\s*", "", clean_l).strip()
+                        clean_l = re.sub(r"^\d{4}\s*[-–—]\s*\d{4}\s*", "", clean_l).strip()
+                        if clean_l:
+                            valid_lessons.append(l)
+                    slots[slot] = valid_lessons
+                    lessons = valid_lessons
+
                     if len(lessons) == 2:
                         l0, l1 = lessons[0], lessons[1]
-                        is_lang_pe = any(re.search(r'русск|немец|франц|англ|культ', l, re.I) for l in [l0, l1])
+                        is_lang_pe = any(re.search(r'русск|немец|франц|англ|иностранн|культ', l, re.I) for l in [l0, l1])
                         if not is_lang_pe:
                             if not l0.startswith("1 подгруппа") and not l0.startswith("2 подгруппа"):
                                 lessons[0] = "1 подгруппа\n" + l0
