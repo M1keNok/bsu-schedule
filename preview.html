@@ -666,7 +666,6 @@
       overflow-x: auto;
       scrollbar-width: none;
       -ms-overflow-style: none;
-      scroll-behavior: smooth;
       -webkit-overflow-scrolling: touch;
     }
 
@@ -2530,24 +2529,27 @@
     }
 
     function formatSplitFlapTime(secsLeft, timerType) {
-      if (secsLeft <= 0) return '00м 00с';
+      const isLivePairOrBreak = (timerType === 'lesson' || timerType === 'break');
+      if (secsLeft <= 0) return isLivePairOrBreak ? '00м 00с' : '00м';
       const days = Math.floor(secsLeft / 86400);
       const hours = Math.floor((secsLeft % 86400) / 3600);
       const mins = Math.floor((secsLeft % 3600) / 60);
       const secs = secsLeft % 60;
       const pad2 = n => (n < 10 ? '0' : '') + n;
 
-      // Если до события больше суток (days > 0): только дни и часы (без секунд)
+      // ТОЛЬКО во время пары ('lesson') или перерыва ('break') отображаем живые секунды:
+      if (isLivePairOrBreak) {
+        return `${pad2(mins)}м ${pad2(secs)}с`;
+      }
+
+      // Для предстоящих событий ('upcoming' или 'before_first') секунды СТРОГО скрыты:
       if (days > 0) {
         return `${days}д ${pad2(hours)}ч`;
       }
-      // Если до события от 1 до 24 часов: только часы и минуты (без секунд)
       if (hours > 0) {
         return `${pad2(hours)}ч ${pad2(mins)}м`;
       }
-      // Во время пары ('lesson'), перерыва ('break') или если до пары менее 60 минут:
-      // ТОЛЬКО здесь выводим живые минуты и секунды!
-      return `${pad2(mins)}м ${pad2(secs)}с`;
+      return `${pad2(mins)}м`;
     }
 
     function updateSplitFlapBoard(boardEl, timeStr) {
@@ -3442,9 +3444,6 @@
         if (window.Motion?.animate) {
           Motion.animate(selectorBox.children[index], { transform: ['scale(0.96)', 'scale(1)'] }, { duration: 0.32, ease: [0.16, 1, 0.3, 1] });
         }
-        try {
-          selectorBox.children[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        } catch(e) {}
       }
 
       renderView();
@@ -3946,19 +3945,61 @@
       const activeBtn = selectorBox.querySelector('.calendar-day-btn.active');
       if (!activeBtn) return;
 
+      // Остановка предыдущей анимации скролла, если она ещё идёт
+      if (selectorBox._springAnimId) {
+        cancelAnimationFrame(selectorBox._springAnimId);
+        selectorBox._springAnimId = null;
+      }
+
       const todayIdx = currentDaysList.findIndex(item => item.isToday);
       const isToday = selectedDayIndex === todayIdx;
-      const behavior = smooth ? 'smooth' : 'auto';
 
+      let targetLeft = 0;
       if (isToday && todayIdx > 0) {
-        // Оставляем вчерашний день отчетливо торчащим слева (~54px)
-        const targetLeft = Math.max(0, activeBtn.offsetLeft - 54);
-        selectorBox.scrollTo({ left: targetLeft, behavior });
-      } else if (selectedDayIndex < todayIdx) {
-        activeBtn.scrollIntoView({ behavior, inline: 'center', block: 'nearest' });
+        // Оставляем вчерашний день слегка торчащим слева (~52px), чтобы виден контекст вчерашнего дня
+        targetLeft = Math.max(0, activeBtn.offsetLeft - 52);
       } else {
-        activeBtn.scrollIntoView({ behavior, inline: 'nearest', block: 'nearest' });
+        // Центрируем активный день по центру ленты
+        const containerWidth = selectorBox.clientWidth;
+        const btnWidth = activeBtn.offsetWidth;
+        targetLeft = Math.max(0, activeBtn.offsetLeft - (containerWidth - btnWidth) / 2);
       }
+
+      const maxScroll = Math.max(0, selectorBox.scrollWidth - selectorBox.clientWidth);
+      targetLeft = Math.min(targetLeft, maxScroll);
+
+      if (!smooth) {
+        selectorBox.scrollLeft = targetLeft;
+        return;
+      }
+
+      const startLeft = selectorBox.scrollLeft;
+      const delta = targetLeft - startLeft;
+      if (Math.abs(delta) < 1.5) {
+        selectorBox.scrollLeft = targetLeft;
+        return;
+      }
+
+      // Плавная физическая анимация скролла (критически демпфированная пружина, 360 мс)
+      const duration = 360;
+      const startTime = performance.now();
+
+      function springStep(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(1, elapsed / duration);
+        // iOS Spring Curve: 1 - (1 - progress)^3.2
+        const ease = 1 - Math.pow(1 - progress, 3.2);
+        selectorBox.scrollLeft = Math.round(startLeft + delta * ease);
+
+        if (progress < 1) {
+          selectorBox._springAnimId = requestAnimationFrame(springStep);
+        } else {
+          selectorBox.scrollLeft = targetLeft;
+          selectorBox._springAnimId = null;
+        }
+      }
+
+      selectorBox._springAnimId = requestAnimationFrame(springStep);
     }
 
     function renderView() {
@@ -4418,6 +4459,10 @@
       if (!selectorBox) return;
 
       selectorBox.addEventListener('touchstart', e => {
+        if (selectorBox._springAnimId) {
+          cancelAnimationFrame(selectorBox._springAnimId);
+          selectorBox._springAnimId = null;
+        }
         if (e.touches && e.touches.length === 1) {
           calendarTouchStartX = e.touches[0].clientX;
           calendarTouchStartY = e.touches[0].clientY;
@@ -4646,14 +4691,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v17') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v19') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=18')
+        navigator.serviceWorker.register('./sw-preview.js?v=19')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
