@@ -1101,7 +1101,7 @@
           <span style="font-size: 16px; line-height: 1;">☕</span>
           <span>Сегодня воскресенье — выходной</span>
         </div>
-        <button onclick="selectDayIndex(-1, 'medium')" class="btn btn-warning btn-xs rounded-lg font-bold">
+        <button onclick="goToSundayToday()" class="btn btn-warning btn-xs rounded-lg font-bold">
           Перейти
         </button>
       </div>
@@ -1187,6 +1187,7 @@
     };
 
     const DAY_DEFS = [
+      { index: 0, short: 'Вс', name: 'ВОСКРЕСЕНЬЕ', full: 'Воскресенье' },
       { index: 1, short: 'Пн', name: 'ПОНЕДЕЛЬНИК', full: 'Понедельник' },
       { index: 2, short: 'Вт', name: 'ВТОРНИК', full: 'Вторник' },
       { index: 3, short: 'Ср', name: 'СРЕДА', full: 'Среда' },
@@ -2476,9 +2477,9 @@
       if (byName) return byName;
       if (dateObj) {
         const dow = dateObj.getDay();
-        return DAY_DEFS.find(d => d.index === dow) || DAY_DEFS[0];
+        return DAY_DEFS.find(d => d.index === dow) || DAY_DEFS[1];
       }
-      return DAY_DEFS[0];
+      return DAY_DEFS[1];
     }
 
     function getScheduleDays(groupSchedule) {
@@ -2488,59 +2489,62 @@
       const keys = Object.keys(groupSchedule || {});
       const daysMap = new Map();
 
+      const addDayIfMissing = (wDate, rawKey = null) => {
+        const timeKey = wDate.getTime();
+        if (daysMap.has(timeKey)) return;
+        const targetDayOfWeek = wDate.getDay();
+        const dayDef = rawKey ? findDayDef(rawKey, wDate) : (DAY_DEFS.find(d => d.index === targetDayOfWeek) || DAY_DEFS[1]);
+        const diffDays = Math.round((todayStart.getTime() - wDate.getTime()) / 86400000);
+        const isToday = diffDays === 0;
+        const isTomorrow = diffDays === -1;
+        const isPast = diffDays > 0;
+
+        daysMap.set(timeKey, {
+          rawKey,
+          date: wDate,
+          dayDef,
+          short: dayDef.short,
+          full: dayDef.full,
+          name: dayDef.name,
+          dateText: formatDDMM(wDate),
+          formattedDate: formatDateRu(wDate),
+          isToday,
+          isTomorrow,
+          isPast
+        });
+      };
+
       // 1. Add all parsed days from groupSchedule (within 7 days)
       keys.forEach(rawKey => {
         const keyDate = parseDayKeyDate(rawKey, now);
         if (!keyDate) return;
         const diffDays = Math.round((todayStart.getTime() - keyDate.getTime()) / 86400000);
         if (diffDays > 7) return;
-
-        const dayDef = findDayDef(rawKey, keyDate);
-        const isToday = diffDays === 0;
-        const isTomorrow = diffDays === -1;
-        const isPast = diffDays > 0;
-
-        daysMap.set(keyDate.getTime(), {
-          rawKey,
-          date: keyDate,
-          dayDef,
-          short: dayDef.short,
-          full: dayDef.full,
-          name: dayDef.name,
-          dateText: formatDDMM(keyDate),
-          formattedDate: formatDateRu(keyDate),
-          isToday,
-          isTomorrow,
-          isPast
-        });
+        addDayIfMissing(keyDate, rawKey);
       });
 
-      // 2. Ensure current week Monday..Saturday exists in daysMap (placeholder if not uploaded)
+      // 2. Ensure current week Monday..Sunday (i = 0..6) exists in daysMap
       const currentWeekMonday = new Date(todayStart.getTime() - ((now.getDay() + 6) % 7) * 86400000);
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 7; i++) {
         const wDate = new Date(currentWeekMonday.getTime() + i * 86400000);
-        const timeKey = wDate.getTime();
-        if (!daysMap.has(timeKey)) {
-          const targetDayOfWeek = wDate.getDay();
-          const dayDef = DAY_DEFS.find(d => d.index === targetDayOfWeek) || DAY_DEFS[0];
-          const diffDays = Math.round((todayStart.getTime() - wDate.getTime()) / 86400000);
-          const isToday = diffDays === 0;
-          const isTomorrow = diffDays === -1;
-          const isPast = diffDays > 0;
+        addDayIfMissing(wDate);
+      }
 
-          daysMap.set(timeKey, {
-            rawKey: null,
-            date: wDate,
-            dayDef,
-            short: dayDef.short,
-            full: dayDef.full,
-            name: dayDef.name,
-            dateText: formatDDMM(wDate),
-            formattedDate: formatDateRu(wDate),
-            isToday,
-            isTomorrow,
-            isPast
-          });
+      // If today is not Sunday, also ensure previous Sunday exists if within recent days
+      if (now.getDay() !== 0) {
+        const prevSunday = new Date(currentWeekMonday.getTime() - 1 * 86400000);
+        const diffPrev = Math.round((todayStart.getTime() - prevSunday.getTime()) / 86400000);
+        if (diffPrev <= 6) {
+          addDayIfMissing(prevSunday);
+        }
+      }
+
+      // If today is Saturday or Sunday, also ensure next week Monday..Saturday exists
+      if (now.getDay() === 0 || now.getDay() === 6) {
+        const nextWeekMonday = new Date(currentWeekMonday.getTime() + 7 * 86400000);
+        for (let i = 0; i < 6; i++) {
+          const wDate = new Date(nextWeekMonday.getTime() + i * 86400000);
+          addDayIfMissing(wDate);
         }
       }
 
@@ -2624,7 +2628,14 @@
 
     function selectDayIndex(index, hapticType = 'medium') {
       const isSundayToday = new Date().getDay() === 0;
-      if (index === -1 && !isSundayToday) return;
+      if (index === -1) {
+        const todaySunIdx = currentDaysList.findIndex(d => d.isToday && d.dayDef?.index === 0);
+        if (todaySunIdx !== -1) {
+          index = todaySunIdx;
+        } else if (!isSundayToday) {
+          return;
+        }
+      }
       if (index < -1 || index >= currentDaysList.length) return;
       if (selectedDayIndex === index) return;
 
@@ -2688,10 +2699,6 @@
     }
 
     function findInitialDayIndex(groupSchedule) {
-      const now = new Date();
-      if (now.getDay() === 0) {
-        return -1; // Sunday!
-      }
       const days = getScheduleDays(groupSchedule);
       for (let i = 0; i < days.length; i++) {
         if (days[i].isToday) {
@@ -2728,15 +2735,16 @@
         }
       }
 
-      if (dayIndex === -1) {
-        const sundayDate = now.getDate() + ' ' + monthsGenitive[now.getMonth()];
+      const currentDay = (dayIndex >= 0 && dayIndex < currentDaysList.length) ? currentDaysList[dayIndex] : null;
+
+      if (dayIndex === -1 || (currentDay && currentDay.dayDef && currentDay.dayDef.index === 0)) {
+        const sundayDate = currentDay ? currentDay.formattedDate : (now.getDate() + ' ' + monthsGenitive[now.getMonth()]);
         dayFullTitle.textContent = `Воскресенье, ${sundayDate}`;
         badgeBox.innerHTML = '<span class="badge badge-warning badge-sm font-bold">Выходной</span>';
         lessonsCountBox.innerHTML = '<span class="badge badge-ghost badge-sm font-bold">Выходной</span>';
         return;
       }
 
-      const currentDay = currentDaysList[dayIndex];
       if (!currentDay) return;
 
       dayFullTitle.textContent = `${currentDay.full}, ${currentDay.formattedDate}`;
@@ -3025,6 +3033,12 @@
       return frag;
     }
 
+    function goToSundayToday() {
+      const idx = currentDaysList.findIndex(d => d.isToday);
+      if (idx !== -1) selectDayIndex(idx, 'medium');
+      else selectDayIndex(-1, 'medium');
+    }
+
     function buildDayPage(dayIndex, groupSchedule) {
       const page = document.createElement('div');
       page.className = 'schedule-page active-page';
@@ -3035,7 +3049,12 @@
       }
 
       const currentDay = currentDaysList[dayIndex];
-      if (!currentDay || !currentDay.rawKey) {
+      if (!currentDay || (currentDay.dayDef && currentDay.dayDef.index === 0)) {
+        page.innerHTML = getWeekendCardHTML();
+        return page;
+      }
+
+      if (!currentDay.rawKey) {
         page.innerHTML = `
           <div class="card-glass animate-card" style="text-align: center; padding: 42px 20px;">
             <div style="width: 60px; height: 60px; border-radius: 20px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
@@ -3096,7 +3115,8 @@
       const isSundayToday = now.getDay() === 0;
       const sundayBanner = document.getElementById('sundayBanner');
       if (sundayBanner) {
-        sundayBanner.style.display = (isSundayToday && selectedDayIndex >= 0) ? 'flex' : 'none';
+        const isViewingSunday = (selectedDayIndex >= 0 && currentDaysList[selectedDayIndex]?.dayDef?.index === 0) || selectedDayIndex === -1;
+        sundayBanner.style.display = (isSundayToday && !isViewingSunday) ? 'flex' : 'none';
       }
 
       if (selectedDayIndex >= currentDaysList.length) {
@@ -3567,7 +3587,9 @@
           if (deltaX < 0) {
             // Swipe Left -> Next day
             if (selectedDayIndex === -1) {
-              selectDayIndex(0, 'heavy');
+              const sundayIdx = currentDaysList.findIndex(d => d.isToday && d.dayDef?.index === 0);
+              const nextIdx = sundayIdx !== -1 ? sundayIdx + 1 : currentDaysList.findIndex(d => !d.isPast);
+              selectDayIndex(nextIdx !== -1 ? nextIdx : 0, 'heavy');
             } else if (selectedDayIndex < currentDaysList.length - 1) {
               selectDayIndex(selectedDayIndex + 1, 'heavy');
             }
@@ -3576,7 +3598,8 @@
             if (selectedDayIndex > 0) {
               selectDayIndex(selectedDayIndex - 1, 'heavy');
             } else if (selectedDayIndex === 0 && isSundayToday) {
-              selectDayIndex(-1, 'heavy');
+              const sundayIdx = currentDaysList.findIndex(d => d.isToday && d.dayDef?.index === 0);
+              if (sundayIdx !== -1) selectDayIndex(sundayIdx, 'heavy');
             }
           }
         }
@@ -3594,7 +3617,9 @@
 
         if (e.key === 'ArrowRight') {
           if (selectedDayIndex === -1) {
-            selectDayIndex(0, 'medium');
+            const sundayIdx = currentDaysList.findIndex(d => d.isToday && d.dayDef?.index === 0);
+            const nextIdx = sundayIdx !== -1 ? sundayIdx + 1 : currentDaysList.findIndex(d => !d.isPast);
+            selectDayIndex(nextIdx !== -1 ? nextIdx : 0, 'medium');
           } else if (selectedDayIndex < currentDaysList.length - 1) {
             selectDayIndex(selectedDayIndex + 1, 'medium');
           }
@@ -3602,7 +3627,8 @@
           if (selectedDayIndex > 0) {
             selectDayIndex(selectedDayIndex - 1, 'medium');
           } else if (selectedDayIndex === 0 && isSundayToday) {
-            selectDayIndex(-1, 'medium');
+            const sundayIdx = currentDaysList.findIndex(d => d.isToday && d.dayDef?.index === 0);
+            if (sundayIdx !== -1) selectDayIndex(sundayIdx, 'medium');
           }
         }
       });
@@ -3649,14 +3675,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-v') && k !== 'bsu-schedule-v27') caches.delete(k);
+          if (k.startsWith('bsu-schedule-v') && k !== 'bsu-schedule-v28') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=27')
+        navigator.serviceWorker.register('./sw.js?v=28')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
