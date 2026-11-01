@@ -1288,6 +1288,133 @@
       100% { opacity: 0; }
     }
 
+    /* ─── Kokonut UI: Dynamic Status Island ───────────────────────────────── */
+    .status-island {
+      background: rgba(14, 14, 18, 0.88);
+      backdrop-filter: blur(28px) saturate(200%);
+      -webkit-backdrop-filter: blur(28px) saturate(200%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      border-radius: 24px;
+      padding: 12px 14px;
+      transition: all 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+    }
+    html:not(.dark) .status-island {
+      background: rgba(255, 255, 255, 0.9);
+      border-color: rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    }
+    .status-island.island-expanded {
+      border-radius: 20px;
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+    .status-island-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 12px #10b981;
+    }
+    .dot-live-pulse {
+      background: #10b981 !important;
+      animation: islandLivePulse 1.8s infinite;
+    }
+    @keyframes islandLivePulse {
+      0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      50% { opacity: 0.7; transform: scale(1.15); box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+    }
+    .dot-break-pulse {
+      background: #f59e0b !important;
+      animation: islandBreakPulse 1.8s infinite;
+    }
+    @keyframes islandBreakPulse {
+      0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+      50% { opacity: 0.7; transform: scale(1.15); box-shadow: 0 0 0 5px rgba(245, 158, 11, 0); }
+    }
+    .dot-upcoming-pulse {
+      background: #64748b !important;
+    }
+
+    /* ─── Kokonut UI: Liquid Glass Live Glow ──────────────────────────────── */
+    .liquid-glass-live {
+      border-color: rgba(16, 185, 129, 0.5) !important;
+      box-shadow: 0 0 24px rgba(16, 185, 129, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.18) !important;
+      position: relative;
+    }
+
+    /* ─── Kokonut UI: Morphic Floating Bottom Bar ─────────────────────────── */
+    .morphic-bottom-nav {
+      position: fixed;
+      bottom: calc(10px + env(safe-area-inset-bottom, 10px));
+      left: 16px;
+      right: 16px;
+      max-width: 360px;
+      margin: 0 auto;
+      z-index: 40;
+    }
+    .morphic-nav-shell {
+      background: rgba(16, 16, 20, 0.88);
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 9999px;
+      padding: 6px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.14);
+    }
+    html:not(.dark) .morphic-nav-shell {
+      background: rgba(255, 255, 255, 0.92);
+      border-color: rgba(0, 0, 0, 0.12);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    }
+    .morphic-nav-btn {
+      flex: 1;
+      padding: 7px 12px;
+      border-radius: 9999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      background: transparent;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+    }
+    .morphic-nav-btn.active {
+      background: #10b981;
+      color: #000000;
+      box-shadow: 0 2px 14px rgba(16, 185, 129, 0.45);
+      font-weight: 800;
+    }
+
+    /* ─── Kokonut UI: Smooth Bottom Drawer ────────────────────────────────── */
+    .drawer-overlay {
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: opacity 0.28s ease;
+    }
+    .drawer-sheet {
+      background: rgba(18, 18, 22, 0.97);
+      backdrop-filter: blur(32px);
+      -webkit-backdrop-filter: blur(32px);
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 28px 28px 0 0;
+      box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.85);
+      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    html:not(.dark) .drawer-sheet {
+      background: rgba(255, 255, 255, 0.97);
+      border-top: 1px solid rgba(0, 0, 0, 0.12);
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.12);
+    }
+
   </style>
 </head>
 <body>
@@ -1372,7 +1499,7 @@
     </div>
   </header>
 
-  <main id="mainContent" style="flex: 1; padding: 6px 16px 24px; max-width: 480px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; touch-action: pan-y; perspective: 1400px; -webkit-perspective: 1400px;">
+  <main id="mainContent" style="flex: 1; padding: 6px 16px 88px; max-width: 480px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; touch-action: pan-y; perspective: 1400px; -webkit-perspective: 1400px;">
     
     <!-- Tab 0: SETTINGS VIEW -->
     <div id="settingsView" class="tab-view" style="display: none; flex-direction: column; gap: 14px; width: 100%;">
@@ -1437,7 +1564,57 @@
         </div>
       </div>
 
+      <!-- Kokonut UI: Dynamic Status Island -->
+      <div id="dynamicStatusIsland" onclick="toggleStatusIsland()" class="status-island tap-scale" role="button" aria-expanded="false" style="display: none;">
+        <div class="flex items-center justify-between gap-3 min-w-0">
+          <div class="flex items-center gap-2.5 min-w-0 flex-1">
+            <span id="islandLiveDot" class="status-island-dot dot-live-pulse shrink-0"></span>
+            <div class="truncate flex-1 min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span id="islandTitle" class="text-xs font-black tracking-tight truncate text-white">Определение пары...</span>
+                <span id="islandBadge" class="badge badge-xs font-bold border-0 bg-emerald-500/20 text-emerald-300">LIVE</span>
+              </div>
+              <p id="islandSubtitle" class="text-[11px] opacity-75 truncate mt-0.5">...</p>
+            </div>
+          </div>
+          <div id="islandTimeBadge" class="badge badge-sm font-mono shrink-0 bg-base-200/60 text-base-content border-0">--:--</div>
+        </div>
+        <div id="islandProgressContainer" class="w-full h-1 bg-white/10 rounded-full overflow-hidden mt-2.5">
+          <div id="islandProgressBar" class="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full transition-all duration-700" style="width: 0%;"></div>
+        </div>
+        <!-- Expanded accordion view on tap -->
+        <div id="islandExpandedDetails" class="hidden pt-2.5 mt-2.5 border-t border-white/10 space-y-2 text-xs">
+          <div class="flex justify-between items-center text-slate-300">
+            <span class="text-slate-400">Преподаватель:</span>
+            <span id="islandTeacher" class="font-semibold text-white truncate max-w-[200px]">...</span>
+          </div>
+          <div class="flex justify-between items-center text-slate-300">
+            <span class="text-slate-400">Следующее событие:</span>
+            <span id="islandNextEvent" class="font-semibold text-amber-300 font-mono truncate max-w-[200px]">...</span>
+          </div>
+          <div class="pt-1 flex gap-2">
+            <button id="islandActionBtn" onclick="event.stopPropagation(); openIslandLessonDetails();" class="btn btn-xs rounded-xl bg-emerald-500 text-black font-bold border-0 hover:bg-emerald-400 flex-1">
+              Подробнее и заметки
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div id="calendarSelector" class="calendar-selector"></div>
+
+      <!-- daisyUI Stats: Сводка дня -->
+      <div id="daySummaryStats" class="stats stats-horizontal shadow-sm card-glass rounded-2xl w-full border border-base-content/10 mb-0.5" style="display: none;">
+        <div class="stat py-2 px-3">
+          <div class="stat-title text-[10.5px] opacity-70">Занятий за день</div>
+          <div id="statLessonsCount" class="stat-value text-emerald-400 text-base font-extrabold font-mono">0 пар</div>
+          <div id="statWindowsDesc" class="stat-desc text-[10px] opacity-70">Без окон</div>
+        </div>
+        <div class="stat py-2 px-3 border-l border-base-content/10">
+          <div class="stat-title text-[10.5px] opacity-70">Учебный диапазон</div>
+          <div id="statTimeSpan" class="stat-value text-base-content text-sm font-mono font-bold">--:-- – --:--</div>
+          <div id="statGroupLabel" class="stat-desc text-[10px] text-cyan-400 truncate">...</div>
+        </div>
+      </div>
 
       <div id="dayHeaderRow" style="display: flex; align-items: center; justify-content: space-between; margin-top: 1px; padding: 0 2px; min-height: 28px;">
         <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0;">
@@ -1455,9 +1632,132 @@
       </div>
     </div>
 
+    <!-- Tab 2: SEARCH VIEW (Kokonut Action Search) -->
+    <div id="searchView" class="tab-view" style="display: none; flex-direction: column; gap: 14px; width: 100%;">
+      <div class="card-glass rounded-3xl p-5 flex flex-col gap-4 box-border">
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+          <div>
+            <span style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-sub); letter-spacing: 0.5px;">Поиск по факультету</span>
+            <h3 style="font-size: 17px; font-weight: 800; margin-top: 1px;">Преподаватели и аудитории</h3>
+          </div>
+          <span class="badge badge-accent badge-sm font-bold text-white shadow-sm">Геофак БГУ</span>
+        </div>
+
+        <!-- Search Input -->
+        <div style="position: relative; width: 100%;">
+          <input
+            type="search"
+            id="facultySearchInput"
+            oninput="handleFacultySearch(this.value)"
+            placeholder="Фамилия (Лопух, Матейко) или ауд. (303, 312)..."
+            class="input input-bordered w-full rounded-2xl text-xs"
+            style="background: var(--glass-card-subtle); border-color: var(--border-color); padding-left: 36px; height: 44px;"
+          />
+          <svg style="width: 16px; height: 16px; position: absolute; left: 12px; top: 14px; opacity: 0.5; pointer-events: none;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </div>
+
+        <!-- Filter chips -->
+        <div style="display: flex; gap: 6px; overflow-x: auto;" class="no-scrollbar">
+          <button type="button" onclick="setFacultySearchType('all')" id="searchChipAll" class="btn btn-xs rounded-xl btn-primary">Все</button>
+          <button type="button" onclick="setFacultySearchType('teacher')" id="searchChipTeacher" class="btn btn-xs rounded-xl btn-ghost border border-base-content/10">Преподаватели</button>
+          <button type="button" onclick="setFacultySearchType('room')" id="searchChipRoom" class="btn btn-xs rounded-xl btn-ghost border border-base-content/10">Аудитории</button>
+          <button type="button" onclick="setFacultySearchType('subject')" id="searchChipSubject" class="btn btn-xs rounded-xl btn-ghost border border-base-content/10">Предметы</button>
+        </div>
+      </div>
+
+      <!-- Search results -->
+      <div id="facultySearchResults" style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="card-glass rounded-2xl p-6 text-center text-xs opacity-60">
+          Начните вводить текст для поиска по расписанию всех 4 курсов
+        </div>
+      </div>
+    </div>
+
 
 
   </main>
+
+  <!-- Kokonut UI: Smooth Bottom Drawer (Детали пары и личные заметки студента) -->
+  <div id="lessonDrawerOverlay" onclick="closeLessonDetailsDrawer()" class="drawer-overlay fixed inset-0 z-50 hidden opacity-0"></div>
+
+  <div id="lessonDetailsDrawer" class="drawer-sheet fixed inset-x-0 bottom-0 z-50 p-5 transform translate-y-full max-w-lg mx-auto">
+    <div class="w-12 h-1.5 bg-base-content/20 rounded-full mx-auto mb-4"></div>
+
+    <div class="flex items-start justify-between gap-3">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap mb-1.5">
+          <span id="drawerLessonType" class="badge badge-sm font-bold bg-purple-500/20 text-purple-300 border-0">Лекция</span>
+          <span id="drawerLessonTime" class="text-xs font-mono font-bold text-emerald-400">11:20–12:40</span>
+          <span id="drawerLessonSubgroup" class="badge badge-xs badge-outline border-base-content/20 text-base-content/80 hidden"></span>
+        </div>
+        <h2 id="drawerLessonTitle" class="text-base font-black text-base-content leading-snug">Название предмета</h2>
+      </div>
+      <button onclick="closeLessonDetailsDrawer()" class="btn btn-ghost btn-circle btn-xs text-base-content/60 hover:text-base-content" title="Закрыть">✕</button>
+    </div>
+
+    <div class="mt-4 space-y-3">
+      <!-- Аудитория (БЕЗ навигации/этажей/маршрутов — только чистый текст деканата) -->
+      <div class="card-glass p-3 rounded-2xl flex items-center justify-between text-xs">
+        <div>
+          <span class="text-base-content/60 block text-[11px]">Аудитория / Локация:</span>
+          <span id="drawerLessonRoom" class="text-base-content font-bold text-sm">ауд. 303</span>
+        </div>
+        <span class="badge badge-sm bg-base-content/10 text-base-content/80 border-0 font-mono">Кабинет</span>
+      </div>
+
+      <!-- Преподаватель -->
+      <div class="card-glass p-3 rounded-2xl text-xs">
+        <span class="text-base-content/60 block text-[11px] mb-0.5">Преподаватель:</span>
+        <span id="drawerLessonTeacher" class="text-base-content font-semibold text-xs leading-relaxed">...</span>
+      </div>
+
+      <!-- Личная заметка студента (Kokonut Local Note) -->
+      <div>
+        <div class="flex items-center justify-between mb-1.5">
+          <label class="text-[11px] font-bold uppercase text-base-content/60 tracking-wider">
+            Личная заметка к этой паре:
+          </label>
+          <span id="drawerNoteStatus" class="text-[10px] text-emerald-400 font-bold hidden">Сохранено</span>
+        </div>
+        <textarea
+          id="drawerLessonNoteInput"
+          rows="2"
+          placeholder="Например: сдать контурную карту, тест к лабораторной, взять калькулятор..."
+          class="textarea textarea-bordered w-full rounded-2xl text-xs text-base-content"
+          style="background: var(--glass-card-subtle); border-color: var(--border-color);"
+        ></textarea>
+      </div>
+
+      <div class="flex gap-2 pt-1">
+        <button type="button" onclick="saveCurrentLessonNote()" class="btn btn-primary flex-1 rounded-2xl font-bold border-0 text-xs shadow-md">
+          <span>Сохранить заметку</span>
+        </button>
+        <button type="button" onclick="closeLessonDetailsDrawer()" class="btn btn-ghost rounded-2xl text-xs border border-base-content/10">
+          Закрыть
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kokonut UI: Morphic Floating Bottom Bar -->
+  <nav id="morphicBottomNav" class="morphic-bottom-nav">
+    <div class="morphic-nav-shell">
+      <button type="button" onclick="switchMainTab('schedule')" id="morphicTabSchedule" class="morphic-nav-btn active">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2.5" ry="2.5"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <span>Пары</span>
+      </button>
+
+      <button type="button" onclick="switchMainTab('search')" id="morphicTabSearch" class="morphic-nav-btn">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <span>Поиск</span>
+      </button>
+
+      <button type="button" onclick="switchMainTab('settings')" id="morphicTabSettings" class="morphic-nav-btn">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1 2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Профиль</span>
+      </button>
+    </div>
+  </nav>
 
   <div id="settingsModal" class="modal-overlay">
     <div class="modal-sheet">
@@ -2444,35 +2744,66 @@
           // 1a. Сейчас идёт пара
           const currentLesson = validSlots.find(s => curMin >= s.startMin && curMin < s.endMin);
           if (currentLesson) {
+            const currentSlot = todaySlots.find(s => s.timeStr === currentLesson.timeStr);
             const targetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Math.floor(currentLesson.endMin / 60), currentLesson.endMin % 60, 0, 0);
             const diffMs = targetDate.getTime() - now.getTime();
+            const totalSecs = (currentLesson.endMin - currentLesson.startMin) * 60;
+            const it = currentSlot?.items?.[0] || {};
+            const nextL = validSlots.find(s => s.startMin > curMin);
+            const nextSlot = nextL ? todaySlots.find(s => s.timeStr === nextL.timeStr) : null;
             return {
               type: 'lesson',
               label: 'до перерыва',
-              secsLeft: Math.max(0, Math.floor(diffMs / 1000))
+              secsLeft: Math.max(0, Math.floor(diffMs / 1000)),
+              totalSecs,
+              timeStr: currentLesson.timeStr,
+              lessonTitle: it.subject || it.title || it.raw || 'Учебное занятие',
+              room: it.room ? ('ауд. ' + it.room) : (it.raw && /хим/i.test(it.raw) ? 'Хим. фак.' : ''),
+              teacher: it.teacher || '',
+              nextEventLabel: nextSlot?.items?.[0] ? `${nextL.timeStr} • ${nextSlot.items[0].subject || nextSlot.items[0].title}` : 'Далее пар нет',
+              slotData: currentSlot
             };
           }
 
           // 1b. Перемена между парами сегодня
           const nextBreakLesson = validSlots.find(s => s.startMin > curMin);
           if (nextBreakLesson && curMin >= firstLesson.startMin) {
+            const nextSlot = todaySlots.find(s => s.timeStr === nextBreakLesson.timeStr);
             const targetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Math.floor(nextBreakLesson.startMin / 60), nextBreakLesson.startMin % 60, 0, 0);
             const diffMs = targetDate.getTime() - now.getTime();
+            const prevL = validSlots.filter(s => s.endMin <= curMin).sort((a,b) => b.endMin - a.endMin)[0];
+            const prevEnd = prevL ? prevL.endMin : firstLesson.startMin;
+            const totalSecs = (nextBreakLesson.startMin - prevEnd) * 60;
+            const it = nextSlot?.items?.[0] || {};
             return {
               type: 'break',
               label: 'до пары',
-              secsLeft: Math.max(0, Math.floor(diffMs / 1000))
+              secsLeft: Math.max(0, Math.floor(diffMs / 1000)),
+              totalSecs: Math.max(60, totalSecs),
+              nextSubject: it.subject || it.title || it.raw || 'Занятие',
+              room: it.room ? ('ауд. ' + it.room) : '',
+              teacher: it.teacher || '',
+              nextEventLabel: `${nextBreakLesson.timeStr} • ${it.subject || it.title || 'Следующая пара'}`,
+              slotData: nextSlot
             };
           }
 
           // 1c. Утро до первой пары сегодня
           if (curMin < firstLesson.startMin) {
+            const firstSlot = todaySlots.find(s => s.timeStr === firstLesson.timeStr);
             const targetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Math.floor(firstLesson.startMin / 60), firstLesson.startMin % 60, 0, 0);
             const diffMs = targetDate.getTime() - now.getTime();
+            const it = firstSlot?.items?.[0] || {};
             return {
               type: 'before_first',
               label: 'до пары',
-              secsLeft: Math.max(0, Math.floor(diffMs / 1000))
+              secsLeft: Math.max(0, Math.floor(diffMs / 1000)),
+              firstSubject: it.subject || it.title || '1 пара',
+              timeStr: firstLesson.timeStr,
+              room: it.room ? ('ауд. ' + it.room) : '',
+              teacher: it.teacher || '',
+              nextEventLabel: `${firstLesson.timeStr} • ${it.subject || it.title || '1 пара'}`,
+              slotData: firstSlot
             };
           }
         }
@@ -2651,6 +2982,80 @@
       if (boardEl) {
         updateSplitFlapBoard(boardEl, timeStr);
       }
+
+      // ─── Kokonut UI: Dynamic Status Island Update ───────────────────────────
+      const island = document.getElementById('dynamicStatusIsland');
+      if (island) {
+        if (!event) {
+          island.style.display = 'none';
+        } else {
+          island.style.display = 'block';
+          const islandTitle = document.getElementById('islandTitle');
+          const islandBadge = document.getElementById('islandBadge');
+          const islandSubtitle = document.getElementById('islandSubtitle');
+          const islandTimeBadge = document.getElementById('islandTimeBadge');
+          const islandProgressBar = document.getElementById('islandProgressBar');
+          const islandLiveDot = document.getElementById('islandLiveDot');
+          const islandTeacher = document.getElementById('islandTeacher');
+          const islandNextEvent = document.getElementById('islandNextEvent');
+
+          if (event.type === 'lesson') {
+            if (islandLiveDot) islandLiveDot.className = 'status-island-dot dot-live-pulse shrink-0';
+            if (islandBadge) {
+              islandBadge.className = 'badge badge-xs font-bold border-0 bg-emerald-500 text-black';
+              islandBadge.textContent = 'LIVE';
+            }
+            if (islandTitle) islandTitle.textContent = event.lessonTitle || 'Идёт учебная пара';
+            if (islandSubtitle) islandSubtitle.textContent = `Осталось ${formatMinutesLeft(Math.floor(event.secsLeft / 60))} • ${event.room || 'ауд. не указана'}`;
+            if (islandTimeBadge) islandTimeBadge.textContent = event.timeStr || timeStr;
+            if (islandProgressBar && event.totalSecs > 0) {
+              const pct = Math.min(100, Math.max(0, Math.round(((event.totalSecs - event.secsLeft) / event.totalSecs) * 100)));
+              islandProgressBar.style.width = pct + '%';
+            }
+            if (islandTeacher) islandTeacher.textContent = event.teacher || '—';
+            if (islandNextEvent) islandNextEvent.textContent = event.nextEventLabel || '—';
+          } else if (event.type === 'break') {
+            if (islandLiveDot) islandLiveDot.className = 'status-island-dot dot-break-pulse shrink-0';
+            if (islandBadge) {
+              islandBadge.className = 'badge badge-xs font-bold border-0 bg-amber-500 text-black';
+              islandBadge.textContent = 'ПЕРЕРЫВ';
+            }
+            if (islandTitle) islandTitle.textContent = 'Перерыв между парами';
+            if (islandSubtitle) islandSubtitle.textContent = `До пары ${formatMinutesLeft(Math.floor(event.secsLeft / 60))} • ${event.nextSubject || 'следующее занятие'}`;
+            if (islandTimeBadge) islandTimeBadge.textContent = `через ${formatMinutesLeft(Math.floor(event.secsLeft / 60))}`;
+            if (islandProgressBar && event.totalSecs > 0) {
+              const pct = Math.min(100, Math.max(0, Math.round(((event.totalSecs - event.secsLeft) / event.totalSecs) * 100)));
+              islandProgressBar.style.width = pct + '%';
+            }
+            if (islandTeacher) islandTeacher.textContent = event.teacher || '—';
+            if (islandNextEvent) islandNextEvent.textContent = event.nextEventLabel || '—';
+          } else if (event.type === 'before_first') {
+            if (islandLiveDot) islandLiveDot.className = 'status-island-dot dot-upcoming-pulse shrink-0';
+            if (islandBadge) {
+              islandBadge.className = 'badge badge-xs font-bold border-0 bg-cyan-500/20 text-cyan-300';
+              islandBadge.textContent = 'СКОРО';
+            }
+            if (islandTitle) islandTitle.textContent = 'Скоро первая пара';
+            if (islandSubtitle) islandSubtitle.textContent = `До начала ${formatMinutesLeft(Math.floor(event.secsLeft / 60))} • ${event.firstSubject || '1 пара'}`;
+            if (islandTimeBadge) islandTimeBadge.textContent = event.timeStr || '--:--';
+            if (islandProgressBar) islandProgressBar.style.width = '0%';
+            if (islandTeacher) islandTeacher.textContent = event.teacher || '—';
+            if (islandNextEvent) islandNextEvent.textContent = event.nextEventLabel || '—';
+          } else {
+            if (islandLiveDot) islandLiveDot.className = 'status-island-dot dot-upcoming-pulse shrink-0';
+            if (islandBadge) {
+              islandBadge.className = 'badge badge-xs font-bold border-0 bg-slate-500/20 text-slate-300';
+              islandBadge.textContent = 'ОТДЫХ';
+            }
+            if (islandTitle) islandTitle.textContent = 'Пары на сегодня завершены';
+            if (islandSubtitle) islandSubtitle.textContent = event.nextEventLabel || 'До следующей пары';
+            if (islandTimeBadge) islandTimeBadge.textContent = timeStr;
+            if (islandProgressBar) islandProgressBar.style.width = '100%';
+            if (islandTeacher) islandTeacher.textContent = '—';
+            if (islandNextEvent) islandNextEvent.textContent = event.nextEventLabel || '—';
+          }
+        }
+      }
     }
 
     function startLiveStatusTimer(groupSchedule) {
@@ -2707,6 +3112,313 @@
         toastContainer.style.opacity = '0';
         toastContainer.style.transform = 'translateY(12px)';
       }, 2300);
+    }
+
+    // ─── Kokonut UI: Status Island & Bottom Drawer ──────────────────────────
+    function toggleStatusIsland() {
+      const island = document.getElementById('dynamicStatusIsland');
+      const details = document.getElementById('islandExpandedDetails');
+      if (!island || !details) return;
+      const isHidden = details.classList.contains('hidden');
+      if (isHidden) {
+        details.classList.remove('hidden');
+        island.classList.add('island-expanded');
+        island.setAttribute('aria-expanded', 'true');
+        triggerHaptic('selection');
+      } else {
+        details.classList.add('hidden');
+        island.classList.remove('island-expanded');
+        island.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    function openIslandLessonDetails() {
+      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
+      const event = getNextEventCountdown(groupSchedule);
+      if (event && event.slotData) {
+        openLessonDetailsDrawer(event.slotData);
+      }
+    }
+
+    function updateDaySummaryStats(dayIndex, groupSchedule) {
+      const statsBox = document.getElementById('daySummaryStats');
+      if (!statsBox) return;
+
+      if (dayIndex < 0 || dayIndex >= currentDaysList.length) {
+        statsBox.style.display = 'none';
+        return;
+      }
+
+      const dayItem = currentDaysList[dayIndex];
+      if (!dayItem || !dayItem.rawKey || (dayItem.dayDef && dayItem.dayDef.index === 0)) {
+        statsBox.style.display = 'none';
+        return;
+      }
+
+      const slots = getProcessedDaySlots(dayItem.rawKey, groupSchedule);
+      if (!slots || !slots.length) {
+        statsBox.style.display = 'none';
+        return;
+      }
+
+      const lessonSlots = slots.filter(s => s.items && s.items.length > 0);
+      const breakSlots = slots.filter(s => !s.items || s.items.length === 0);
+
+      const countEl = document.getElementById('statLessonsCount');
+      const windowsEl = document.getElementById('statWindowsDesc');
+      const timeSpanEl = document.getElementById('statTimeSpan');
+      const groupLabelEl = document.getElementById('statGroupLabel');
+
+      statsBox.style.display = 'flex';
+
+      if (countEl) {
+        const n = lessonSlots.length;
+        const word = (n === 1) ? 'пара' : ((n >= 2 && n <= 4) ? 'пары' : 'пар');
+        countEl.textContent = `${n} ${word}`;
+      }
+
+      if (windowsEl) {
+        const b = breakSlots.length;
+        windowsEl.textContent = (b === 0) ? 'Без окон' : `${b} ${b === 1 ? 'окно' : 'окна'}`;
+      }
+
+      if (timeSpanEl && lessonSlots.length > 0) {
+        const parsedAll = lessonSlots.map(s => parseTimeSlotMinutes(s.timeStr)).filter(Boolean);
+        if (parsedAll.length > 0) {
+          parsedAll.sort((a, b) => a.startMin - b.startMin);
+          const sMin = parsedAll[0].startMin;
+          const eMin = parsedAll[parsedAll.length - 1].endMin;
+          const fmt = m => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+          timeSpanEl.textContent = `${fmt(sMin)} – ${fmt(eMin)}`;
+        }
+      }
+
+      if (groupLabelEl) {
+        groupLabelEl.textContent = `${currentProfile.course} курс • ${currentProfile.group_name}`;
+      }
+    }
+
+    let _activeDrawerLessonKey = null;
+
+    function openLessonDetailsDrawer(slotData) {
+      if (!slotData) return;
+      const { timeStr, items } = slotData;
+      if (!items || !items.length) return;
+
+      const item = items[0];
+      const title = item.subject || item.title || item.raw || 'Учебное занятие';
+      const teacher = item.teacher || 'Преподаватель не указан';
+      const room = item.room ? ('ауд. ' + item.room) : (item.raw && /хим/i.test(item.raw) ? 'Хим. фак.' : 'Аудитория не указана');
+      const typeLabel = item.type?.label || 'Пара';
+      const subgroupText = items.length === 1 && item.subgroup ? `${item.subgroup} подгруппа` : (items.length > 1 ? 'Обе подгруппы' : '');
+
+      const titleEl = document.getElementById('drawerLessonTitle');
+      const timeEl = document.getElementById('drawerLessonTime');
+      const typeEl = document.getElementById('drawerLessonType');
+      const roomEl = document.getElementById('drawerLessonRoom');
+      const teacherEl = document.getElementById('drawerLessonTeacher');
+      const sgEl = document.getElementById('drawerLessonSubgroup');
+      const inputEl = document.getElementById('drawerLessonNoteInput');
+      const statusEl = document.getElementById('drawerNoteStatus');
+
+      if (titleEl) titleEl.textContent = title;
+      if (timeEl) timeEl.textContent = timeStr;
+      if (typeEl) {
+        typeEl.textContent = typeLabel;
+        if (item.type?.color) {
+          typeEl.style.color = item.type.color;
+          typeEl.style.background = item.type.bg || 'rgba(168, 85, 247, 0.15)';
+        }
+      }
+      if (roomEl) roomEl.textContent = room;
+      if (teacherEl) teacherEl.textContent = teacher;
+
+      if (sgEl) {
+        if (subgroupText) {
+          sgEl.textContent = subgroupText;
+          sgEl.classList.remove('hidden');
+        } else {
+          sgEl.classList.add('hidden');
+        }
+      }
+
+      // Unique storage key for personal note
+      const dayRaw = currentDaysList[selectedDayIndex]?.rawKey || '';
+      _activeDrawerLessonKey = `bsu_note_${currentProfile.course}_${currentProfile.group_name}_${dayRaw}_${timeStr}_${title.slice(0, 15)}`;
+
+      const savedNote = localStorage.getItem(_activeDrawerLessonKey) || '';
+      if (inputEl) inputEl.value = savedNote;
+      if (statusEl) statusEl.classList.add('hidden');
+
+      const overlay = document.getElementById('lessonDrawerOverlay');
+      const drawer = document.getElementById('lessonDetailsDrawer');
+      if (overlay && drawer) {
+        overlay.classList.remove('hidden');
+        triggerHaptic('light');
+        requestAnimationFrame(() => {
+          overlay.classList.remove('opacity-0');
+          drawer.classList.remove('translate-y-full');
+        });
+      }
+    }
+
+    function closeLessonDetailsDrawer() {
+      const overlay = document.getElementById('lessonDrawerOverlay');
+      const drawer = document.getElementById('lessonDetailsDrawer');
+      if (overlay && drawer) {
+        overlay.classList.add('opacity-0');
+        drawer.classList.add('translate-y-full');
+        setTimeout(() => {
+          overlay.classList.add('hidden');
+        }, 320);
+      }
+    }
+
+    function saveCurrentLessonNote() {
+      if (!_activeDrawerLessonKey) return;
+      const inputEl = document.getElementById('drawerLessonNoteInput');
+      const text = inputEl ? inputEl.value.trim() : '';
+
+      if (text) {
+        localStorage.setItem(_activeDrawerLessonKey, text);
+      } else {
+        localStorage.removeItem(_activeDrawerLessonKey);
+      }
+
+      const statusEl = document.getElementById('drawerNoteStatus');
+      if (statusEl) {
+        statusEl.classList.remove('hidden');
+        setTimeout(() => statusEl.classList.add('hidden'), 2000);
+      }
+
+      triggerHaptic('medium');
+      showToastNotification(text ? 'Заметка сохранена' : 'Заметка удалена');
+      closeLessonDetailsDrawer();
+
+      // Refresh schedule page so note badge updates
+      const scheduleList = document.getElementById('scheduleList');
+      const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
+      if (scheduleList) {
+        scheduleList.innerHTML = '';
+        const newPage = buildDayPage(selectedDayIndex, groupSchedule);
+        scheduleList.appendChild(newPage);
+      }
+    }
+
+    // ─── Kokonut Action Search (Global Faculty Search) ─────────────────────
+    let _facultySearchType = 'all';
+
+    function setFacultySearchType(type) {
+      _facultySearchType = type;
+      ['all', 'teacher', 'room', 'subject'].forEach(t => {
+        const chip = document.getElementById('searchChip' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (chip) {
+          if (t === type) {
+            chip.className = 'btn btn-xs rounded-xl btn-primary';
+          } else {
+            chip.className = 'btn btn-xs rounded-xl btn-ghost border border-base-content/10';
+          }
+        }
+      });
+      const input = document.getElementById('facultySearchInput');
+      handleFacultySearch(input ? input.value : '');
+    }
+
+    function handleFacultySearch(query) {
+      const q = (query || '').trim().toLowerCase();
+      const container = document.getElementById('facultySearchResults');
+      if (!container) return;
+
+      if (!q || q.length < 2) {
+        container.innerHTML = `
+          <div class="card-glass rounded-2xl p-6 text-center text-xs opacity-60">
+            Начните вводить текст (от 2 символов) для поиска по расписанию
+          </div>
+        `;
+        return;
+      }
+
+      if (!facultyData || !facultyData.courses) {
+        container.innerHTML = `
+          <div class="card-glass rounded-2xl p-6 text-center text-xs opacity-60">
+            Расписание еще загружается...
+          </div>
+        `;
+        return;
+      }
+
+      const results = [];
+      const seen = new Set();
+
+      for (const [courseName, groups] of Object.entries(facultyData.courses)) {
+        for (const [groupName, days] of Object.entries(groups)) {
+          for (const [dayKey, slots] of Object.entries(days)) {
+            for (const [timeStr, lessons] of Object.entries(slots)) {
+              if (!Array.isArray(lessons)) continue;
+              for (const lText of lessons) {
+                if (!lText) continue;
+                const lower = lText.toLowerCase();
+
+                let match = false;
+                if (_facultySearchType === 'all' && lower.includes(q)) match = true;
+                else if (_facultySearchType === 'teacher' && lower.includes(q) && (/доцент|профессор|препод|ст\.\s*препод|ассистент/i.test(lText) || q.length >= 4)) match = true;
+                else if (_facultySearchType === 'room' && (lower.includes(q) || lower.includes('ауд.' + q) || lower.includes('ауд. ' + q))) match = true;
+                else if (_facultySearchType === 'subject' && lower.includes(q)) match = true;
+
+                if (match) {
+                  const dedupeKey = `${courseName}_${groupName}_${dayKey}_${timeStr}_${lText.slice(0, 30)}`;
+                  if (!seen.has(dedupeKey)) {
+                    seen.add(dedupeKey);
+                    results.push({
+                      course: courseName,
+                      group: groupName,
+                      day: dayKey,
+                      time: timeStr,
+                      rawText: lText
+                    });
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      if (!results.length) {
+        container.innerHTML = `
+          <div class="card-glass rounded-2xl p-6 text-center text-xs opacity-60">
+            По запросу «${escapeHTML(query)}» ничего не найдено
+          </div>
+        `;
+        return;
+      }
+
+      // Limit results to top 40 for max performance
+      const topResults = results.slice(0, 40);
+      container.innerHTML = topResults.map(r => {
+        const parsed = parseLessons([r.rawText])[0] || {};
+        const subject = parsed.subject || parsed.title || r.rawText.split('\n')[0];
+        const teacher = parsed.teacher || '';
+        const room = parsed.room ? ('ауд. ' + parsed.room) : '';
+        const typeBadge = parsed.type?.label ? `<span class="badge badge-xs font-bold" style="color: ${parsed.type.color}; background: ${parsed.type.bg};">${parsed.type.label}</span>` : '';
+
+        return `
+          <div class="card-glass rounded-2xl p-3.5 flex flex-col gap-2 box-border">
+            <div class="flex items-center justify-between gap-2 text-[11px]">
+              <span class="badge badge-outline badge-xs font-mono border-base-content/20 text-base-content/70">${r.course} курс • ${r.group}</span>
+              <span class="font-mono font-bold text-emerald-400">${r.day.split(' ')[0]} ${r.time}</span>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-xs font-black text-base-content leading-snug">${escapeHTML(subject)}</span>
+                ${typeBadge}
+              </div>
+              ${teacher ? `<div class="text-[11px] opacity-75 text-base-content mt-1">👨‍🏫 ${escapeHTML(teacher)}</div>` : ''}
+              ${room ? `<div class="text-[11px] font-mono text-cyan-400 font-semibold mt-0.5">📍 ${escapeHTML(room)}</div>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     function renderLessonDetails(detailsStr) {
@@ -2848,9 +3560,9 @@
       } catch (e) {}
     }
 
-    // ─── Main Tab Navigation (Schedule vs Settings) ───────────────────────────
-    let currentMainTab = 'schedule'; // 'schedule' | 'settings'
-    const MAIN_TABS = ['schedule', 'settings'];
+    // ─── Main Tab Navigation (Schedule vs Search vs Settings) ────────────────
+    let currentMainTab = 'schedule'; // 'schedule' | 'search' | 'settings'
+    const MAIN_TABS = ['schedule', 'search', 'settings'];
 
     function updateDockPill(tab, animate = true) {
       const dock = document.querySelector('.header-dock');
@@ -2906,9 +3618,23 @@
 
       updateDockPill(targetTab, true);
 
+      // Update Morphic Bottom Nav
+      const morphicBtns = {
+        schedule: document.getElementById('morphicTabSchedule'),
+        search: document.getElementById('morphicTabSearch'),
+        settings: document.getElementById('morphicTabSettings')
+      };
+      Object.keys(morphicBtns).forEach(k => {
+        if (morphicBtns[k]) {
+          if (k === targetTab) morphicBtns[k].classList.add('active');
+          else morphicBtns[k].classList.remove('active');
+        }
+      });
+
       const tabViews = {
         settings: document.getElementById('settingsView'),
-        schedule: document.getElementById('scheduleView')
+        schedule: document.getElementById('scheduleView'),
+        search: document.getElementById('searchView')
       };
 
       const prevView = tabViews[prevTab];
@@ -2927,6 +3653,16 @@
         if (window.Telegram?.WebApp?.BackButton) {
           Telegram.WebApp.BackButton.show();
           Telegram.WebApp.BackButton.onClick(onTelegramBackClick);
+        }
+      } else if (targetTab === 'search') {
+        updateHeaderGroupTitle();
+        if (window.Telegram?.WebApp?.BackButton) {
+          Telegram.WebApp.BackButton.show();
+          Telegram.WebApp.BackButton.onClick(onTelegramBackClick);
+        }
+        const sInput = document.getElementById('facultySearchInput');
+        if (sInput && !sInput.value) {
+          handleFacultySearch('');
         }
       }
 
@@ -3698,10 +4434,15 @@
         }
 
         const card = document.createElement('div');
-        let cardClasses = 'card-glass rounded-2xl p-3.5 w-full box-border';
-        if (isLive) cardClasses = 'active-lesson-card rounded-2xl p-3.5 w-full box-border';
+        let cardClasses = 'card-glass rounded-2xl p-3.5 w-full box-border tap-scale';
+        if (isLive) cardClasses = 'active-lesson-card liquid-glass-live rounded-2xl p-3.5 w-full box-border tap-scale';
         if (isPast) cardClasses += ' archive-card';
         card.className = cardClasses;
+        card.style.cursor = 'pointer';
+        card.onclick = (e) => {
+          if (e.target.closest('a') || e.target.closest('.moodle-link-btn')) return;
+          openLessonDetailsDrawer(slotData);
+        };
 
         // Если у обеих подгрупп один и тот же тип занятия (например, у обоих лабораторная или у обоих практика) —
         // выносим плашку типа занятия общей в заголовок карточки
@@ -3883,6 +4624,24 @@
           }
         }
 
+        // Check if student has a personal note for this lesson
+        const dayRaw = currentDaysList[selectedDayIndex]?.rawKey || '';
+        const it0 = items[0] || {};
+        const subjectName = it0.subject || it0.title || it0.raw || '';
+        const noteStorageKey = `bsu_note_${currentProfile.course}_${currentProfile.group_name}_${dayRaw}_${timeStr}_${subjectName.slice(0, 15)}`;
+        const savedNoteText = localStorage.getItem(noteStorageKey);
+        if (savedNoteText) {
+          innerContent += `
+            <div class="mt-2 pt-2 border-t border-base-content/10 flex items-center justify-between text-[11px] text-emerald-400 font-medium">
+              <span class="flex items-center gap-1.5 min-w-0">
+                <span>📝</span>
+                <span class="truncate max-w-[210px] text-base-content/80">${escapeHTML(savedNoteText)}</span>
+              </span>
+              <span class="badge badge-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex-shrink-0">Заметка</span>
+            </div>
+          `;
+        }
+
         card.innerHTML = innerContent + liveProgressBarHTML;
         frag.appendChild(card);
       });
@@ -4025,6 +4784,7 @@
       scrollCalendarToSelected(currentSlideDirection !== 'none');
 
       updateDayHeader(selectedDayIndex, groupSchedule);
+      updateDaySummaryStats(selectedDayIndex, groupSchedule);
 
       // Запускаем / обновляем живой таймер статуса пары
       startLiveStatusTimer(groupSchedule);
@@ -4632,6 +5392,8 @@
       }
 
       updateDockPill('schedule', false);
+      const bSchedule = document.getElementById('morphicTabSchedule');
+      if (bSchedule) bSchedule.classList.add('active');
       window.addEventListener('resize', () => updateDockPill(currentMainTab, false));
     }
 
@@ -4648,7 +5410,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=15')
+        navigator.serviceWorker.register('./sw-preview.js?v=16')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
