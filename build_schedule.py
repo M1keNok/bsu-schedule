@@ -80,8 +80,16 @@ def convert_docs(files):
 
 def format_time(t):
     digits = re.sub(r"\s+", "", t)
-    m = re.match(r"(\d{2})[:.]?(\d{2})[-–](\d{2})[:.]?(\d{2})", digits)
-    return f"{m.group(1)}:{m.group(2)}–{m.group(3)}:{m.group(4)}" if m else digits
+    m = re.match(r"(\d{1,2})[:.](\d{2})[-–—](\d{1,2})[:.](\d{2})", digits)
+    if m:
+        return f"{int(m.group(1)):02d}:{m.group(2)}–{int(m.group(3)):02d}:{m.group(4)}"
+    m2 = re.match(r"(\d{3,4})[-–—](\d{3,4})", digits)
+    if m2:
+        p1, p2 = m2.group(1), m2.group(2)
+        h1, m1 = p1[:-2], p1[-2:]
+        h2, m2_min = p2[:-2], p2[-2:]
+        return f"{int(h1):02d}:{m1}–{int(h2):02d}:{m2_min}"
+    return digits
 
 def is_cell_valid_for_slot(cell_text, cur_time):
     if not cell_text or not cur_time:
@@ -121,11 +129,12 @@ def is_cell_valid_for_slot(cell_text, cur_time):
 def extract_pe_time(raw_text, cur_time=None):
     if not raw_text or not re.search(r"физическ.*культ|спорт\s*комплекс", raw_text, re.I):
         return None
+    cleaned = re.sub(r"\b\d{1,2}\.(?:0[1-9]|1[0-2])\s*[-–—]\s*\d{1,2}\.(?:0[1-9]|1[0-2])\b", "", raw_text)
     # 1. Ищем явное время в тексте ячейки для спорткомплекса на Октябрьской (основная группа)
-    m_okt = re.search(r"(\d{1,2})[.:](\d{2})\s*[-–—]\s*(\d{1,2})[.:](\d{2})[^\n]*октябрьск", raw_text, re.I)
+    m_okt = re.search(r"(\d{1,2})[.:](\d{2})\s*[-–—]\s*(\d{1,2})[.:](\d{2})[^\n]*октябрьск", cleaned, re.I)
     if m_okt:
         return f"{int(m_okt.group(1)):02d}:{m_okt.group(2)}–{int(m_okt.group(3)):02d}:{m_okt.group(4)}"
-    m_any = re.search(r"(\d{1,2})[.:](\d{2})\s*[-–—]\s*(\d{1,2})[.:](\d{2})", raw_text)
+    m_any = re.search(r"(\d{1,2})[.:](\d{2})\s*[-–—]\s*(\d{1,2})[.:](\d{2})", cleaned)
     if m_any:
         return f"{int(m_any.group(1)):02d}:{m_any.group(2)}–{int(m_any.group(3)):02d}:{m_any.group(4)}"
     # 2. Стандартные официальные сдвиги расписания спорткомплекса геофака БГУ
@@ -148,7 +157,8 @@ def extract_custom_cell_time(raw_text, cur_time=None):
             return pe_t
 
     # 2. Chemistry faculty lab (e.g. Course 1 Group 8 Monday 11:50–14:50)
-    if re.search(r"хим\.?\s*фак", raw_text, re.I) and re.search(r"общая\s+химия|лаб", raw_text, re.I):
+    # Strictly require chem faculty AND lab marker, never match lectures in main building
+    if re.search(r"хим\.?\s*фак", raw_text, re.I) and re.search(r"\bлаб", raw_text, re.I):
         return "11:50–14:50"
 
     # 3. Strip calendar date ranges (e.g. 05.10-09.11)
@@ -333,7 +343,7 @@ def parse_docx(path):
 
                     tagged_lesson = (subgroup_prefix + lesson) if (subgroup_prefix and not lesson.startswith(subgroup_prefix)) else lesson
 
-                    slot_time = custom_time if custom_time else cur_time
+                    slot_time = format_time(custom_time if custom_time else cur_time)
 
                     for g_name in matching_groups:
                         res.setdefault(g_name, {}).setdefault(cur_day, {}).setdefault(slot_time, [])
@@ -350,6 +360,15 @@ def parse_docx(path):
                                     continue
                                 if sub and sub not in res[g_name][cur_day][slot_time]:
                                     res[g_name][cur_day][slot_time].append(sub)
+
+    def _parse_start_min(t):
+        m = re.match(r"(\d{1,2})[:.]?(\d{2})[-–—](\d{1,2})[:.]?(\d{2})", t)
+        return int(m.group(1)) * 60 + int(m.group(2)) if m else 9999
+
+    for g in res:
+        for d in res[g]:
+            res[g][d] = dict(sorted(res[g][d].items(), key=lambda kv: _parse_start_min(kv[0])))
+
     return res
 
 def detect_lesson_language(text):

@@ -3629,9 +3629,14 @@
       times.forEach(timeStr => {
         const items = getLessonsForSlot(timeStr, dayKey, groupSchedule, currentProfile);
         if (items && items.length > 0) {
-          const actualTimeStr = getLessonActualTime(timeStr, items);
+          let actualTimeStr = getLessonActualTime(timeStr, items);
           const parsed = parseTimeSlotMinutes(actualTimeStr);
           if (parsed) {
+            const sh = Math.floor(parsed.startMin / 60);
+            const sm = parsed.startMin % 60;
+            const eh = Math.floor(parsed.endMin / 60);
+            const em = parsed.endMin % 60;
+            actualTimeStr = `${String(sh).padStart(2, '0')}:${String(sm).padStart(2, '0')}–${String(eh).padStart(2, '0')}:${String(em).padStart(2, '0')}`;
             validLessons.push({
               timeStr: actualTimeStr,
               startMin: parsed.startMin,
@@ -4648,7 +4653,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=17')
+        navigator.serviceWorker.register('./sw-preview.js?v=18')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
