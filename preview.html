@@ -585,6 +585,24 @@
       opacity: 0.88;
     }
 
+    .btn.btn-circle,
+    .btn-circle {
+      border-radius: 9999px !important;
+      padding: 0 !important;
+      width: 2.25rem !important;
+      height: 2.25rem !important;
+      min-height: 2.25rem !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex-shrink: 0 !important;
+    }
+    .btn-circle.btn-sm {
+      width: 2rem !important;
+      height: 2rem !important;
+      min-height: 2rem !important;
+    }
+
     .btn-primary {
       display: inline-flex;
       align-items: center;
@@ -1116,175 +1134,85 @@
       transform: scale(1.06);
     }
 
-    /* ─── Kokonut UI: Split Flap Text (Departure Board) Countdown ─────────── */
-    .split-flap-badge {
+    /* ─── Digital Chrono Live Timer (Liquid Glass & Crisp Tabular Digits) ──── */
+    .live-chrono-badge {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 2.5px 7px 2.5px 7px;
+      gap: 6px;
+      padding: 3px 9px 3px 8px;
       border-radius: 9999px;
-      background: rgba(24, 24, 27, 0.72);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(20, 20, 24, 0.78);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.15);
       line-height: 1;
       user-select: none;
       -webkit-user-select: none;
       vertical-align: middle;
+      transition: all 0.25s ease;
     }
-    html:not(.dark) .split-flap-badge {
-      background: rgba(244, 244, 245, 0.9);
-      border-color: rgba(0, 0, 0, 0.15);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    html:not(.dark) .live-chrono-badge {
+      background: rgba(244, 244, 245, 0.88);
+      border-color: rgba(0, 0, 0, 0.12);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.8);
     }
-    .split-flap-badge .split-dot {
-      width: 6px;
-      height: 6px;
+    .live-chrono-badge .chrono-dot {
+      width: 6.5px;
+      height: 6.5px;
       border-radius: 9999px;
       flex-shrink: 0;
     }
-    .split-flap-badge .split-dot.dot-live {
+    .live-chrono-badge .chrono-dot.dot-live {
       background: #10b981;
-      box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+      box-shadow: 0 0 7px rgba(16, 185, 129, 0.75);
       animation: pulseAura 2s infinite;
     }
-    .split-flap-badge .split-dot.dot-break {
+    .live-chrono-badge .chrono-dot.dot-break {
       background: #f59e0b;
-      box-shadow: 0 0 5px rgba(245, 158, 11, 0.5);
+      box-shadow: 0 0 6px rgba(245, 158, 11, 0.65);
     }
-    .split-flap-badge .split-dot.dot-upcoming {
+    .live-chrono-badge .chrono-dot.dot-upcoming {
       background: #a1a1aa;
     }
-    .split-flap-badge .split-label {
+    .live-chrono-badge .chrono-label {
       font-size: 10.5px;
-      font-weight: 750;
+      font-weight: 700;
       color: var(--text-main);
       opacity: 0.88;
-      letter-spacing: -0.1px;
+      letter-spacing: -0.15px;
       white-space: nowrap;
     }
-    .split-flap-board {
+    .live-chrono-digits {
       display: inline-flex;
-      align-items: center;
-      gap: 1.5px;
+      align-items: baseline;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-variant-numeric: tabular-nums;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: -0.2px;
+      color: #fafafa;
+      line-height: 1;
     }
-    .split-tile-space {
-      width: 3.5px;
+    html:not(.dark) .live-chrono-digits {
+      color: #18181b;
+    }
+    .live-chrono-digits .chrono-val {
+      font-weight: 800;
       display: inline-block;
     }
-    .split-tile {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 12px;
-      height: 16px;
-      border-radius: 2.5px;
-      background: #18181b;
-      color: #fafafa;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 10.5px;
-      font-weight: 800;
-      line-height: 16px;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 1px 2px rgba(0, 0, 0, 0.45);
-      perspective: 70px;
-      -webkit-perspective: 70px;
-      overflow: visible;
-      flex-shrink: 0;
-    }
-    html:not(.dark) .split-tile {
-      background: #27272a;
-      color: #ffffff;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 1px 2px rgba(0, 0, 0, 0.2);
-    }
-    .split-tile.tile-unit {
-      width: 9.5px;
-      font-size: 9px;
-      font-weight: 700;
+    .live-chrono-digits .chrono-unit {
+      font-size: 9.5px;
+      font-weight: 600;
       color: #a1a1aa;
+      margin-left: 0.5px;
+      margin-right: 3px;
     }
-    .split-tile .flap-half {
-      position: absolute;
-      left: 0;
-      right: 0;
-      overflow: hidden;
-      background: inherit;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
+    html:not(.dark) .live-chrono-digits .chrono-unit {
+      color: #71717a;
     }
-    .split-tile .flap-top {
-      top: 0;
-      height: 50%;
-      border-top-left-radius: 2.5px;
-      border-top-right-radius: 2.5px;
-      transform-origin: 50% 100%;
-    }
-    .split-tile .flap-bottom {
-      bottom: 0;
-      height: 50%;
-      border-bottom-left-radius: 2.5px;
-      border-bottom-right-radius: 2.5px;
-      transform-origin: 50% 0%;
-    }
-    .split-tile .flap-glyph {
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-    .split-tile .flap-top .flap-glyph { top: 0; }
-    .split-tile .flap-bottom .flap-glyph { bottom: 0; }
-    .split-tile .flap-hinge {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 50%;
-      height: 1px;
-      transform: translateY(-50%);
-      background: rgba(0, 0, 0, 0.9);
-      z-index: 6;
-      box-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.12);
-    }
-    @keyframes flapFoldTop {
-      0% { transform: rotateX(0deg); }
-      100% { transform: rotateX(-90deg); }
-    }
-    @keyframes flapDropBottom {
-      0% { transform: rotateX(90deg); }
-      100% { transform: rotateX(0deg); }
-    }
-    .split-tile .flap-anim-top {
-      animation: flapFoldTop 0.14s cubic-bezier(0.4, 0, 0.8, 0.6) forwards;
-      z-index: 4;
-    }
-    .split-tile .flap-anim-bottom {
-      animation: flapDropBottom 0.14s cubic-bezier(0.2, 0.6, 0.3, 1) 0.14s forwards;
-      z-index: 4;
-      transform: rotateX(90deg);
-    }
-    .split-tile .flap-shade {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 50%;
-      background: rgba(0, 0, 0, 0.65);
-      opacity: 0;
-      border-bottom-left-radius: 2.5px;
-      border-bottom-right-radius: 2.5px;
-      pointer-events: none;
-      z-index: 5;
-      animation: flapShadeAnim 0.28s linear forwards;
-    }
-    @keyframes flapShadeAnim {
-      0% { opacity: 0; }
-      50% { opacity: 0.75; }
-      100% { opacity: 0; }
+    .live-chrono-digits .chrono-unit:last-child {
+      margin-right: 0;
     }
 
   </style>
@@ -1520,8 +1448,8 @@
         <!-- Feature 1: Primary Group -->
         <div style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;">
           <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <svg class="w-4 h-4 text-blue-400 fill-current" viewBox="0 0 24 24">
-              <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6l1 1 1-1v-6H18v-2l-2-2z"/>
+            <svg style="width: 18px; height: 18px;" class="text-blue-400" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z"/>
             </svg>
           </div>
           <div>
@@ -2587,73 +2515,8 @@
       return `${pad2(mins)}м ${pad2(secs)}с`;
     }
 
-    function updateSplitFlapBoard(boardEl, timeStr) {
-      if (!boardEl) return;
-      const chars = timeStr.split('');
-      const oldChars = _prevSplitFlapStr ? _prevSplitFlapStr.split('') : [];
-      _prevSplitFlapStr = timeStr;
-
-      // Rebuild on structural change or first render
-      if (boardEl.children.length !== chars.length) {
-        boardEl.innerHTML = '';
-        chars.forEach((c) => {
-          const isSpace = (c === ' ');
-          const isUnit = ('чмдс:'.indexOf(c) !== -1);
-          const tile = document.createElement('span');
-          if (isSpace) {
-            tile.className = 'split-tile-space';
-          } else {
-            tile.className = 'split-tile' + (isUnit ? ' tile-unit' : '');
-            tile.setAttribute('data-char', c);
-            tile.innerHTML = 
-              '<span class="flap-half flap-top"><span class="flap-glyph">' + c + '</span></span>' +
-              '<span class="flap-half flap-bottom"><span class="flap-glyph">' + c + '</span></span>' +
-              '<span class="flap-hinge"></span>';
-          }
-          boardEl.appendChild(tile);
-        });
-        return;
-      }
-
-      // Smooth mechanical flap flip with stagger
-      chars.forEach((c, idx) => {
-        const oldC = oldChars[idx] || '';
-        const tile = boardEl.children[idx];
-        if (tile && !tile.classList.contains('split-tile-space') && oldC !== c) {
-          tile.setAttribute('data-char', c);
-
-          const staticTop = tile.querySelector('.flap-top .flap-glyph');
-          const staticBottom = tile.querySelector('.flap-bottom .flap-glyph');
-          if (staticTop) staticTop.textContent = c;
-
-          const delayMs = idx * 15;
-
-          const fallingTop = document.createElement('span');
-          fallingTop.className = 'flap-half flap-top flap-anim-top';
-          fallingTop.style.animationDelay = delayMs + 'ms';
-          fallingTop.innerHTML = '<span class="flap-glyph">' + oldC + '</span>';
-
-          const landingBottom = document.createElement('span');
-          landingBottom.className = 'flap-half flap-bottom flap-anim-bottom';
-          landingBottom.style.animationDelay = (delayMs + 45) + 'ms';
-          landingBottom.innerHTML = '<span class="flap-glyph">' + c + '</span>';
-
-          const shade = document.createElement('span');
-          shade.className = 'flap-shade';
-          shade.style.animationDelay = delayMs + 'ms';
-
-          tile.appendChild(fallingTop);
-          tile.appendChild(landingBottom);
-          tile.appendChild(shade);
-
-          setTimeout(() => {
-            if (staticBottom) staticBottom.textContent = c;
-            fallingTop.remove();
-            landingBottom.remove();
-            shade.remove();
-          }, delayMs + 320);
-        }
-      });
+    function formatChronoDigitsHtml(timeStr) {
+      return timeStr.replace(/(\d+)\s*([чмдс])/g, '<span class="chrono-val">$1</span><span class="chrono-unit">$2</span>');
     }
 
     function updateLiveStatusBanner(groupSchedule) {
@@ -2669,24 +2532,24 @@
 
       const timeStr = formatSplitFlapTime(event.secsLeft, event.type);
 
-      let badge = liveTimerBox.querySelector('.split-flap-badge');
+      let badge = liveTimerBox.querySelector('.live-chrono-badge');
       if (!badge || _prevSplitFlapType !== event.type) {
         _prevSplitFlapType = event.type;
         const dotClass = (event.type === 'lesson') ? 'dot-live' : ((event.type === 'break') ? 'dot-break' : 'dot-upcoming');
         liveTimerBox.innerHTML = `
-          <div class="split-flap-badge" id="splitFlapBadge" title="${event.label} ${timeStr}">
-            <span class="split-dot ${dotClass}"></span>
-            <span class="split-label">${event.label}</span>
-            <span class="split-flap-board" id="liveSplitFlapBoard"></span>
+          <div class="live-chrono-badge" id="liveChronoBadge" title="${event.label} ${timeStr}">
+            <span class="chrono-dot ${dotClass}"></span>
+            <span class="chrono-label">${event.label}</span>
+            <span class="live-chrono-digits" id="liveChronoDigits"></span>
           </div>
         `;
-        badge = liveTimerBox.querySelector('.split-flap-badge');
-        _prevSplitFlapStr = '';
+        badge = liveTimerBox.querySelector('.live-chrono-badge');
       }
 
-      const boardEl = document.getElementById('liveSplitFlapBoard');
-      if (boardEl) {
-        updateSplitFlapBoard(boardEl, timeStr);
+      const digitsEl = document.getElementById('liveChronoDigits');
+      if (digitsEl && _prevSplitFlapStr !== timeStr) {
+        _prevSplitFlapStr = timeStr;
+        digitsEl.innerHTML = formatChronoDigitsHtml(timeStr);
       }
     }
 
@@ -3093,35 +2956,48 @@
       const isPrimary = (currentProfile.course === primaryCourse && currentProfile.group_name === primaryGroup);
 
       body.innerHTML = `
-        <div class="setting-group-card flex flex-col gap-2">
+        <div class="setting-group-card flex flex-col gap-2.5">
           <div class="flex items-center justify-between">
             <div class="section-title">Основная группа</div>
             ${isPrimary
               ? `<span class="badge badge-success badge-sm font-bold gap-1.5 bg-emerald-500/15 border-emerald-500/30 text-emerald-400">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
+                  <svg style="width: 12px; height: 12px; display: inline-block; flex-shrink: 0;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z"/></svg>
                   <span>Закреплена</span>
                 </span>`
               : `<span class="badge badge-ghost badge-sm text-[10.5px] font-semibold text-base-content/60">Режим просмотра</span>`
             }
           </div>
-          ${!isPrimary ? `
-            <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-base-200/50 border border-base-content/10">
-              <div class="flex flex-col min-w-0">
-                <span class="text-xs font-semibold text-base-content/90 truncate">Вы просматриваете <b>${currentProfile.group_name.replace(/^ГРУППА\s*/i, '')} гр.</b> (${currentProfile.course} курс)</span>
-                <span class="text-[10.5px] text-base-content/50">Нажмите на значок булавки, чтобы закрепить</span>
+          ${isPrimary ? `
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-base-200/50 border border-base-content/10">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-8 h-8 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 text-emerald-400">
+                  <svg style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z"/></svg>
+                </div>
+                <div class="flex flex-col min-w-0">
+                  <span class="text-xs font-bold text-base-content/90 truncate">${primaryGroup.replace(/^ГРУППА\s*/i, 'Группа ')} (${primaryCourse} курс)</span>
+                  <span class="text-[10.5px] text-emerald-400 font-medium">Открывается автоматически при запуске</span>
+                </div>
               </div>
-              <button type="button" onclick="setAsPrimaryGroup()" class="btn btn-sm btn-circle btn-primary flex-shrink-0 shadow-sm" title="Закрепить эту группу как основную" aria-label="Закрепить">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
+            </div>
+          ` : `
+            <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-base-200/50 border border-base-content/10">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-8 h-8 rounded-full bg-base-300/60 border border-base-content/15 flex items-center justify-center flex-shrink-0 text-base-content/70">
+                  <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </div>
+                <div class="flex flex-col min-w-0">
+                  <span class="text-xs font-bold text-base-content/90 truncate">${currentProfile.group_name.replace(/^ГРУППА\s*/i, 'Группа ')} (${currentProfile.course} курс)</span>
+                  <span class="text-[10.5px] text-base-content/50">Нажмите на значок булавки, чтобы закрепить</span>
+                </div>
+              </div>
+              <button type="button" onclick="setAsPrimaryGroup()" class="btn btn-sm btn-circle btn-primary flex-shrink-0 shadow-md" title="Закрепить эту группу как основную" aria-label="Закрепить группу">
+                <svg style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z"/></svg>
               </button>
             </div>
             <button type="button" onclick="returnToPrimaryGroup()" class="btn btn-sm btn-ghost border border-base-content/10 w-full font-bold justify-center gap-2 h-9 rounded-xl">
-              <svg class="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+              <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
               <span>Вернуться к основной (${primaryGroup.replace(/^ГРУППА\s*/i, '')} гр., ${primaryCourse} к.)</span>
             </button>
-          ` : `
-            <div class="text-[11.5px] text-base-content/65">
-              Бот автоматически открывает эту группу при каждом запуске.
-            </div>
           `}
         </div>
 
@@ -3141,7 +3017,11 @@
             ${groups.map(g => {
               const num = g.replace(/^ГРУППА\s*/i, '');
               const sel = currentProfile.group_name === g;
-              return `<button type="button" onclick="selectGroupSettingsTab('${g}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-colors ${sel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">${num}</button>`;
+              const isGroupPinned = (currentProfile.course === primaryCourse && g === primaryGroup);
+              return `<button type="button" onclick="selectGroupSettingsTab('${g}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-colors relative ${sel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">
+                <span>${num}</span>
+                ${isGroupPinned ? `<span class="absolute top-1 right-1 opacity-85 text-emerald-400" title="Основная группа"><svg style="width: 10px; height: 10px;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z"/></svg></span>` : ''}
+              </button>`;
             }).join('')}
           </div>
         </div>
@@ -3262,7 +3142,7 @@
         if (isGuest) {
           headerTitle.innerHTML = `<span class="truncate">${titleText}</span><span class="badge badge-ghost badge-xs text-[9.5px] font-semibold text-base-content/65 ml-1.5 flex-shrink-0">гость</span>`;
         } else {
-          headerTitle.innerHTML = `<span class="truncate">${titleText}</span><svg class="w-3.5 h-3.5 text-emerald-400 inline-block ml-1 flex-shrink-0 opacity-90 align-text-bottom" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" title="Основная группа"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>`;
+          headerTitle.innerHTML = `<span class="truncate">${titleText}</span><svg style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;" class="text-emerald-400 ml-1 flex-shrink-0 opacity-90" viewBox="0 0 24 24" fill="currentColor" title="Основная группа"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z"/></svg>`;
         }
         if (headerSync) {
           if (!navigator.onLine) {
@@ -4754,14 +4634,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v20') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v21') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=20')
+        navigator.serviceWorker.register('./sw-preview.js?v=21')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
