@@ -1727,8 +1727,8 @@
       if (!typeInTitleRegex.test(titleLine)) {
         while (nextIdx < lines.length) {
           const nxt = lines[nextIdx];
-          // Stop title assembly when encountering teacher rank, room, link, or exam marker
-          if (/^(?:старш(?:ий|ая|\.)?|ст\.?\s*препод|препод[а-яё.]*|доцент|профессор|ассистент|зам\.?\s*декана|заместитель\s+декана|зав\.?\s*каф|декан|ауд\.?|каб\.?|ул\.?|корп\.?|http|зач[её]т|экзамен|\([а-яёА-ЯЁ\s.,]+\)$)/i.test(nxt)) {
+          // Stop title assembly when encountering teacher rank, room, link, exam marker, or off-campus building
+          if (/^(?:старш(?:ий|ая|\.)?|ст\.?\s*препод(?:аватель|\.)?|ст\.?\s*преподав\.?|препод\.?-?\s*стаж[её]р|препод[а-яё.]*|доцент|профессор|ассистент|зам\.?\s*декана|заместитель\s+декана|зав\.?\s*каф|декан|ауд\.?|каб\.?|ул\.?|корп\.?|http|зач[её]т|экзамен|внутренн|хим\.?\s*фак|эконом|\([а-яёА-ЯЁ\s.,]+\)$)/i.test(nxt)) {
             break;
           }
           // Also stop if this line is an obvious person's name: Surname I.O.
@@ -1968,30 +1968,67 @@
       }
     }
 
+    function extractBuilding(text) {
+      if (!text) return '';
+      if (/хим\.?\s*фак/i.test(text)) return 'Химфак';
+      if (/к[.\s]*маркс|эконом\.?\s*фак/i.test(text)) return 'К. Маркса 31';
+      if (/курчат/i.test(text)) return 'Курчатова 5';
+      if (/\bфмо\b/i.test(text)) return 'ФМО';
+      if (/внутренн(?:ий|ем)?\s*дворик/i.test(text)) return 'Внутренний дворик';
+      return '';
+    }
+
     function extractSplitRooms(raw) {
       if (!raw) return null;
-      // 1. ауд.121./316, ауд. 111/316, ауд.316/121, Ауд.417, 413, ауд.111 / ауд.316, ауд. 121/224
-      const m1 = raw.match(/(?:ауд\.?|каб\.?)\s*([0-9а-яА-Яa-zA-Z]+)[.\s]*[\/\\–—,][.\s]*(?:(?:ауд\.?|каб\.?)\s*)?([0-9а-яА-Яa-zA-Z]+)/i);
+      const bld = extractBuilding(raw);
+      const prefix = bld ? bld + ', ' : '';
+
+      // 1. ауд. 224/311/111, ауд. 121/224, ауд.121./316, Ауд.417, 413, ауд.111 / ауд.316
+      const m1 = raw.match(/(?:ауд\.?|каб\.?)\s*([0-9а-яА-Яa-zA-Z]+(?:[.\s]*[\/\\–—,][.\s]*(?:(?:ауд\.?|каб\.?)\s*)?[0-9а-яА-Яa-zA-Z]+)+)/i);
       if (m1) {
-        return [`ауд. ${m1[1]}`, `ауд. ${m1[2]}`];
+        const parts = m1[1].split(/[\/\\–—,]/).map(p => p.replace(/^(?:ауд\.?|каб\.?)\s*/i, '').trim()).filter(Boolean);
+        if (parts.length >= 2) {
+          return parts.map(p => `${prefix}ауд. ${p}`);
+        }
       }
+
       // 2. Без префикса ауд.: 121/316, 203/317
       const m2 = raw.match(/\b([0-9]{3})[.\s]*[\/\\–—,][.\s]*([0-9]{3})\b/);
       if (m2) {
-        return [`ауд. ${m2[1]}`, `ауд. ${m2[2]}`];
+        return [`${prefix}ауд. ${m2[1]}`, `${prefix}ауд. ${m2[2]}`];
       }
+
       // 3. Несколько раздельных упоминаний ауд.
       const allAuds = [];
       const audRegex = /(?:ауд\.?|каб\.?)\s*([0-9а-яА-Яa-zA-Z]+)/gi;
       let match;
       while ((match = audRegex.exec(raw)) !== null) {
-        allAuds.push(`ауд. ${match[1]}`);
+        allAuds.push(`${prefix}ауд. ${match[1]}`);
       }
       if (allAuds.length >= 2) {
         return allAuds;
       }
+
       return null;
     }
+
+    function extractSingleRoom(raw) {
+      if (!raw) return null;
+      if (/физическ.*культ|спорт\s*комплекс/i.test(raw)) return 'Спорткомплекс';
+      const bld = extractBuilding(raw);
+      const prefix = bld ? bld + ', ' : '';
+      const m = raw.match(/(?:ауд\.?|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
+      if (m) {
+        const num = m[1].replace(/^[–—•,\s]+|[–—•,\s]+$/g, '');
+        return `${prefix}ауд. ${num}`;
+      }
+      if (bld) return bld;
+      if (/https?:\/\/|edugeo|edueng|онлайн/i.test(raw)) return 'Онлайн';
+      return null;
+    }
+
+    const rankRegex = /^(?:ст\.?\s*препод(?:аватель|\.)?|ст\.?\s*преподав\.?|старший\s+преподаватель|доцент|профессор|ассистент|препод\.?-?\s*стаж[её]р|преподаватель)$/i;
+    const TEACHER_NAME_RE = /([А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/;
 
     function cleanTeacherAndRoom(str, subgroupIndex = null) {
       if (!str) return { teacher: '', room: null };
@@ -2001,25 +2038,26 @@
       if (splitRooms && subgroupIndex !== null && subgroupIndex < splitRooms.length) {
         room = splitRooms[subgroupIndex];
       } else {
-        const m = s.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
-        if (m) {
-          room = m[0].trim();
-          s = s.replace(m[0], '').trim();
-        } else if (/https?:\/\/|edugeo|edueng|онлайн/i.test(s) || isRemoteLesson(s)) {
-          room = 'Онлайн';
+        room = extractSingleRoom(s);
+        if (room && !/Онлайн|Спорткомплекс|Курчатова|Химфак|Маркса|ФМО|дворик/.test(room)) {
+          const bareAud = room.replace(/.*ауд\.\s*/, '');
+          s = s.replace(new RegExp('(?:ауд\\.?|каб\\.?)\\s*' + bareAud, 'i'), '').trim();
         }
       }
+      s = s.replace(/(?:ул\.\s*К\.\s*Маркса\s*31|Карла\s*Маркса\s*31|Хим\.?\s*фак\.?|ул\.\s*Курчатова(?:,\s*5)?|ФМО|Внутренний\s*дворик(?:\s*БГУ)?)/gi, '').trim();
+
       const lines = s.split('\n').map(l => l.trim()).filter(Boolean);
       const cleanLines = [];
       let rank = '';
       for (let i = 0; i < lines.length; i++) {
         const l = lines[i];
         if (/^\(?(?:практ|лекц|лаб|сем|доп\.зан)[^)]*\)?$/i.test(l)) continue;
-        if (/^(?:ст\.?\s*препод(?:аватель|\.)?|доцент|профессор|старший\s+преподаватель|преподаватель|препод\.?-стаж[её]р)$/i.test(l)) {
+        if (rankRegex.test(l)) {
           rank = l;
           continue;
         }
-        if (/([А-ЯЁ][а-яё]+)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/.test(l)) {
+        const tm = l.match(TEACHER_NAME_RE);
+        if (tm) {
           cleanLines.push(rank ? rank + ' ' + l : l);
           rank = '';
         }
@@ -2031,24 +2069,27 @@
 
     function extractSubgroupsFromLesson(raw) {
       if (!raw) return null;
+      const rawLines = raw.split('\n').map(l => l.trim()).filter(Boolean);
 
       // 1. Проверяем явное наличие 1 п/г и 2 п/г
-      const rawLines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-      const l1 = rawLines.find(l => /1\s*(?:п\/г|подгр|подгруппа)/i.test(l));
-      const l2 = rawLines.find(l => /2\s*(?:п\/г|подгр|подгруппа)/i.test(l));
-      if (l1 && l2) {
-        return [cleanTeacherAndRoom(l1, 0), cleanTeacherAndRoom(l2, 1)];
+      const idx1 = rawLines.findIndex(l => /1\s*(?:п\/г|подгр|подгруппа)/i.test(l));
+      const idx2 = rawLines.findIndex(l => /2\s*(?:п\/г|подгр|подгруппа)/i.test(l));
+      if (idx1 !== -1 && idx2 !== -1 && idx1 < idx2) {
+        const lines1 = rawLines.slice(idx1, idx2).join('\n');
+        const lines2 = rawLines.slice(idx2).join('\n');
+        const sg1 = cleanTeacherAndRoom(lines1, 0);
+        const sg2 = cleanTeacherAndRoom(lines2, 1);
+        if (!sg1.room && sg2.room) sg1.room = sg2.room;
+        if (!sg2.room && sg1.room) sg2.room = sg1.room;
+        return [sg1, sg2];
       }
 
-      // 2. Ищем сдвоенную аудиторию через слэш или запятую
-      const splitRooms = extractSplitRooms(raw);
-
-      // Объединяем строки, где звание преподавателя стоит на отдельной строке перед ФИО
+      // 2. Объединяем строки, где звание преподавателя стоит на отдельной строке перед ФИО
       const combined = [];
       let i = 0;
       while (i < rawLines.length) {
         const line = rawLines[i];
-        if (/^(?:ст\.?\s*препод(?:аватель|\.)?|доцент|профессор|старший\s+преподаватель|преподаватель|препод\.?-стаж[её]р)$/i.test(line) && i + 1 < rawLines.length) {
+        if (rankRegex.test(line) && i + 1 < rawLines.length) {
           combined.push(line + ' ' + rawLines[i + 1]);
           i += 2;
         } else {
@@ -2057,59 +2098,81 @@
         }
       }
 
-      // Ищем преподавателей (ФИО с инициалами)
+      // 3. Ищем преподавателей и их локальные/соседние кабинеты
       const teachersFound = [];
-      for (const line of combined) {
-        const tm = line.match(/([А-ЯЁ][а-яё]+)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/);
-        if (tm) {
+      for (let cIdx = 0; cIdx < combined.length; cIdx++) {
+        const line = combined[cIdx];
+        const tm = line.match(TEACHER_NAME_RE);
+        if (tm && !/ул\.\s*К\.|Карла\s*М/i.test(line)) {
           let tText = line.replace(/(?:ауд\.?|каб\.?|спорткомплекс).*/i, '').trim();
           tText = tText.replace(/https?:\/\/\S+|edugeo\S*|edueng\S*/gi, '').trim();
           tText = tText.replace(/^[12]\s*(?:п\/г|подгр\.?|подгруппа)\s*/i, '').trim();
           tText = tText.replace(/^[-–—•,\s]+|[-–—•,\s]+$/g, '').trim();
 
-          const rMatch = line.match(/(?:ауд\.?|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
-          let room = rMatch ? (rMatch[0].startsWith('ауд') || rMatch[0].startsWith('каб') ? rMatch[0] : 'ауд. ' + rMatch[1]) : null;
-          if (/https?:\/\/|edugeo|edueng|онлайн/i.test(line)) {
+          let room = null;
+          const bld = extractBuilding(line) || extractBuilding(raw);
+          const prefix = bld ? bld + ', ' : '';
+
+          const rMatch = line.match(/(?:ауд\.?|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+)/i);
+          if (rMatch) {
+            room = `${prefix}ауд. ${rMatch[1]}`;
+          } else if (/https?:\/\/|edugeo|edueng|онлайн/i.test(line)) {
             room = 'Онлайн';
           }
 
-          teachersFound.push({ teacher: tText, room });
+          // Если в строке преподавателя нет кабинета, проверяем следующую строку
+          if (!room && cIdx + 1 < combined.length) {
+            const nextLine = combined[cIdx + 1];
+            if (!TEACHER_NAME_RE.test(nextLine)) {
+              const nrMatch = nextLine.match(/(?:ауд\.?|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+)/i);
+              if (nrMatch && !nrMatch[1].includes('/')) {
+                room = `${prefix}ауд. ${nrMatch[1]}`;
+              } else if (/https?:\/\/|edugeo|edueng|онлайн/i.test(nextLine)) {
+                room = 'Онлайн';
+              }
+            }
+          }
+
+          teachersFound.push({ teacher: tText, room, rawLineIdx: cIdx });
         }
       }
 
       if (teachersFound.length >= 2) {
-        if (splitRooms && splitRooms.length >= 2) {
-          teachersFound[0].room = splitRooms[0];
-          teachersFound[1].room = splitRooms[1];
+        const splitRooms = extractSplitRooms(raw);
+        const overallRoom = extractSingleRoom(raw);
+
+        // Если сплит-аудитории найдены и ни у кого нет инлайн-кабинетов, распределяем строго по очереди
+        const hasInlineRooms = teachersFound.some(t => t.room !== null);
+        if (!hasInlineRooms && splitRooms && splitRooms.length >= teachersFound.length) {
+          for (let t = 0; t < teachersFound.length; t++) {
+            teachersFound[t].room = splitRooms[t];
+          }
         } else {
-          // Проверяем онлайн-ссылки и раздельные аудитории
-          const lines = raw.split('\n');
-          for (let tIdx = 0; tIdx < teachersFound.length; tIdx++) {
-            if (!teachersFound[tIdx].room) {
-              const tSur = teachersFound[tIdx].teacher.split(' ')[0];
-              const lineIdx = lines.findIndex(l => l.includes(tSur));
-              if (lineIdx !== -1) {
-                const nearby = lines.slice(lineIdx, lineIdx + 3).join(' ');
-                if (/https?:\/\/|edugeo|edueng|онлайн/i.test(nearby)) {
-                  teachersFound[tIdx].room = 'Онлайн';
+          let splitIdx = 0;
+          for (let t = 0; t < teachersFound.length; t++) {
+            if (!teachersFound[t].room) {
+              const nextLine = combined[teachersFound[t].rawLineIdx + 1] || '';
+              const localSplit = extractSplitRooms(nextLine);
+              if (localSplit && localSplit.length >= 2) {
+                teachersFound[t].room = localSplit[0];
+                if (t + 1 < teachersFound.length && !teachersFound[t + 1].room) {
+                  teachersFound[t + 1].room = localSplit[1];
                 }
+              } else if (splitRooms && splitIdx < splitRooms.length) {
+                while (splitIdx < splitRooms.length && teachersFound.some(x => x.room === splitRooms[splitIdx])) {
+                  splitIdx++;
+                }
+                if (splitIdx < splitRooms.length) {
+                  teachersFound[t].room = splitRooms[splitIdx++];
+                }
+              }
+              if (!teachersFound[t].room && overallRoom) {
+                teachersFound[t].room = overallRoom;
               }
             }
           }
-          // Если у одного онлайн, а у второго остался пустой кабинет при наличии ауд. в тексте
-          const singleAud = raw.match(/(?:ауд\.?|каб\.?)\s*([0-9а-яА-Яa-zA-Z]+)/i);
-          if (singleAud) {
-            const rStr = `ауд. ${singleAud[1]}`;
-            if (!teachersFound[0].room && teachersFound[1].room === 'Онлайн') {
-              teachersFound[0].room = rStr;
-            } else if (!teachersFound[1].room && teachersFound[0].room === 'Онлайн') {
-              teachersFound[1].room = rStr;
-            } else if (!teachersFound[0].room && !teachersFound[1].room) {
-              teachersFound[0].room = rStr;
-            }
-          }
         }
-        return teachersFound;
+        return teachersFound.map(t => ({ teacher: t.teacher, room: t.room }));
       }
 
       return null;
@@ -2122,18 +2185,17 @@
         let line = lines[i].trim();
         if (!line) { i++; continue; }
         // Очищаем от URL ссылок, чтобы не захламлять текстовое описание
-        line = line.replace(/https?:\/\/\S+/gi, '').trim();
+        line = line.replace(/https?:\/\/\S+|edugeo\S*|edueng\S*/gi, '').trim();
         if (!line) { i++; continue; }
         // Если должность/звание преподавателя на отдельной строке перед ФИО, объединяем
-        if (/^(?:ст\.?\s*препод(?:аватель|\.)?|доцент|профессор|старший\s+преподаватель|преподаватель|препод\.?-стажер)$/i.test(line) && i + 1 < lines.length) {
+        if (rankRegex.test(line) && i + 1 < lines.length) {
           merged.push(line + ' ' + lines[i + 1].trim());
           i += 2;
           continue;
         }
-        if (roomText) {
-          line = line.replace(roomText, '').trim();
-          line = line.replace(/^[–—•,\s]+|[–—•,\s]+$/g, '').trim();
-        }
+        line = line.replace(/(?:ауд\.?|каб\.?)\s*[0-9/\-а-яА-Яa-zA-Z]+/gi, '').trim();
+        line = line.replace(/(?:ул\.\s*К\.\s*Маркса\s*31|Карла\s*Маркса\s*31|Хим\.?\s*фак\.?|ул\.\s*Курчатова(?:,\s*5)?|ФМО|Внутренний\s*дворик(?:\s*БГУ)?|Эконом\.?\s*Фак\.?)/gi, '').trim();
+        line = line.replace(/^[–—•,\s]+|[–—•,\s]+$/g, '').trim();
         if (line) merged.push(line);
         i++;
       }
@@ -2232,6 +2294,8 @@
         const url = parsedItems[0].url || parsedItems[1].url;
         const sg1 = cleanTeacherAndRoom(parsedItems[0].raw, 0);
         const sg2 = cleanTeacherAndRoom(parsedItems[1].raw, 1);
+        if (!sg1.room && sg2.room) sg1.room = sg2.room;
+        if (!sg2.room && sg1.room) sg2.room = sg1.room;
         return [{
           title: parsedItems[0].title,
           type: lType,
@@ -2277,8 +2341,7 @@
           details = 'Октябрьская, 8а • СУО: Одоевского, 75А';
           if (/зач[её]т/i.test(p.raw)) details += ' • Зачет';
         } else {
-          const roomMatch = p.raw.match(/(?:ауд\.?|спорткомплекс|каб\.?)\s*([0-9/\-а-яА-Яa-zA-Z]+|\S+)/i);
-          room = roomMatch ? roomMatch[0] : (p.isRemote ? 'Онлайн' : null);
+          room = extractSingleRoom(p.raw);
           details = formatDetailsLines(p.lines, room);
         }
 
@@ -3755,7 +3818,7 @@
                     if (isMySg) boxClass += ' subgroup-box-focused';
                     if (isOtherSg) boxClass += ' subgroup-box-dimmed';
 
-                    const m = sg.teacher ? sg.teacher.match(/([А-ЯЁ][а-яё]+)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/) : null;
+                    const m = sg.teacher ? sg.teacher.match(/([А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/) : null;
                     let teacherName = sg.teacher || '—';
                     let rank = '';
                     if (m) {
@@ -3778,7 +3841,7 @@
                               <span>${sgNum} п/г</span>
                               ${isMySg ? '<span class="text-[9px] font-black tracking-tight text-emerald-400 ml-1">✓ МОЯ</span>' : ''}
                             </span>
-                            ${sg.room ? `<span class="badge ${isMySg ? 'badge-primary font-black' : 'badge-ghost font-bold'} badge-xs font-mono flex-shrink-0 text-[10px] px-1.5 py-0 h-4 leading-4 max-w-[85px] truncate" title="${sg.room}">${sg.room}</span>` : ''}
+                            ${sg.room ? `<span class="badge ${isMySg ? 'badge-primary font-black' : 'badge-ghost font-bold'} badge-xs font-mono flex-shrink-0 text-[10px] px-1.5 py-0 h-4 leading-4 max-w-[110px] truncate" title="${sg.room}">${sg.room}</span>` : ''}
                           </div>
                           <div class="text-[10px] text-base-content/55 truncate h-4 leading-4 font-medium mt-1">
                             ${rank || '&nbsp;'}
@@ -4634,14 +4697,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v21') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v22') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=21')
+        navigator.serviceWorker.register('./sw-preview.js?v=22')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
