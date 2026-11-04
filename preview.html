@@ -1146,182 +1146,97 @@
       transform: scale(1.06);
     }
 
-    /* ─── Kokonut UI Cradle Text & Live Timer Island ─────────────────────── */
-    .cradle-island {
-      position: relative;
-      border-radius: 20px;
-      padding: 9px 14px 9px;
+    /* ─── Kokonut UI Dynamic Text Header Pill (Zero-Shift Live Status) ───── */
+    .header-timer-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 3.5px;
+      padding: 1px 6px 1px 5px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       box-sizing: border-box;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      border: 1px solid var(--border-color);
-      background: var(--glass-card-subtle);
-      box-shadow: 0 4px 18px -4px rgba(0, 0, 0, 0.28), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.12);
-      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-      width: 100%;
+      line-height: 1;
+      height: 16px;
+      min-height: 16px;
+      cursor: pointer;
       user-select: none;
       -webkit-user-select: none;
-    }
-    html:not(.dark) .cradle-island {
-      box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.08), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.75);
-    }
-    .cradle-island.cradle-hidden {
-      display: none !important;
-    }
-    .cradle-header-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      min-width: 0;
-      line-height: 1.2;
-    }
-    .cradle-badge-group {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      min-width: 0;
+      transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
       flex-shrink: 0;
     }
-    .cradle-dot {
-      width: 6.5px;
-      height: 6.5px;
+    html:not(.dark) .header-timer-pill {
+      background: rgba(0, 0, 0, 0.05);
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+    .header-timer-pill:active {
+      opacity: 0.75;
+    }
+    .header-timer-dot {
+      width: 5px;
+      height: 5px;
       border-radius: 9999px;
       flex-shrink: 0;
     }
-    .cradle-dot.dot-live {
+    .header-timer-dot.dot-live {
       background: #10b981;
-      box-shadow: 0 0 7px rgba(16, 185, 129, 0.8);
+      box-shadow: 0 0 5px rgba(16, 185, 129, 0.75);
       animation: pulseAura 2s infinite;
     }
-    .cradle-dot.dot-break {
+    .header-timer-dot.dot-break {
       background: #f59e0b;
-      box-shadow: 0 0 7px rgba(245, 158, 11, 0.8);
+      box-shadow: 0 0 5px rgba(245, 158, 11, 0.75);
       animation: pulseAura 2s infinite;
     }
-    .cradle-dot.dot-upcoming {
-      background: #38bdf8;
-      box-shadow: 0 0 6px rgba(56, 189, 248, 0.65);
+    .header-timer-dot.dot-upcoming {
+      background: #06b6d4;
+      box-shadow: 0 0 4px rgba(6, 182, 212, 0.6);
     }
-    .cradle-status-title {
-      font-size: 10.5px;
-      font-weight: 800;
-      letter-spacing: 0.3px;
-      color: var(--text-main);
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    .cradle-meta-text {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-sub);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      text-align: right;
-      min-width: 0;
-    }
-
-    .cradle-stage-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      padding: 1px 0 2px;
-      min-height: 44px;
-    }
-    .cradle-stage {
-      position: relative;
+    .dynamic-text-root {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      padding: 14px 18px 2px;
-      cursor: grab;
-      touch-action: pan-y;
-    }
-    .cradle-stage.cradle-grabbing {
-      cursor: grabbing !important;
-    }
-    .cradle-rail {
-      position: absolute;
-      left: 4px;
-      right: 4px;
-      top: 5px;
-      height: 1.5px;
-      border-radius: 9999px;
-      background: rgba(255, 255, 255, 0.22);
-      box-shadow: 0 0 4px rgba(255, 255, 255, 0.1);
-      pointer-events: none;
-    }
-    html:not(.dark) .cradle-rail {
-      background: rgba(0, 0, 0, 0.16);
-      box-shadow: none;
-    }
-    .cradle-letters {
-      position: relative;
-      display: inline-block;
-      white-space: pre;
-      font-size: clamp(21px, 6vw, 27px);
-      font-weight: 900;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-variant-numeric: tabular-nums;
-      line-height: 1;
-      letter-spacing: -0.035em;
-      color: #fafafa;
-    }
-    html:not(.dark) .cradle-letters {
-      color: #18181b;
-    }
-    .cradle-letter {
-      position: relative;
-      display: inline-block;
-      transform-origin: top left;
-      will-change: transform;
-    }
-    .cradle-thread {
-      position: absolute;
-      width: 1px;
-      background: rgba(255, 255, 255, 0.32);
-      pointer-events: none;
-    }
-    html:not(.dark) .cradle-thread {
-      background: rgba(0, 0, 0, 0.22);
-    }
-    .cradle-footer-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      min-width: 0;
-      padding-top: 3px;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-    }
-    html:not(.dark) .cradle-footer-row {
-      border-top-color: rgba(0, 0, 0, 0.05);
-    }
-    .cradle-footer-note {
       font-size: 10px;
       font-weight: 600;
-      color: var(--text-sub);
-      white-space: nowrap;
+      line-height: 1;
+      color: var(--text-main);
+      letter-spacing: -0.15px;
+      font-variant-numeric: tabular-nums;
+      font-family: inherit;
+      position: relative;
+    }
+    .dynamic-char-slot {
+      position: relative;
+      display: inline-block;
       overflow: hidden;
-      text-overflow: ellipsis;
+      vertical-align: middle;
+      height: 12px;
+      line-height: 12px;
     }
-    .cradle-interactive-badge {
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-      text-transform: uppercase;
-      color: #10b981;
-      opacity: 0.9;
-      flex-shrink: 0;
-      white-space: nowrap;
+    .dynamic-char-glyph {
+      display: block;
+      height: 12px;
+      line-height: 12px;
+      will-change: transform, opacity;
+      transform-origin: center center;
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
     }
-    html:not(.dark) .cradle-interactive-badge {
-      color: #059669;
+    .dynamic-char-glyph.glyph-entering {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    .dynamic-char-glyph.glyph-visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .dynamic-char-glyph.glyph-leaving {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
     }
 
   </style>
@@ -1339,10 +1254,16 @@
         </div>
         <div style="min-width: 0; flex: 1;">
           <div style="display: flex; align-items: center; gap: 5px;"><div id="headerTitle" style="font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">Загрузка...</div><span class="badge badge-warning badge-xs font-mono font-bold text-[9px] px-1 py-0 h-3.5" title="Preview Beta">PREVIEW</span></div>
-          <div id="headerSyncBadge" style="display: flex; align-items: center; gap: 3.5px; margin-top: 1.5px; min-width: 0;" class="cursor-pointer select-none active:opacity-75 transition-opacity" onclick="event.stopPropagation(); checkScheduleUpdates(true);" title="Нажмите для мгновенной проверки расписания">
-            <span id="headerSyncDot" style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; animation: pulseAura 2s infinite; flex-shrink: 0;"></span>
-            <span id="headerSync" style="font-size: 10px; color: var(--text-sub); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;">Загрузка...</span>
-            <svg id="headerSyncIcon" style="width: 8.5px; height: 8.5px; color: var(--text-sub); opacity: 0.7; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          <div style="display: flex; align-items: center; gap: 5px; margin-top: 1.5px; min-width: 0; flex-wrap: nowrap;">
+            <div id="headerSyncBadge" style="display: flex; align-items: center; gap: 3.5px; min-width: 0; flex-shrink: 0;" class="cursor-pointer select-none active:opacity-75 transition-opacity" onclick="event.stopPropagation(); checkScheduleUpdates(true);" title="Нажмите для мгновенной проверки расписания">
+              <span id="headerSyncDot" style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; animation: pulseAura 2s infinite; flex-shrink: 0;"></span>
+              <span id="headerSync" style="font-size: 10px; color: var(--text-sub); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;">Загрузка...</span>
+              <svg id="headerSyncIcon" style="width: 8.5px; height: 8.5px; color: var(--text-sub); opacity: 0.7; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            </div>
+            <div id="headerLiveTimerPill" class="header-timer-pill" style="display: none;" onclick="handleHeaderTimerClick(event)" title="">
+              <span id="headerTimerDot" class="header-timer-dot dot-live"></span>
+              <span id="headerTimerText" class="dynamic-text-root"></span>
+            </div>
           </div>
         </div>
       </div>
@@ -1473,28 +1394,6 @@
         </div>
       </div>
 
-      <!-- Kokonut UI Live Cradle Timer Island (Floating Timer Status) -->
-      <div id="liveCradleIsland" class="cradle-island card-glass cradle-hidden" onclick="handleLiveIslandClick(event)">
-        <div class="cradle-header-row">
-          <div class="cradle-badge-group">
-            <span id="cradleDot" class="cradle-dot dot-live"></span>
-            <span id="cradleStatusLabel" class="cradle-status-title">Идёт пара</span>
-          </div>
-          <div id="cradleDetailMeta" class="cradle-meta-text"></div>
-        </div>
-
-        <div class="cradle-stage-wrapper">
-          <div id="cradleStage" class="cradle-stage" data-cradle-stage>
-            <span class="cradle-rail" aria-hidden="true"></span>
-            <span class="cradle-letters" aria-hidden="true"></span>
-          </div>
-        </div>
-
-        <div class="cradle-footer-row">
-          <span id="cradleFooterNote" class="cradle-footer-note"></span>
-          <span class="cradle-interactive-badge" title="Интерактивный маятник Ньютона">Потяните цифры ✦</span>
-        </div>
-      </div>
 
       <div id="calendarSelector" class="calendar-selector"></div>
 
@@ -2628,7 +2527,7 @@
 
     let _prevSplitFlapStr = '';
     let _prevSplitFlapType = '';
-    let _kokonutCradle = null;
+    let _kokonutDynamicTimer = null;
 
     function getNextEventCountdown(groupSchedule) {
       if (!groupSchedule || !currentDaysList.length) return null;
@@ -2792,476 +2691,129 @@
       return `${pad2(mins)}м ${pad2(secs)}с`;
     }
 
-    /* ─── Kokonut UI Cradle Text (Physics Newton Cradle Pendulum Simulation) ── */
-    class KokonutCradleText {
-      constructor(containerEl, options = {}) {
-        this.stage = containerEl;
-        this.lettersEl = containerEl.querySelector('.cradle-letters');
-        this.rail = containerEl.querySelector('.cradle-rail');
-        this.bounce = options.bounce ?? 0.96;
-        this.intro = options.intro ?? true;
+    /* ─── Kokonut UI Dynamic Text (Character Slot Roll Transitions) ──────── */
+    class KokonutDynamicText {
+      constructor(containerEl) {
+        this.container = containerEl;
         this.currentText = '';
-        this.bobs = [];
-        this.spans = [];
-        this.raf = 0;
-        this.last = 0;
-        this.visible = true;
-        this.pull = null;
-        this.hand = null;
-        this.sweep = null;
-        this.railY = 0;
-        this.radius = 1;
-        this.w0 = (2 * Math.PI) / 0.72;
-        this.greeted = false;
-
-        this.SUBSTEPS = 8;
-        this.ITERATIONS = 3;
-        this.DRAG = 0.3;
-        this.SETTLE_DRAG = 1.6;
-        this.SETTLE_BELOW = 0.02;
-        this.MAX_ANGLE = 1.15;
-        this.SWEEP_PUSH = 0.22;
-        this.MAX_SWEEP = 900;
-        this.TAP_ANGLE = 0.38;
-        this.INTRO_ANGLE = 0.55;
-        this.INTRO_PULL = 480;
-        this.REST = 0.0004;
-
-        this.ink = document.createElement('canvas').getContext('2d');
-        this.bindEvents();
-
-        if (window.ResizeObserver) {
-          let width = this.stage.clientWidth;
-          this.ro = new ResizeObserver(() => {
-            if (this.stage.clientWidth === width) return;
-            width = this.stage.clientWidth;
-            this.measure(false);
-            this.draw();
-          });
-          this.ro.observe(this.stage);
-        }
-      }
-
-      bindEvents() {
-        this.onDown = this.handleDown.bind(this);
-        this.onMove = this.handleMove.bind(this);
-        this.onUp = this.handleUp.bind(this);
-        this.onLeave = this.handleLeave.bind(this);
-
-        this.stage.addEventListener('pointerdown', this.onDown);
-        this.stage.addEventListener('pointermove', this.onMove);
-        this.stage.addEventListener('pointerup', this.onUp);
-        this.stage.addEventListener('pointercancel', this.onUp);
-        this.stage.addEventListener('pointerleave', this.onLeave);
-
-        document.addEventListener('visibilitychange', () => {
-          this.visible = document.visibilityState === 'visible';
-          if (this.visible) this.start();
-        });
+        this.slots = [];
       }
 
       setText(newText) {
-        if (!newText) return;
-        if (this.currentText === newText && this.bobs.length > 0) return;
+        if (newText === this.currentText) return;
+        const oldChars = Array.from(this.currentText);
+        const newChars = Array.from(newText);
 
-        const prevText = this.currentText;
-        this.currentText = newText;
-
-        if (prevText && prevText.length === newText.length && this.bobs.length === newText.length) {
-          let changed = false;
-          for (let i = 0; i < newText.length; i++) {
-            const char = newText[i];
-            const bob = this.bobs[i];
-            if (bob.char !== char) {
-              bob.char = char;
-              bob.el.dataset.letter = char;
-              if (bob.textNode) {
-                bob.textNode.nodeValue = char;
-              }
-              if (Math.abs(bob.phi) < 0.05 && Math.abs(bob.omega) < 0.05) {
-                bob.omega += (i % 2 === 0 ? 0.04 : -0.04);
-                changed = true;
-              }
-            }
+        // Remove surplus slots if newText is shorter
+        while (this.slots.length > newChars.length) {
+          const removedSlot = this.slots.pop();
+          if (removedSlot && removedSlot.parentNode) {
+            removedSlot.remove();
           }
-          this.measure(false);
-          if (changed) this.start();
-          return;
         }
 
-        this.render();
-      }
-
-      render() {
-        this.lettersEl.innerHTML = '';
-        const chars = Array.from(this.currentText);
-        const spans = [];
-
-        chars.forEach((char) => {
-          if (char === ' ') {
-            const space = document.createElement('span');
-            space.className = 'cradle-space inline-block w-[0.28em]';
-            this.lettersEl.appendChild(space);
-          } else {
-            const span = document.createElement('span');
-            span.className = 'cradle-letter relative inline-block origin-top-left will-change-transform';
-            span.dataset.letter = char;
-
-            const thread = document.createElement('span');
-            thread.className = 'cradle-thread absolute w-[1px]';
-            span.appendChild(thread);
-
-            const textNode = document.createTextNode(char);
-            span.appendChild(textNode);
-            span._textNode = textNode;
-
-            this.lettersEl.appendChild(span);
-            spans.push(span);
-          }
-        });
-
-        const endProbe = document.createElement('span');
-        endProbe.className = 'inline-block h-0 w-0';
-        this.lettersEl.appendChild(endProbe);
-
-        this.spans = spans;
-        this.measure(true);
-
-        if (this.intro && !this.greeted && this.bobs.length > 0) {
-          this.greeted = true;
-          setTimeout(() => {
-            const first = this.bobs[0];
-            if (first && !this.hand) {
-              this.pull = { bob: first, start: performance.now(), to: -this.INTRO_ANGLE };
-              this.start();
-            }
-          }, 350);
+        // Append missing slots if newText is longer
+        while (this.slots.length < newChars.length) {
+          const slot = document.createElement('span');
+          slot.className = 'dynamic-char-slot';
+          this.container.appendChild(slot);
+          this.slots.push(slot);
         }
 
-        this.draw();
-        this.start();
-      }
+        // Transition individual slots
+        for (let i = 0; i < newChars.length; i++) {
+          const slot = this.slots[i];
+          const oldChar = oldChars[i];
+          const newChar = newChars[i];
 
-      measure(resetAngles = false) {
-        if (!this.spans || !this.spans.length) return;
-        const stageBox = this.stage.getBoundingClientRect();
-        if (stageBox.width === 0) return;
-        const probe = this.lettersEl.lastElementChild;
-        if (!probe) return;
-        const baseline = probe.getBoundingClientRect().bottom - stageBox.top;
-        const style = getComputedStyle(this.lettersEl);
-        const em = parseFloat(style.fontSize) || 24;
-        this.ink.font = style.font;
-        this.railY = Math.max(this.rail.getBoundingClientRect().top - stageBox.top + 0.5, 2);
-        this.radius = Math.max(baseline - em * 0.35 - this.railY, 12);
-
-        const oldBobs = this.bobs;
-        this.bobs = this.spans.map((el, idx) => {
-          const prevBob = oldBobs[idx];
-          const box = el.getBoundingClientRect();
-          const char = el.dataset.letter || '';
-          const m = this.ink.measureText(char);
-          const ascent = m.actualBoundingBoxAscent ?? (em * 0.7);
-          const descent = m.actualBoundingBoxDescent ?? (em * 0.2);
-          const leftBox = m.actualBoundingBoxLeft ?? 0;
-          const rightBox = m.actualBoundingBoxRight ?? (m.width || (em * 0.5));
-
-          const bLeft = box.left - stageBox.left;
-          const left = bLeft - leftBox;
-          const right = bLeft + rightBox;
-          const top = baseline - ascent;
-          const center = (left + right) / 2;
-
-          const thread = el.firstElementChild;
-          if (thread) {
-            thread.style.left = `${(center - bLeft - 0.5).toFixed(1)}px`;
-            thread.style.top = `${(this.railY - (box.top - stageBox.top)).toFixed(1)}px`;
-            thread.style.height = `${Math.max(top - this.railY, 2).toFixed(1)}px`;
-          }
-
-          return {
-            el,
-            textNode: el._textNode,
-            char,
-            left,
-            right,
-            center,
-            top,
-            bottom: baseline + descent,
-            boxLeft: bLeft,
-            boxTop: box.top - stageBox.top,
-            gap: 0,
-            phi: (resetAngles || !prevBob) ? 0 : prevBob.phi,
-            omega: (resetAngles || !prevBob) ? 0 : prevBob.omega,
-            held: (prevBob && prevBob.held) || false
-          };
-        });
-
-        for (let i = 0; i + 1 < this.bobs.length; i++) {
-          this.bobs[i].gap = Math.max(this.bobs[i + 1].left - this.bobs[i].right, 0);
-        }
-      }
-
-      draw() {
-        for (const bob of this.bobs) {
-          if (bob.phi === 0) {
-            bob.el.style.transform = '';
+          // If character didn't change and slot already has a glyph, keep it static
+          if (oldChar === newChar && slot.querySelector('.dynamic-char-glyph')) {
             continue;
           }
-          const px = bob.center - bob.boxLeft;
-          const py = this.railY - bob.boxTop;
-          bob.el.style.transform = `translate3d(${px.toFixed(2)}px, ${py.toFixed(2)}px, 0) rotate(${(-bob.phi).toFixed(4)}rad) translate3d(${(-px).toFixed(2)}px, ${(-py).toFixed(2)}px, 0)`;
-        }
-      }
 
-      energy() {
-        return this.bobs.reduce(
-          (e, b) => e + (b.omega / this.w0) ** 2 + 2 * (1 - Math.cos(b.phi)),
-          0
-        );
-      }
+          // Mark current active glyphs as leaving
+          const activeGlyphs = slot.querySelectorAll('.dynamic-char-glyph:not(.glyph-leaving)');
+          activeGlyphs.forEach(g => {
+            g.classList.add('glyph-leaving');
+            g.classList.remove('glyph-visible');
+            setTimeout(() => {
+              if (g.parentNode) g.remove();
+            }, 300);
+          });
 
-      bounceApart(a, b, wa, wb) {
-        const ca = Math.max(Math.cos(a.phi), 0.2);
-        const cb = Math.max(Math.cos(b.phi), 0.2);
-        const va = a.omega * this.radius * ca;
-        const vb = b.omega * this.radius * cb;
-        const closing = va - vb;
-        if (closing <= 0) return;
-        const impulse = ((1 + this.bounce) * closing) / (wa + wb);
-        a.omega = (va - wa * impulse) / (this.radius * ca);
-        b.omega = (vb + wb * impulse) / (this.radius * cb);
-      }
+          // Create new entering glyph
+          const newGlyph = document.createElement('span');
+          newGlyph.className = 'dynamic-char-glyph glyph-entering';
+          newGlyph.textContent = newChar === ' ' ? ' ' : newChar;
+          slot.appendChild(newGlyph);
 
-      collide(a, b) {
-        const xa = this.radius * Math.sin(a.phi);
-        const xb = this.radius * Math.sin(b.phi);
-        const depth = xa - xb - a.gap;
-        const wa = a.held ? 0 : 1;
-        const wb = b.held ? 0 : 1;
-        if (depth <= 0 || wa + wb === 0) return;
-        const share = depth / (wa + wb);
-        a.phi = Math.asin(Math.max(-1, Math.min(1, (xa - wa * share) / this.radius)));
-        b.phi = Math.asin(Math.max(-1, Math.min(1, (xb + wb * share) / this.radius)));
-        this.bounceApart(a, b, wa, wb);
-      }
-
-      swing(h, drag) {
-        for (const bob of this.bobs) {
-          if (!bob.held) {
-            bob.omega -= this.w0 * this.w0 * Math.sin(bob.phi) * h;
-            bob.omega *= (1 - drag * h);
-            bob.phi += bob.omega * h;
-          }
-        }
-      }
-
-      step(dt) {
-        const h = dt / this.SUBSTEPS;
-        const drag = this.energy() < this.SETTLE_BELOW ? this.SETTLE_DRAG : this.DRAG;
-        for (let s = 0; s < this.SUBSTEPS; s++) {
-          this.swing(h, drag);
-          for (let it = 0; it < this.ITERATIONS; it++) {
-            for (let i = 0; i + 1 < this.bobs.length; i++) {
-              this.collide(this.bobs[i], this.bobs[i + 1]);
-            }
-            for (let i = this.bobs.length - 2; i >= 0; i--) {
-              this.collide(this.bobs[i], this.bobs[i + 1]);
-            }
-          }
-        }
-      }
-
-      runPull(now) {
-        if (!this.pull) return;
-        const t = (now - this.pull.start) / this.INTRO_PULL;
-        if (t >= 1.25) {
-          this.pull.bob.held = false;
-          this.pull.bob.omega = 0;
-          this.pull = null;
-          return;
-        }
-        this.pull.bob.held = true;
-        const easeOutVal = 1 - (1 - Math.min(t, 1)) ** 4;
-        this.pull.bob.phi = this.pull.to * easeOutVal;
-        this.pull.bob.omega = 0;
-      }
-
-      frame(now) {
-        this.raf = 0;
-        if (!this.visible) return;
-        const dt = this.last ? Math.min((now - this.last) / 1000, 1 / 30) : 1 / 60;
-        this.last = now;
-        this.runPull(now);
-        this.step(dt);
-        this.draw();
-        if (this.hand || this.pull || this.energy() > this.REST) {
-          this.raf = requestAnimationFrame(this.frame.bind(this));
-          return;
-        }
-        for (const bob of this.bobs) {
-          bob.phi = 0;
-          bob.omega = 0;
-        }
-        this.draw();
-      }
-
-      start() {
-        if (!this.raf && this.visible) {
-          this.last = 0;
-          this.raf = requestAnimationFrame(this.frame.bind(this));
-        }
-      }
-
-      local(event) {
-        const r = this.stage.getBoundingClientRect();
-        return { x: event.clientX - r.left, y: event.clientY - r.top };
-      }
-
-      bobAt(x, y, slack) {
-        return this.bobs.find((bob) => {
-          const shift = this.radius * Math.sin(bob.phi);
-          return (
-            x > bob.left + shift - slack &&
-            x < bob.right + shift + slack &&
-            y > bob.top - slack &&
-            y < bob.bottom + slack
-          );
-        });
-      }
-
-      handleDown(event) {
-        if (this.hand || (event.button && event.button !== 0)) return;
-        const p = this.local(event);
-        const em = parseFloat(getComputedStyle(this.lettersEl).fontSize) || 24;
-        const bob = this.bobAt(p.x, p.y, em * 0.25);
-        if (!bob) return;
-
-        if (window.Telegram?.WebApp?.HapticFeedback) {
-          Telegram.WebApp.HapticFeedback.impactOccurred('light');
+          // Trigger spring roll transition on next frame
+          requestAnimationFrame(() => {
+            newGlyph.classList.remove('glyph-entering');
+            newGlyph.classList.add('glyph-visible');
+          });
         }
 
-        try { this.stage.setPointerCapture(event.pointerId); } catch(e) {}
-        this.pull = null;
-        bob.held = true;
-        bob.omega = 0;
-        this.hand = {
-          id: event.pointerId,
-          bob,
-          startX: p.x - this.radius * Math.sin(bob.phi),
-          startTime: event.timeStamp,
-          moved: false,
-          prev: bob.phi,
-          prevTime: event.timeStamp,
-          spin: 0
-        };
-        this.stage.classList.add('cradle-grabbing');
-        this.start();
-      }
-
-      handleMove(event) {
-        const p = this.local(event);
-        if (this.hand && event.pointerId === this.hand.id) {
-          const dx = p.x - this.hand.startX;
-          if (Math.abs(dx) > 3) this.hand.moved = true;
-          const maxSin = Math.sin(this.MAX_ANGLE);
-          const phi = Math.asin(Math.max(-maxSin, Math.min(maxSin, dx / this.radius)));
-          const dt = Math.max(event.timeStamp - this.hand.prevTime, 8) / 1000;
-          const spin = (phi - this.hand.prev) / dt;
-          this.hand.spin = this.hand.spin * 0.4 + spin * 0.6;
-          this.hand.prev = phi;
-          this.hand.prevTime = event.timeStamp;
-          this.hand.bob.phi = phi;
-          this.hand.bob.omega = this.hand.spin;
-          this.start();
-          return;
-        }
-        if (event.pointerType !== 'mouse') {
-          this.sweep = null;
-          return;
-        }
-        const over = this.bobAt(p.x, p.y, 0) || null;
-        if (this.sweep && over && over !== this.sweep.over && !over.held) {
-          const dt = Math.max(event.timeStamp - this.sweep.t, 8) / 1000;
-          const vx = Math.max(-this.MAX_SWEEP, Math.min(this.MAX_SWEEP, (p.x - this.sweep.x) / dt));
-          over.omega += (this.SWEEP_PUSH * vx) / this.radius;
-          this.pull = null;
-          this.start();
-        }
-        this.sweep = { x: p.x, t: event.timeStamp, over };
-      }
-
-      handleUp(event) {
-        if (!this.hand || event.pointerId !== this.hand.id) return;
-        const { bob } = this.hand;
-        bob.held = false;
-        this.stage.classList.remove('cradle-grabbing');
-        if (this.hand.moved) {
-          const idle = event.timeStamp - this.hand.prevTime > 60;
-          bob.omega = idle ? 0 : Math.max(-this.w0 * 1.5, Math.min(this.w0 * 1.5, this.hand.spin));
-        } else {
-          const p = this.local(event);
-          const side = p.x < bob.center + this.radius * Math.sin(bob.phi) ? 1 : -1;
-          bob.omega += side * this.w0 * this.TAP_ANGLE;
-        }
-        this.hand = null;
-        this.start();
-      }
-
-      handleLeave() {
-        this.sweep = null;
+        this.currentText = newText;
       }
     }
 
-    function handleLiveIslandClick(event) {
-      if (event.target.closest('.cradle-stage')) return;
+    function handleHeaderTimerClick(event) {
+      if (event) event.stopPropagation();
+      triggerHaptic('light');
+      if (currentMainTab !== 'schedule') {
+        switchMainTab('schedule');
+      }
       const todayIdx = currentDaysList.findIndex(d => d.isToday);
       if (todayIdx !== -1 && selectedDayIndex !== todayIdx) {
-        triggerHaptic('light');
         selectDay(todayIdx);
       }
     }
 
     function updateLiveStatusBanner(groupSchedule) {
-      const island = document.getElementById('liveCradleIsland');
-      if (!island) return;
+      const pillEl = document.getElementById('headerLiveTimerPill');
+      if (!pillEl) return;
 
       const event = getNextEventCountdown(groupSchedule);
       if (!event) {
-        island.classList.add('cradle-hidden');
+        pillEl.style.display = 'none';
         return;
       }
 
-      island.classList.remove('cradle-hidden');
-
-      const dot = document.getElementById('cradleDot');
-      if (dot) {
-        dot.className = 'cradle-dot ' + (event.type === 'lesson' ? 'dot-live' : (event.type === 'break' ? 'dot-break' : 'dot-upcoming'));
+      // If upcoming is far in the future or not today, hide pill to keep interface uncluttered
+      if (event.type === 'upcoming' || (event.type === 'before_first' && event.secsLeft > 10800)) {
+        pillEl.style.display = 'none';
+        return;
       }
 
-      const statusLabel = document.getElementById('cradleStatusLabel');
-      if (statusLabel) {
-        statusLabel.textContent = event.label;
+      pillEl.style.display = 'inline-flex';
+
+      const dotEl = document.getElementById('headerTimerDot');
+      if (dotEl) {
+        dotEl.className = 'header-timer-dot ' + (
+          event.type === 'lesson' ? 'dot-live' :
+          (event.type === 'break' ? 'dot-break' : 'dot-upcoming')
+        );
       }
 
-      const metaText = document.getElementById('cradleDetailMeta');
-      if (metaText) {
-        metaText.textContent = event.detail || '';
-      }
+      const prefix = event.type === 'lesson' ? 'Пара ' : (event.type === 'break' ? 'Перемена ' : 'До пар ');
+      const hours = Math.floor(event.secsLeft / 3600);
+      const mins = Math.floor((event.secsLeft % 3600) / 60);
+      const secs = event.secsLeft % 60;
+      const pad2 = n => (n < 10 ? '0' : '') + n;
+      const timeStr = hours > 0 ? `${pad2(hours)}:${pad2(mins)}:${pad2(secs)}` : `${pad2(mins)}:${pad2(secs)}`;
+      const fullText = prefix + timeStr;
 
-      const footerNote = document.getElementById('cradleFooterNote');
-      if (footerNote) {
-        footerNote.textContent = event.footer || '';
-      }
-
-      const stageEl = document.getElementById('cradleStage');
-      if (stageEl) {
-        if (!_kokonutCradle) {
-          _kokonutCradle = new KokonutCradleText(stageEl, { intro: true, bounce: 0.96 });
+      const textEl = document.getElementById('headerTimerText');
+      if (textEl) {
+        if (!_kokonutDynamicTimer) {
+          _kokonutDynamicTimer = new KokonutDynamicText(textEl);
         }
-        const timeStr = formatSplitFlapTime(event.secsLeft, event.type);
-        _kokonutCradle.setText(timeStr);
+        _kokonutDynamicTimer.setText(fullText);
       }
+
+      const tooltip = `${event.label}: ${event.detail || ''} • ${timeStr} ${event.footer || ''} • Нажмите для перехода к сегодня`.trim();
+      pillEl.setAttribute('title', tooltip);
     }
 
     function startLiveStatusTimer(groupSchedule) {
@@ -5388,7 +4940,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=32')
+        navigator.serviceWorker.register('./sw-preview.js?v=33')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
