@@ -1004,64 +1004,65 @@
       color: #155e75;
     }
 
-    /* Subgroup box focus states */
+    /* Subgroup box */
     .subgroup-box {
       border: 1px solid var(--border-color);
       border-radius: 12px;
       padding: 7px 9px;
       background: var(--glass-card-subtle);
-      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-      cursor: pointer;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-    }
-    .subgroup-box:active {
-      transform: scale(0.985);
-    }
-    .subgroup-box-focused {
-      border-color: rgba(16, 185, 129, 0.65) !important;
-      background: rgba(16, 185, 129, 0.12) !important;
-      box-shadow: 0 0 16px -2px rgba(16, 185, 129, 0.35), inset 0 0 0 1px rgba(16, 185, 129, 0.22);
-    }
-    html:not(.dark) .subgroup-box-focused {
-      border-color: rgba(5, 150, 105, 0.55) !important;
-      background: rgba(5, 150, 105, 0.09) !important;
-      box-shadow: 0 0 12px -2px rgba(5, 150, 105, 0.25), inset 0 0 0 1px rgba(5, 150, 105, 0.18);
-    }
-    .subgroup-box-dimmed {
-      opacity: 0.85;
-      filter: none;
-      transform: none;
-      cursor: pointer;
-    }
-    .subgroup-box-dimmed:hover, .subgroup-box-dimmed:active {
-      opacity: 1;
-      transform: none;
-    }
-
-    /* Live Progress Bar for ongoing lesson */
-    .live-progress-container {
-      margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(16, 185, 129, 0.22);
-    }
-    .live-progress-track {
-      width: 100%;
-      height: 6px;
-      border-radius: 9999px;
-      background: rgba(16, 185, 129, 0.14);
-      border: 1px solid rgba(16, 185, 129, 0.30);
-      overflow: hidden;
-      padding: 1px;
       box-sizing: border-box;
     }
-    .live-progress-fill {
-      height: 100%;
-      border-radius: 9999px;
-      background: linear-gradient(90deg, #10b981, #06b6d4);
-      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+
+    /* Header Buttons: Theme Controller & Help (pixel-perfect centering & upright icons) */
+    #headerHelpBtn, #headerThemeLabel {
+      width: 32px !important;
+      height: 32px !important;
+      min-height: 32px !important;
+      padding: 0 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      position: relative !important;
+      box-sizing: border-box !important;
+      cursor: pointer;
+    }
+    #headerThemeLabel input {
+      position: absolute !important;
+      width: 0 !important;
+      height: 0 !important;
+      opacity: 0 !important;
+      margin: 0 !important;
+      pointer-events: none !important;
+    }
+    #headerThemeLabel svg {
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      margin: 0 !important;
+      transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    /* In dark mode: display Sun icon (upright, centered) */
+    html.dark #themeIconSun {
+      opacity: 1 !important;
+      transform: translate(-50%, -50%) scale(1) !important;
+      pointer-events: auto !important;
+    }
+    html.dark #themeIconMoon {
+      opacity: 0 !important;
+      transform: translate(-50%, -50%) scale(0.6) !important;
+      pointer-events: none !important;
+    }
+    /* In light mode: display Moon icon (upright, centered) */
+    html:not(.dark) #themeIconSun {
+      opacity: 0 !important;
+      transform: translate(-50%, -50%) scale(0.6) !important;
+      pointer-events: none !important;
+    }
+    html:not(.dark) #themeIconMoon {
+      opacity: 1 !important;
+      transform: translate(-50%, -50%) scale(1) !important;
+      pointer-events: auto !important;
     }
 
     /* ─── Slide to Confirm (Swipe to dismiss beta banner) ─────────────────── */
@@ -1299,20 +1300,21 @@
         </button>
 
         <!-- daisyUI Theme Controller (fluid, circular reveal from icon) -->
-        <label id="headerThemeLabel" class="swap btn btn-ghost btn-circle btn-sm border border-base-content/10 bg-base-200/50 flex-shrink-0" title="Сменить тему">
+        <label id="headerThemeLabel" class="btn btn-ghost btn-circle btn-sm border border-base-content/10 bg-base-200/50 flex-shrink-0 cursor-pointer" title="Сменить тему">
           <input type="checkbox" class="theme-controller" id="headerThemeToggle" onchange="toggleThemeFromController(this.checked, event)" />
-          <svg class="swap-on w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="4" fill="currentColor"></circle>
+          <svg id="themeIconSun" class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
             <line x1="12" y1="1" x2="12" y2="3"></line>
             <line x1="12" y1="21" x2="12" y2="23"></line>
             <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
             <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="1" y1="12" x2="23" y2="12"></line>
             <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
             <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
           </svg>
-          <svg class="swap-off fill-current w-4 h-4 text-zinc-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Z"/></svg>
+          <svg id="themeIconMoon" class="w-4 h-4 text-zinc-500 dark:text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
         </label>
       </div>
     </div>
@@ -1339,24 +1341,6 @@
             <span>Применить и открыть расписание</span>
           </button>
         </div>
-      </div>
-
-      <!-- App & Faculty Info Card -->
-      <div class="card-glass rounded-2xl p-4 flex items-center justify-between text-xs text-base-content/60">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
-            <svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="2" y1="12" x2="22" y2="12"></line>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-            </svg>
-          </div>
-          <div>
-            <div class="font-bold text-base-content text-[12.5px]">Факультет географии и геоинформатики</div>
-            <div class="text-[11px] opacity-70">Белорусский государственный университет</div>
-          </div>
-        </div>
-        <span class="badge badge-ghost badge-sm font-bold opacity-70">2026</span>
       </div>
     </div>
 
@@ -1460,23 +1444,6 @@
           </div>
         </div>
 
-        <!-- Feature 2: Subgroups -->
-        <div style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;">
-          <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-          </div>
-          <div>
-            <div style="font-size: 13px; font-weight: 750; color: var(--text-main);">Подсветка своей подгруппы</div>
-            <p style="font-size: 11.5px; color: var(--text-sub); margin-top: 2px; line-height: 1.45;">
-              Нажмите на 1-ю или 2-ю подгруппу в расписании — бот запомнит и подсветит ваши занятия. При просмотре других групп чужие подгруппы не подсвечиваются.
-            </p>
-          </div>
-        </div>
 
         <!-- Feature 3: Split Flap Countdown with seconds -->
         <div style="background: var(--glass-card-subtle); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;">
@@ -1558,8 +1525,7 @@
     let currentProfile = {
       course: "1",
       group_name: "",
-      foreign_lang: null,
-      subgroup: "all"
+      foreign_lang: null
     };
 
     const DAY_DEFS = [
@@ -2944,18 +2910,6 @@
     }
 
     // ─── Settings Tab Logic ───────────────────────────────────────────────────
-    function getSubgroupFor(course, group) {
-      return localStorage.getItem(`bsu_subgroup_${course}_${group}`) || 'all';
-    }
-
-    function setSubgroupFor(course, group, sg) {
-      if (sg === 'all') {
-        localStorage.removeItem(`bsu_subgroup_${course}_${group}`);
-      } else {
-        localStorage.setItem(`bsu_subgroup_${course}_${group}`, sg);
-      }
-    }
-
     function setAsPrimaryGroup() {
       triggerHaptic('medium');
       const primary = {
@@ -2980,7 +2934,6 @@
           currentProfile.course = prim.course;
           currentProfile.group_name = prim.group_name;
           currentProfile.foreign_lang = prim.foreign_lang;
-          currentProfile.subgroup = getSubgroupFor(prim.course, prim.group_name);
           localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
         } catch(e) {}
       }
@@ -3102,33 +3055,7 @@
           </div>
           <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px; line-height: 1.4;">${langHint}</div>
         </div>
-
-        <div class="setting-group-card flex flex-col gap-2">
-          <div class="section-title">Обучение и подсказки</div>
-          <button type="button" onclick="openOnboardingModal()" class="btn btn-sm btn-ghost border border-base-content/10 rounded-xl justify-between font-semibold text-xs h-10 w-full px-3 transition-colors hover:bg-base-200/50">
-            <span class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-              </svg>
-              <span>Функции и возможности расписания</span>
-            </span>
-            <span class="opacity-40">›</span>
-          </button>
-        </div>
       `;
-    }
-
-    function quickToggleSubgroup(sgNum) {
-      triggerHaptic('light');
-      const sgStr = String(sgNum);
-      const cur = getSubgroupFor(currentProfile.course, currentProfile.group_name);
-      const nextSg = (cur === sgStr) ? 'all' : sgStr;
-      currentProfile.subgroup = nextSg;
-      setSubgroupFor(currentProfile.course, currentProfile.group_name, nextSg);
-      localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
-      renderView();
     }
 
     function selectCourseSettingsTab(course) {
@@ -3138,7 +3065,6 @@
       if (!availGroups.includes(currentProfile.group_name)) {
         currentProfile.group_name = availGroups[0] || '';
       }
-      currentProfile.subgroup = getSubgroupFor(currentProfile.course, currentProfile.group_name);
       localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
       renderSettingsTab();
     }
@@ -3146,7 +3072,6 @@
     function selectGroupSettingsTab(group) {
       triggerHaptic('light');
       currentProfile.group_name = group;
-      currentProfile.subgroup = getSubgroupFor(currentProfile.course, currentProfile.group_name);
       localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
       renderSettingsTab();
     }
@@ -3199,8 +3124,7 @@
         }
         const isGuest = primaryCourse && primaryGroup && (currentProfile.course !== primaryCourse || currentProfile.group_name !== primaryGroup);
 
-        const sgTag = (currentProfile.subgroup === '1' || currentProfile.subgroup === '2') ? ` • ${currentProfile.subgroup} п/г` : '';
-        const titleText = `${currentProfile.course} курс • ${currentProfile.group_name.replace('ГРУППА ', 'Группа ')}${sgTag}`;
+        const titleText = `${currentProfile.course} курс • ${currentProfile.group_name.replace('ГРУППА ', 'Группа ')}`;
 
         if (isGuest) {
           headerTitle.innerHTML = `<span class="truncate">${titleText}</span><span class="badge badge-ghost badge-xs text-[9.5px] font-semibold text-base-content/65 ml-1.5 flex-shrink-0">гость</span>`;
@@ -3768,14 +3692,6 @@
             </span>
           ` : '';
 
-          let singleSgNotice = '';
-          if (item.subgroup && (currentProfile.subgroup === '1' || currentProfile.subgroup === '2')) {
-            const itemSgNum = item.subgroup.includes('1') ? '1' : (item.subgroup.includes('2') ? '2' : null);
-            if (itemSgNum && itemSgNum !== currentProfile.subgroup) {
-              singleSgNotice = `<span class="badge badge-warning badge-xs opacity-75 font-semibold text-[10px]">у вас окно</span>`;
-            }
-          }
-
           // Плашка типа занятия выводится на строке предмета ТОЛЬКО если она не вынесена общей в заголовок
           const itemTypeBadge = (!commonType && item.type) ? `
             <span class="badge badge-sm font-bold flex-shrink-0" style="color: ${item.type.color}; background: ${item.type.bg}; border: 1px solid ${item.type.border};">${item.type.label}</span>
@@ -3798,7 +3714,6 @@
               <div class="flex items-start justify-between gap-2">
                 <div class="flex items-center gap-1.5 flex-wrap min-w-0">
                   ${subgroupBadge}
-                  ${singleSgNotice}
                   <span class="text-[14px] font-bold leading-snug">${item.title}</span>
                   ${itemTypeBadge}
                   ${itemRemoteBadge}
@@ -3810,13 +3725,7 @@
                 <div class="grid grid-cols-2 gap-2 mt-2.5 pt-2.5 border-t border-base-content/10 w-full box-border items-stretch">
                   ${item.subgroups.map((sg, sgIdx) => {
                     const sgNum = sgIdx + 1;
-                    const hasSgFilter = (currentProfile.subgroup === '1' || currentProfile.subgroup === '2');
-                    const isMySg = hasSgFilter && (currentProfile.subgroup === String(sgNum));
-                    const isOtherSg = hasSgFilter && !isMySg;
-
-                    let boxClass = 'subgroup-box min-w-0 h-full flex flex-col justify-between';
-                    if (isMySg) boxClass += ' subgroup-box-focused';
-                    if (isOtherSg) boxClass += ' subgroup-box-dimmed';
+                    const boxClass = 'subgroup-box min-w-0 h-full flex flex-col justify-between';
 
                     const m = sg.teacher ? sg.teacher.match(/([А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)\s+([А-ЯЁ]\.?\s*[А-ЯЁ]\.?)/) : null;
                     let teacherName = sg.teacher || '—';
@@ -3828,20 +3737,15 @@
                       rank = sg.teacher.replace(m[0], '').replace(/^[-–—•,\s]+|[-–—•,\s]+$/g, '').trim();
                     }
 
-                    const tooltipText = isMySg
-                      ? 'Ваша подгруппа (нажмите для сброса)'
-                      : (isOtherSg ? 'Нажмите, чтобы выделить эту подгруппу' : 'Нажмите, чтобы выделить свою подгруппу');
-
                     return `
-                      <div class="${boxClass}" onclick="quickToggleSubgroup(${sgNum})" title="${tooltipText}">
+                      <div class="${boxClass}">
                         <div>
                           <div class="flex items-center justify-between gap-1 pb-1.5 border-b border-base-content/10 min-w-0">
                             <span class="subgroup-pill subgroup-pill-compact font-extrabold flex-shrink-0" title="${sgNum} подгруппа">
                               <span class="sg-dot"></span>
                               <span>${sgNum} п/г</span>
-                              ${isMySg ? '<span class="text-[9px] font-black tracking-tight text-emerald-400 ml-1">✓ МОЯ</span>' : ''}
                             </span>
-                            ${sg.room ? `<span class="badge ${isMySg ? 'badge-primary font-black' : 'badge-ghost font-bold'} badge-xs font-mono flex-shrink-0 text-[10px] px-1.5 py-0 h-4 leading-4 max-w-[110px] truncate" title="${sg.room}">${sg.room}</span>` : ''}
+                            ${sg.room ? `<span class="badge badge-ghost font-bold badge-xs font-mono flex-shrink-0 text-[10px] px-1.5 py-0 h-4 leading-4 max-w-[110px] truncate" title="${sg.room}">${sg.room}</span>` : ''}
                           </div>
                           <div class="text-[10px] text-base-content/55 truncate h-4 leading-4 font-medium mt-1">
                             ${rank || '&nbsp;'}
@@ -3860,34 +3764,7 @@
           `;
         });
 
-        let liveProgressBarHTML = '';
-        if (isLive) {
-          const parsed = parseTimeSlotMinutes(timeStr);
-          if (parsed) {
-            const now = new Date();
-            const curMin = now.getHours() * 60 + now.getMinutes();
-            const totalDuration = Math.max(1, parsed.endMin - parsed.startMin);
-            const elapsed = Math.max(0, Math.min(totalDuration, curMin - parsed.startMin));
-            const pct = Math.round((elapsed / totalDuration) * 100);
-            const remMins = Math.max(1, parsed.endMin - curMin);
-            liveProgressBarHTML = `
-              <div class="live-progress-container">
-                <div class="flex items-center justify-between text-[10.5px] font-bold text-emerald-400 mb-1.5">
-                  <span class="flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                    <span>Пара идёт: ${elapsed} из ${totalDuration} мин</span>
-                  </span>
-                  <span>осталось ${remMins} мин (${pct}%)</span>
-                </div>
-                <div class="live-progress-track">
-                  <div class="live-progress-fill" style="width: ${pct}%"></div>
-                </div>
-              </div>
-            `;
-          }
-        }
-
-        card.innerHTML = innerContent + liveProgressBarHTML;
+        card.innerHTML = innerContent;
         frag.appendChild(card);
       });
 
@@ -4323,7 +4200,6 @@
 
     function saveUnifiedProfile() {
       currentProfile = { ...draftProfile };
-      currentProfile.subgroup = getSubgroupFor(currentProfile.course, currentProfile.group_name);
       localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
       closeSettingsModal();
       const groupSchedule = facultyData?.courses?.[currentProfile.course]?.[currentProfile.group_name] || {};
@@ -4425,7 +4301,6 @@
         renderWizardStep();
       } else {
         currentProfile = { ...draftProfile };
-        currentProfile.subgroup = getSubgroupFor(currentProfile.course, currentProfile.group_name);
         localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
         const primary = {
           course: currentProfile.course,
@@ -4530,7 +4405,6 @@
             target.closest('.header-dock') ||
             target.closest('#devWarningBanner') ||
             target.closest('.modal-overlay') ||
-            target.closest('.subgroup-box') ||
             target.closest('button') ||
             target.closest('a')
           );
@@ -4638,7 +4512,6 @@
             currentProfile.course = prim.course;
             currentProfile.group_name = prim.group_name;
             currentProfile.foreign_lang = prim.foreign_lang || null;
-            currentProfile.subgroup = getSubgroupFor(prim.course, prim.group_name);
             localStorage.setItem('bsu_profile', JSON.stringify(currentProfile));
           }
         } catch(e) {}
@@ -4646,7 +4519,6 @@
         try {
           currentProfile = JSON.parse(savedProfile);
           if (currentProfile.foreign_lang === 'ALL') currentProfile.foreign_lang = null;
-          if (!currentProfile.subgroup) currentProfile.subgroup = 'all';
           if (currentProfile.course && currentProfile.group_name) {
             const primary = {
               course: currentProfile.course,
@@ -4704,7 +4576,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=22')
+        navigator.serviceWorker.register('./sw-preview.js?v=23')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
