@@ -1150,27 +1150,38 @@
     .header-timer-pill {
       display: inline-flex;
       align-items: center;
-      gap: 3.5px;
-      padding: 1px 6px 1px 5px;
+      gap: 4px;
+      padding: 1.5px 7px 1.5px 6px;
       border-radius: 9999px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.2);
       box-sizing: border-box;
       line-height: 1;
-      height: 16px;
-      min-height: 16px;
+      height: 18px;
+      min-height: 18px;
       cursor: pointer;
       user-select: none;
       -webkit-user-select: none;
-      transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+      transition: all 0.2s ease;
       flex-shrink: 0;
     }
     html:not(.dark) .header-timer-pill {
       background: rgba(0, 0, 0, 0.05);
-      border-color: rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.85);
+    }
+    .header-timer-pill:hover {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.24);
+    }
+    html:not(.dark) .header-timer-pill:hover {
+      background: rgba(0, 0, 0, 0.08);
+      border-color: rgba(0, 0, 0, 0.18);
     }
     .header-timer-pill:active {
-      opacity: 0.75;
+      transform: scale(0.96);
+      opacity: 0.8;
     }
     .header-timer-dot {
       width: 5px;
@@ -1180,17 +1191,17 @@
     }
     .header-timer-dot.dot-live {
       background: #10b981;
-      box-shadow: 0 0 5px rgba(16, 185, 129, 0.75);
+      box-shadow: 0 0 5px rgba(16, 185, 129, 0.8);
       animation: pulseAura 2s infinite;
     }
     .header-timer-dot.dot-break {
       background: #f59e0b;
-      box-shadow: 0 0 5px rgba(245, 158, 11, 0.75);
+      box-shadow: 0 0 5px rgba(245, 158, 11, 0.8);
       animation: pulseAura 2s infinite;
     }
     .header-timer-dot.dot-upcoming {
       background: #06b6d4;
-      box-shadow: 0 0 4px rgba(6, 182, 212, 0.6);
+      box-shadow: 0 0 4px rgba(6, 182, 212, 0.7);
     }
     .dynamic-text-root {
       display: inline-flex;
@@ -1209,13 +1220,13 @@
       display: inline-block;
       overflow: hidden;
       vertical-align: middle;
-      height: 12px;
-      line-height: 12px;
+      height: 13px;
+      line-height: 13px;
     }
     .dynamic-char-glyph {
       display: block;
-      height: 12px;
-      line-height: 12px;
+      height: 13px;
+      line-height: 13px;
       will-change: transform, opacity;
       transform-origin: center center;
       transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
@@ -1260,9 +1271,9 @@
               <span id="headerSync" style="font-size: 10px; color: var(--text-sub); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;">Загрузка...</span>
               <svg id="headerSyncIcon" style="width: 8.5px; height: 8.5px; color: var(--text-sub); opacity: 0.7; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
             </div>
-            <div id="headerLiveTimerPill" class="header-timer-pill" style="display: none;" onclick="handleHeaderTimerClick(event)" title="">
-              <span id="headerTimerDot" class="header-timer-dot dot-live"></span>
-              <span id="headerTimerText" class="dynamic-text-root"></span>
+            <div id="headerLiveTimerPill" class="header-timer-pill" onclick="handleHeaderTimerClick(event)" title="Статус занятий">
+              <span id="headerTimerDot" class="header-timer-dot dot-upcoming"></span>
+              <span id="headerTimerText" class="dynamic-text-root">Расписание</span>
             </div>
           </div>
         </div>
@@ -2530,7 +2541,11 @@
     let _kokonutDynamicTimer = null;
 
     function getNextEventCountdown(groupSchedule) {
-      if (!groupSchedule || !currentDaysList.length) return null;
+      if (!groupSchedule) return null;
+      if (!currentDaysList || !currentDaysList.length) {
+        currentDaysList = getScheduleDays(groupSchedule);
+      }
+      if (!currentDaysList || !currentDaysList.length) return null;
 
       const now = new Date();
       const curMin = now.getHours() * 60 + now.getMinutes();
@@ -2766,7 +2781,7 @@
       }
       const todayIdx = currentDaysList.findIndex(d => d.isToday);
       if (todayIdx !== -1 && selectedDayIndex !== todayIdx) {
-        selectDay(todayIdx);
+        selectDayIndex(todayIdx, 'light');
       }
     }
 
@@ -2774,21 +2789,26 @@
       const pillEl = document.getElementById('headerLiveTimerPill');
       if (!pillEl) return;
 
+      const dotEl = document.getElementById('headerTimerDot');
+      const textEl = document.getElementById('headerTimerText');
+
+      if (!groupSchedule) {
+        if (textEl && !_kokonutDynamicTimer) _kokonutDynamicTimer = new KokonutDynamicText(textEl);
+        if (_kokonutDynamicTimer) _kokonutDynamicTimer.setText('Загрузка...');
+        return;
+      }
+
       const event = getNextEventCountdown(groupSchedule);
       if (!event) {
-        pillEl.style.display = 'none';
+        if (dotEl) dotEl.className = 'header-timer-dot dot-upcoming';
+        if (textEl) {
+          if (!_kokonutDynamicTimer) _kokonutDynamicTimer = new KokonutDynamicText(textEl);
+          _kokonutDynamicTimer.setText('Занятий нет');
+        }
+        pillEl.setAttribute('title', 'Нет запланированных занятий в расписании');
         return;
       }
 
-      // If upcoming is far in the future or not today, hide pill to keep interface uncluttered
-      if (event.type === 'upcoming' || (event.type === 'before_first' && event.secsLeft > 10800)) {
-        pillEl.style.display = 'none';
-        return;
-      }
-
-      pillEl.style.display = 'inline-flex';
-
-      const dotEl = document.getElementById('headerTimerDot');
       if (dotEl) {
         dotEl.className = 'header-timer-dot ' + (
           event.type === 'lesson' ? 'dot-live' :
@@ -2796,15 +2816,36 @@
         );
       }
 
-      const prefix = event.type === 'lesson' ? 'Пара ' : (event.type === 'break' ? 'Перемена ' : 'До пар ');
+      const pad2 = n => (n < 10 ? '0' : '') + n;
       const hours = Math.floor(event.secsLeft / 3600);
       const mins = Math.floor((event.secsLeft % 3600) / 60);
       const secs = event.secsLeft % 60;
-      const pad2 = n => (n < 10 ? '0' : '') + n;
-      const timeStr = hours > 0 ? `${pad2(hours)}:${pad2(mins)}:${pad2(secs)}` : `${pad2(mins)}:${pad2(secs)}`;
+      const days = Math.floor(event.secsLeft / 86400);
+
+      let prefix = '';
+      let timeStr = '';
+
+      if (event.type === 'lesson') {
+        prefix = 'Пара ';
+        timeStr = hours > 0 ? `${pad2(hours)}:${pad2(mins)}:${pad2(secs)}` : `${pad2(mins)}:${pad2(secs)}`;
+      } else if (event.type === 'break') {
+        prefix = 'Перерыв ';
+        timeStr = hours > 0 ? `${pad2(hours)}:${pad2(mins)}:${pad2(secs)}` : `${pad2(mins)}:${pad2(secs)}`;
+      } else if (event.type === 'before_first') {
+        prefix = 'До пар ';
+        timeStr = hours > 0 ? `${pad2(hours)}:${pad2(mins)}:${pad2(secs)}` : `${pad2(mins)}:${pad2(secs)}`;
+      } else { // upcoming
+        if (days > 0) {
+          prefix = 'Пары: ';
+          timeStr = `${days}д ${pad2(hours % 24)}ч`;
+        } else {
+          prefix = 'До пар ';
+          timeStr = `${pad2(hours)}:${pad2(mins)}:${pad2(secs)}`;
+        }
+      }
+
       const fullText = prefix + timeStr;
 
-      const textEl = document.getElementById('headerTimerText');
       if (textEl) {
         if (!_kokonutDynamicTimer) {
           _kokonutDynamicTimer = new KokonutDynamicText(textEl);
@@ -2812,7 +2853,7 @@
         _kokonutDynamicTimer.setText(fullText);
       }
 
-      const tooltip = `${event.label}: ${event.detail || ''} • ${timeStr} ${event.footer || ''} • Нажмите для перехода к сегодня`.trim();
+      const tooltip = `${event.label}: ${event.detail || ''} • ${timeStr} ${event.footer || ''} • Нажмите для перехода к расписанию`.trim();
       pillEl.setAttribute('title', tooltip);
     }
 
@@ -4933,14 +4974,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v32') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v34') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=33')
+        navigator.serviceWorker.register('./sw-preview.js?v=34')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
