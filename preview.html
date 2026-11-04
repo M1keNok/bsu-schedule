@@ -1344,14 +1344,6 @@
     <!-- Tab 0: SETTINGS VIEW -->
     <div id="settingsView" class="tab-view" style="display: none; flex-direction: column; gap: 14px; width: 100%;">
       <div class="card-glass rounded-3xl p-5 flex flex-col gap-5 box-border">
-        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
-          <div>
-            <span style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-sub); letter-spacing: 0.5px;">Параметры профиля</span>
-            <h3 style="font-size: 17px; font-weight: 800; margin-top: 1px;">Настройки расписания</h3>
-          </div>
-          <span class="badge badge-accent badge-sm font-bold text-white shadow-sm">БГУ Геофак</span>
-        </div>
-
         <div id="settingsViewBody" class="flex flex-col gap-5"></div>
 
         <div style="display: flex; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 14px; margin-top: 4px;">
@@ -4813,14 +4805,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v30') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v31') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=30')
+        navigator.serviceWorker.register('./sw-preview.js?v=31')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
