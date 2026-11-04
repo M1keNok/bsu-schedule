@@ -1150,34 +1150,30 @@
     .header-timer-pill {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 3.5px;
       padding: 1.5px 7px 1.5px 6px;
       border-radius: 9999px;
-      background: rgba(255, 255, 255, 0.09);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       box-sizing: border-box;
       line-height: 1;
       height: 18px;
-      min-height: 18px;
       cursor: pointer;
       user-select: none;
       -webkit-user-select: none;
       transition: all 0.2s ease;
       flex-shrink: 0;
+      white-space: nowrap;
     }
     html:not(.dark) .header-timer-pill {
       background: rgba(0, 0, 0, 0.05);
-      border: 1px solid rgba(0, 0, 0, 0.12);
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(0, 0, 0, 0.1);
     }
     .header-timer-pill:hover {
-      background: rgba(255, 255, 255, 0.14);
-      border-color: rgba(255, 255, 255, 0.24);
+      background: rgba(255, 255, 255, 0.13);
     }
     html:not(.dark) .header-timer-pill:hover {
       background: rgba(0, 0, 0, 0.08);
-      border-color: rgba(0, 0, 0, 0.18);
     }
     .header-timer-pill:active {
       transform: scale(0.96);
@@ -1220,13 +1216,13 @@
       display: inline-block;
       overflow: hidden;
       vertical-align: middle;
-      height: 13px;
-      line-height: 13px;
+      height: 12px;
+      line-height: 12px;
     }
     .dynamic-char-glyph {
       display: block;
-      height: 13px;
-      line-height: 13px;
+      height: 12px;
+      line-height: 12px;
       will-change: transform, opacity;
       transform-origin: center center;
       transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
@@ -1265,18 +1261,18 @@
         </div>
         <div style="min-width: 0; flex: 1;">
           <div style="display: flex; align-items: center; gap: 5px;"><div id="headerTitle" style="font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">Загрузка...</div><span class="badge badge-warning badge-xs font-mono font-bold text-[9px] px-1 py-0 h-3.5" title="Preview Beta">PREVIEW</span></div>
-          <div style="display: flex; align-items: center; gap: 5px; margin-top: 1.5px; min-width: 0; flex-wrap: nowrap;">
-            <div id="headerSyncBadge" style="display: flex; align-items: center; gap: 3.5px; min-width: 0; flex-shrink: 0;" class="cursor-pointer select-none active:opacity-75 transition-opacity" onclick="event.stopPropagation(); checkScheduleUpdates(true);" title="Нажмите для мгновенной проверки расписания">
-              <span id="headerSyncDot" style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; animation: pulseAura 2s infinite; flex-shrink: 0;"></span>
-              <span id="headerSync" style="font-size: 10px; color: var(--text-sub); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;">Загрузка...</span>
-              <svg id="headerSyncIcon" style="width: 8.5px; height: 8.5px; color: var(--text-sub); opacity: 0.7; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-            </div>
-            <div id="headerLiveTimerPill" class="header-timer-pill" onclick="handleHeaderTimerClick(event)" title="Статус занятий">
-              <span id="headerTimerDot" class="header-timer-dot dot-upcoming"></span>
-              <span id="headerTimerText" class="dynamic-text-root">Расписание</span>
-            </div>
+          <div id="headerSyncBadge" style="display: flex; align-items: center; gap: 3.5px; margin-top: 1.5px; min-width: 0;" class="cursor-pointer select-none active:opacity-75 transition-opacity" onclick="event.stopPropagation(); checkScheduleUpdates(true);" title="Нажмите для мгновенной проверки расписания">
+            <span id="headerSyncDot" style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; animation: pulseAura 2s infinite; flex-shrink: 0;"></span>
+            <span id="headerSync" style="font-size: 10px; color: var(--text-sub); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;">Загрузка...</span>
+            <svg id="headerSyncIcon" style="width: 8.5px; height: 8.5px; color: var(--text-sub); opacity: 0.7; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
           </div>
         </div>
+      </div>
+
+      <!-- Live Status Timer Pill (Kokonut UI Dynamic Text) -->
+      <div id="headerLiveTimerPill" class="header-timer-pill" onclick="handleHeaderTimerClick(event)" title="Статус занятий">
+        <span id="headerTimerDot" class="header-timer-dot dot-live"></span>
+        <span id="headerTimerText" class="dynamic-text-root font-semibold"></span>
       </div>
 
       <!-- Right Action Controls (Dock, Help, Theme) -->
@@ -1404,7 +1400,6 @@
           </div>
         </div>
       </div>
-
 
       <div id="calendarSelector" class="calendar-selector"></div>
 
@@ -2541,11 +2536,7 @@
     let _kokonutDynamicTimer = null;
 
     function getNextEventCountdown(groupSchedule) {
-      if (!groupSchedule) return null;
-      if (!currentDaysList || !currentDaysList.length) {
-        currentDaysList = getScheduleDays(groupSchedule);
-      }
-      if (!currentDaysList || !currentDaysList.length) return null;
+      if (!groupSchedule || !currentDaysList.length) return null;
 
       const now = new Date();
       const curMin = now.getHours() * 60 + now.getMinutes();
@@ -2557,17 +2548,9 @@
         const todaySlots = todayDay.rawKey ? getProcessedDaySlots(todayDay.rawKey, groupSchedule) : [];
         const validSlots = todaySlots
           .filter(s => s.items && s.items.length > 0)
-          .map((s, idx) => {
+          .map(s => {
             const parsed = parseTimeSlotMinutes(s.timeStr);
-            const firstItem = s.items[0];
-            return parsed ? {
-              startMin: parsed.startMin,
-              endMin: parsed.endMin,
-              timeStr: s.timeStr,
-              subject: firstItem?.subject || '',
-              room: firstItem?.room || '',
-              pairNum: idx + 1
-            } : null;
+            return parsed ? { startMin: parsed.startMin, endMin: parsed.endMin, timeStr: s.timeStr } : null;
           })
           .filter(Boolean)
           .sort((a, b) => a.startMin - b.startMin);
@@ -2581,14 +2564,9 @@
           if (currentLesson) {
             const targetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Math.floor(currentLesson.endMin / 60), currentLesson.endMin % 60, 0, 0);
             const diffMs = targetDate.getTime() - now.getTime();
-            const pairNumStr = `${currentLesson.pairNum} пара`;
-            const subj = currentLesson.subject ? `${pairNumStr} • ${currentLesson.subject}` : pairNumStr;
-            const room = currentLesson.room ? ` (${currentLesson.room})` : '';
             return {
               type: 'lesson',
-              label: 'Идёт занятие',
-              detail: subj + room,
-              footer: 'до звонка на перемену',
+              label: 'до перерыва',
               secsLeft: Math.max(0, Math.floor(diffMs / 1000))
             };
           }
@@ -2598,14 +2576,9 @@
           if (nextBreakLesson && curMin >= firstLesson.startMin) {
             const targetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Math.floor(nextBreakLesson.startMin / 60), nextBreakLesson.startMin % 60, 0, 0);
             const diffMs = targetDate.getTime() - now.getTime();
-            const nextPairStr = `${nextBreakLesson.pairNum} пара`;
-            const nextSubj = nextBreakLesson.subject ? `${nextPairStr}: ${nextBreakLesson.subject}` : `Начало в ${nextBreakLesson.timeStr.split('-')[0].trim()}`;
-            const room = nextBreakLesson.room ? ` (${nextBreakLesson.room})` : '';
             return {
               type: 'break',
-              label: 'Перемена',
-              detail: nextSubj + room,
-              footer: 'до звонка на пару',
+              label: 'до пары',
               secsLeft: Math.max(0, Math.floor(diffMs / 1000))
             };
           }
@@ -2614,13 +2587,9 @@
           if (curMin < firstLesson.startMin) {
             const targetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Math.floor(firstLesson.startMin / 60), firstLesson.startMin % 60, 0, 0);
             const diffMs = targetDate.getTime() - now.getTime();
-            const firstSubj = firstLesson.subject ? `1 пара: ${firstLesson.subject}` : `Начало в ${firstLesson.timeStr.split('-')[0].trim()}`;
-            const room = firstLesson.room ? ` (${firstLesson.room})` : '';
             return {
               type: 'before_first',
-              label: 'До начала пар',
-              detail: firstSubj + room,
-              footer: 'до первой пары сегодня',
+              label: 'до пары',
               secsLeft: Math.max(0, Math.floor(diffMs / 1000))
             };
           }
@@ -2633,24 +2602,17 @@
         const dayItem = currentDaysList[i];
         if (!dayItem.rawKey) continue;
         const slots = getProcessedDaySlots(dayItem.rawKey, groupSchedule);
-        const validSlots = slots
+        const validStarts = slots
           .filter(s => s.items && s.items.length > 0)
-          .map((s, idx) => {
+          .map(s => {
             const parsed = parseTimeSlotMinutes(s.timeStr);
-            const firstItem = s.items[0];
-            return parsed ? {
-              startMin: parsed.startMin,
-              timeStr: s.timeStr,
-              subject: firstItem?.subject || '',
-              room: firstItem?.room || '',
-              pairNum: idx + 1
-            } : null;
+            return parsed ? parsed.startMin : null;
           })
-          .filter(Boolean)
-          .sort((a, b) => a.startMin - b.startMin);
+          .filter(m => m !== null)
+          .sort((a, b) => a - b);
 
-        if (validSlots.length > 0) {
-          const firstSlot = validSlots[0];
+        if (validStarts.length > 0) {
+          const firstStartMin = validStarts[0];
           let targetDate = dayItem.date ? new Date(dayItem.date) : null;
           if (!targetDate && dayItem.rawKey) {
             const dm = dayItem.rawKey.match(/(\d{1,2})\.(\d{1,2})/);
@@ -2665,20 +2627,16 @@
               targetDate.getFullYear(),
               targetDate.getMonth(),
               targetDate.getDate(),
-              Math.floor(firstSlot.startMin / 60),
-              firstSlot.startMin % 60,
+              Math.floor(firstStartMin / 60),
+              firstStartMin % 60,
               0,
               0
             );
             const diffMs = targetTime.getTime() - now.getTime();
             if (diffMs > 0) {
-              const dayName = dayItem.dayName || dayItem.name || 'Завтра';
-              const firstSubj = firstSlot.subject ? `${dayName} • ${firstSlot.subject}` : `${dayName} в ${firstSlot.timeStr.split('-')[0].trim()}`;
               return {
                 type: 'upcoming',
-                label: 'Следующие пары',
-                detail: firstSubj,
-                footer: 'до начала занятий',
+                label: 'до пары',
                 secsLeft: Math.max(0, Math.floor(diffMs / 1000))
               };
             }
@@ -2697,9 +2655,12 @@
       const secs = secsLeft % 60;
       const pad2 = n => (n < 10 ? '0' : '') + n;
 
+      // Если до события больше суток (days > 0): только дни и часы (без секунд)
       if (days > 0) {
         return `${days}д ${pad2(hours)}ч`;
       }
+
+      // Если до события осталось меньше суток (< 24 ч): ВСЕГДА отображаем с секундами
       if (hours > 0) {
         return `${pad2(hours)}ч ${pad2(mins)}м ${pad2(secs)}с`;
       }
@@ -2715,19 +2676,15 @@
       }
 
       setText(newText) {
-        if (newText === this.currentText) return;
+        if (!newText || newText === this.currentText) return;
         const oldChars = Array.from(this.currentText);
         const newChars = Array.from(newText);
 
-        // Remove surplus slots if newText is shorter
         while (this.slots.length > newChars.length) {
-          const removedSlot = this.slots.pop();
-          if (removedSlot && removedSlot.parentNode) {
-            removedSlot.remove();
-          }
+          const removed = this.slots.pop();
+          if (removed && removed.parentNode) removed.remove();
         }
 
-        // Append missing slots if newText is longer
         while (this.slots.length < newChars.length) {
           const slot = document.createElement('span');
           slot.className = 'dynamic-char-slot';
@@ -2735,34 +2692,27 @@
           this.slots.push(slot);
         }
 
-        // Transition individual slots
         for (let i = 0; i < newChars.length; i++) {
           const slot = this.slots[i];
           const oldChar = oldChars[i];
           const newChar = newChars[i];
 
-          // If character didn't change and slot already has a glyph, keep it static
           if (oldChar === newChar && slot.querySelector('.dynamic-char-glyph')) {
             continue;
           }
 
-          // Mark current active glyphs as leaving
-          const activeGlyphs = slot.querySelectorAll('.dynamic-char-glyph:not(.glyph-leaving)');
-          activeGlyphs.forEach(g => {
+          const leavingGlyphs = slot.querySelectorAll('.dynamic-char-glyph:not(.glyph-leaving)');
+          leavingGlyphs.forEach(g => {
             g.classList.add('glyph-leaving');
             g.classList.remove('glyph-visible');
-            setTimeout(() => {
-              if (g.parentNode) g.remove();
-            }, 300);
+            setTimeout(() => { if (g.parentNode) g.remove(); }, 300);
           });
 
-          // Create new entering glyph
           const newGlyph = document.createElement('span');
           newGlyph.className = 'dynamic-char-glyph glyph-entering';
-          newGlyph.textContent = newChar === ' ' ? ' ' : newChar;
+          newGlyph.textContent = newChar === ' ' ? '\u00A0' : newChar;
           slot.appendChild(newGlyph);
 
-          // Trigger spring roll transition on next frame
           requestAnimationFrame(() => {
             newGlyph.classList.remove('glyph-entering');
             newGlyph.classList.add('glyph-visible');
@@ -2789,26 +2739,20 @@
       const pillEl = document.getElementById('headerLiveTimerPill');
       if (!pillEl) return;
 
-      const dotEl = document.getElementById('headerTimerDot');
-      const textEl = document.getElementById('headerTimerText');
-
-      if (!groupSchedule) {
-        if (textEl && !_kokonutDynamicTimer) _kokonutDynamicTimer = new KokonutDynamicText(textEl);
-        if (_kokonutDynamicTimer) _kokonutDynamicTimer.setText('Загрузка...');
+      if (currentMainTab === 'settings') {
+        pillEl.style.display = 'none';
         return;
       }
 
       const event = getNextEventCountdown(groupSchedule);
       if (!event) {
-        if (dotEl) dotEl.className = 'header-timer-dot dot-upcoming';
-        if (textEl) {
-          if (!_kokonutDynamicTimer) _kokonutDynamicTimer = new KokonutDynamicText(textEl);
-          _kokonutDynamicTimer.setText('Занятий нет');
-        }
-        pillEl.setAttribute('title', 'Нет запланированных занятий в расписании');
+        pillEl.style.display = 'none';
         return;
       }
 
+      pillEl.style.display = 'inline-flex';
+
+      const dotEl = document.getElementById('headerTimerDot');
       if (dotEl) {
         dotEl.className = 'header-timer-dot ' + (
           event.type === 'lesson' ? 'dot-live' :
@@ -2822,39 +2766,37 @@
       const secs = event.secsLeft % 60;
       const days = Math.floor(event.secsLeft / 86400);
 
-      let prefix = '';
-      let timeStr = '';
-
+      let text = '';
       if (event.type === 'lesson') {
-        prefix = 'Пара ';
-        timeStr = hours > 0 ? `${pad2(hours)}:${pad2(mins)}:${pad2(secs)}` : `${pad2(mins)}:${pad2(secs)}`;
+        text = `Пара ${pad2(mins)}:${pad2(secs)}`;
       } else if (event.type === 'break') {
-        prefix = 'Перерыв ';
-        timeStr = hours > 0 ? `${pad2(hours)}:${pad2(mins)}:${pad2(secs)}` : `${pad2(mins)}:${pad2(secs)}`;
+        text = `Перерыв ${pad2(mins)}:${pad2(secs)}`;
       } else if (event.type === 'before_first') {
-        prefix = 'До пар ';
-        timeStr = hours > 0 ? `${pad2(hours)}:${pad2(mins)}:${pad2(secs)}` : `${pad2(mins)}:${pad2(secs)}`;
+        if (hours > 0) {
+          text = `До пар ${hours}ч ${pad2(mins)}м`;
+        } else {
+          text = `До пар ${pad2(mins)}:${pad2(secs)}`;
+        }
       } else { // upcoming
         if (days > 0) {
-          prefix = 'Пары: ';
-          timeStr = `${days}д ${pad2(hours % 24)}ч`;
+          text = `Пары через ${days}д`;
+        } else if (hours > 0) {
+          text = `До пар ${hours}ч ${pad2(mins)}м`;
         } else {
-          prefix = 'До пар ';
-          timeStr = `${pad2(hours)}:${pad2(mins)}:${pad2(secs)}`;
+          text = `До пар ${pad2(mins)}:${pad2(secs)}`;
         }
       }
 
-      const fullText = prefix + timeStr;
-
+      const textEl = document.getElementById('headerTimerText');
       if (textEl) {
         if (!_kokonutDynamicTimer) {
           _kokonutDynamicTimer = new KokonutDynamicText(textEl);
         }
-        _kokonutDynamicTimer.setText(fullText);
+        _kokonutDynamicTimer.setText(text);
       }
 
-      const tooltip = `${event.label}: ${event.detail || ''} • ${timeStr} ${event.footer || ''} • Нажмите для перехода к расписанию`.trim();
-      pillEl.setAttribute('title', tooltip);
+      const tooltipTime = hours > 0 ? `${hours} ч ${mins} мин` : `${mins} мин ${secs} сек`;
+      pillEl.setAttribute('title', `${event.label} — ${tooltipTime} • Нажмите для перехода к расписанию`);
     }
 
     function startLiveStatusTimer(groupSchedule) {
@@ -4974,14 +4916,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v34') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v35') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=34')
+        navigator.serviceWorker.register('./sw-preview.js?v=35')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
