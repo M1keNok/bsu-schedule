@@ -566,6 +566,13 @@
     }
 
     /* Disable bounce/scale jumps on modal option and parameter selection buttons */
+    #settingsView,
+    #settingsViewBody {
+      overflow-anchor: none;
+    }
+    .setting-group-card {
+      contain: layout style;
+    }
     .modal-sheet button:not(.modal-close-btn),
     .modal-sheet .btn:not(.modal-close-btn),
     #settingsView button,
@@ -573,6 +580,7 @@
     .setting-group-card button,
     .setting-group-card .btn {
       transform: none !important;
+      animation: none !important;
       transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease, opacity 0.12s ease !important;
     }
     .modal-sheet button:not(.modal-close-btn):active,
@@ -582,6 +590,7 @@
     .setting-group-card button:active,
     .setting-group-card .btn:active {
       transform: none !important;
+      animation: none !important;
       opacity: 0.88;
     }
 
@@ -1441,9 +1450,6 @@
             <p style="font-size: 11.5px; color: var(--text-sub); margin-top: 3px; line-height: 1.45;">
               Закрепление через значок булавки в настройках. При каждом новом запуске приложение будет автоматически открывать именно её. Повторное нажатие на булавку снимает закрепление.
             </p>
-            <div style="font-size: 11px; color: var(--text-sub); margin-top: 6px; padding: 6px 9px; border-radius: 10px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.18); line-height: 1.4;">
-              <b>Пример:</b> Студент 1 курса 31 группы нажимает булавку на своей группе один раз. Теперь при входе в бота сразу открываются его пары, а при временном просмотре других групп остаётся кнопка быстрого возврата.
-            </div>
           </div>
         </div>
 
@@ -2984,8 +2990,8 @@
 
       const activeLangObj = langs.find(l => l.id === currentProfile.foreign_lang);
       const langHint = activeLangObj
-        ? `Выбран <b>${activeLangObj.label}</b>. Нажмите повторно для сброса (будут показаны все языки).`
-        : `Язык не выбран • в расписании показываются все языки. Нажмите на язык, чтобы скрыть остальные.`;
+        ? `Выбран <b>${activeLangObj.label}</b> • нажмите повторно для сброса`
+        : `Фильтр отключен • в расписании видны все языки`;
 
       let primaryCourse = null;
       let primaryGroup = null;
@@ -3006,59 +3012,67 @@
       let primaryCardHtml = '';
       if (isCurrentPinned) {
         primaryCardHtml = `
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-base-200/50 border border-base-content/10">
+          <div class="flex items-center justify-between gap-2 p-2.5 min-h-[52px] rounded-xl bg-base-200/50 border border-base-content/10">
             <div class="flex items-center gap-2.5 min-w-0">
               <div class="w-8 h-8 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 text-emerald-400">
                 <svg style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z"/></svg>
               </div>
               <div class="flex flex-col min-w-0">
                 <span class="text-xs font-bold text-base-content/90 truncate">${primaryGroup.replace(/^ГРУППА\s*/i, 'Группа ')} (${primaryCourse} курс)</span>
+                <span class="text-[10px] text-emerald-400 font-medium truncate">Закреплена как основная</span>
               </div>
             </div>
-            <button type="button" onclick="unsetPrimaryGroup()" class="btn btn-sm btn-circle bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/35 flex-shrink-0 shadow-sm" title="Нажмите, чтобы открепить группу" aria-label="Открепить группу">
-              <svg style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z"/></svg>
-            </button>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <button type="button" onclick="unsetPrimaryGroup()" class="btn btn-sm btn-circle bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/35 flex-shrink-0 shadow-sm" title="Нажмите, чтобы открепить группу" aria-label="Открепить группу">
+                <svg style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z"/></svg>
+              </button>
+            </div>
           </div>
         `;
       } else if (hasPrimary) {
         primaryCardHtml = `
-          <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-base-200/50 border border-base-content/10">
+          <div class="flex items-center justify-between gap-2 p-2.5 min-h-[52px] rounded-xl bg-base-200/50 border border-base-content/10">
             <div class="flex items-center gap-2.5 min-w-0">
               <div class="w-8 h-8 rounded-full bg-base-300/60 border border-base-content/15 flex items-center justify-center flex-shrink-0 text-base-content/70">
                 <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
               </div>
               <div class="flex flex-col min-w-0">
                 <span class="text-xs font-bold text-base-content/90 truncate">${currentProfile.group_name.replace(/^ГРУППА\s*/i, 'Группа ')} (${currentProfile.course} курс)</span>
-                <span class="text-[10px] text-base-content/50">Просмотр (основная: ${primaryGroup.replace(/^ГРУППА\s*/i, '')} гр.)</span>
+                <span class="text-[10px] text-base-content/50 truncate">Просмотр (основная: ${primaryGroup.replace(/^ГРУППА\s*/i, '')} гр.)</span>
               </div>
             </div>
-            <button type="button" onclick="setAsPrimaryGroup()" class="btn btn-sm btn-circle btn-primary flex-shrink-0 shadow-md" title="Закрепить эту группу как основную" aria-label="Закрепить группу">
-              <svg style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z"/></svg>
-            </button>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <button type="button" onclick="returnToPrimaryGroup()" class="btn btn-sm btn-circle btn-ghost border border-base-content/20 text-base-content/70 hover:text-base-content flex-shrink-0 shadow-sm" title="Вернуться к основной (${primaryGroup.replace(/^ГРУППА\s*/i, '')} гр., ${primaryCourse} к.)" aria-label="Вернуться к основной группе">
+                <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+              </button>
+              <button type="button" onclick="setAsPrimaryGroup()" class="btn btn-sm btn-circle btn-primary flex-shrink-0 shadow-sm" title="Закрепить эту группу как основную" aria-label="Закрепить группу">
+                <svg style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z"/></svg>
+              </button>
+            </div>
           </div>
-          <button type="button" onclick="returnToPrimaryGroup()" class="btn btn-sm btn-ghost border border-base-content/10 w-full font-bold justify-center gap-2 h-9 rounded-xl">
-            <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            <span>Вернуться к основной (${primaryGroup.replace(/^ГРУППА\s*/i, '')} гр., ${primaryCourse} к.)</span>
-          </button>
         `;
       } else {
         primaryCardHtml = `
-          <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-base-200/50 border border-base-content/10">
+          <div class="flex items-center justify-between gap-2 p-2.5 min-h-[52px] rounded-xl bg-base-200/50 border border-base-content/10">
             <div class="flex items-center gap-2.5 min-w-0">
               <div class="w-8 h-8 rounded-full bg-base-300/60 border border-base-content/15 flex items-center justify-center flex-shrink-0 text-base-content/60">
                 <svg style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z"/></svg>
               </div>
               <div class="flex flex-col min-w-0">
                 <span class="text-xs font-bold text-base-content/90 truncate">${currentProfile.group_name.replace(/^ГРУППА\s*/i, 'Группа ')} (${currentProfile.course} курс)</span>
-                <span class="text-[10px] text-base-content/50">Группа не закреплена</span>
+                <span class="text-[10px] text-base-content/50 truncate">Группа не закреплена</span>
               </div>
             </div>
-            <button type="button" onclick="setAsPrimaryGroup()" class="btn btn-sm btn-circle btn-ghost border border-base-content/20 text-base-content/70 hover:text-base-content flex-shrink-0 shadow-sm" title="Закрепить эту группу как основную" aria-label="Закрепить группу">
-              <svg style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z"/></svg>
-            </button>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <button type="button" onclick="setAsPrimaryGroup()" class="btn btn-sm btn-circle btn-ghost border border-base-content/20 text-base-content/70 hover:text-base-content flex-shrink-0 shadow-sm" title="Закрепить эту группу как основную" aria-label="Закрепить группу">
+                <svg style="width: 15px; height: 15px;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z"/></svg>
+              </button>
+            </div>
           </div>
         `;
       }
+
+      const prevScroll = window.scrollY;
 
       body.innerHTML = `
         <div class="setting-group-card flex flex-col gap-2.5">
@@ -3095,13 +3109,10 @@
               const num = g.replace(/^ГРУППА\s*/i, '');
               const sel = currentProfile.group_name === g;
               const isGroupPinned = hasPrimary && (currentProfile.course === primaryCourse && g === primaryGroup);
-              return `<button type="button" onclick="selectGroupSettingsTab('${g}')" class="btn btn-sm rounded-xl font-bold border border-base-content/10 transition-colors relative ${sel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">
+              return `<button type="button" onclick="selectGroupSettingsTab('${g}')" class="btn btn-sm h-9 min-h-[36px] rounded-xl font-bold border border-base-content/10 transition-colors relative ${sel ? 'btn-primary shadow-sm' : 'btn-ghost bg-base-200/50'}">
                 <span>${num}</span>
                 ${isGroupPinned ? `<span class="absolute top-1 right-1 opacity-85 text-emerald-400" title="Основная группа"><svg style="width: 10px; height: 10px;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z"/></svg></span>` : ''}
               </button>`;
-            }).join('')}
-          </div>
-        </div>
             }).join('')}
           </div>
         </div>
@@ -3117,9 +3128,13 @@
               </button>`;
             }).join('')}
           </div>
-          <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px; line-height: 1.4;">${langHint}</div>
+          <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px; min-height: 18px; line-height: 1.4;" class="truncate">${langHint}</div>
         </div>
       `;
+
+      if (window.scrollY !== prevScroll) {
+        window.scrollTo(0, prevScroll);
+      }
     }
 
     function selectCourseSettingsTab(course) {
@@ -4710,14 +4725,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v22') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v25') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=24')
+        navigator.serviceWorker.register('./sw-preview.js?v=25')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
