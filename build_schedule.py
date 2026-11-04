@@ -843,6 +843,13 @@ def build_all():
     with open("schedule_data.json", "w", encoding="utf-8") as f:
         json.dump(final_data, f, ensure_ascii=False, indent=2)
 
+    try:
+        from dropbox_checker import get_current_dropbox_state, save_state
+        save_state(get_current_dropbox_state())
+        print("dropbox_state.json синхронизирован с актуальным состоянием.")
+    except Exception as e:
+        print(f"Не удалось обновить dropbox_state.json: {e}")
+
     # Clean up temporary doc and docx files
     for cid, cfg in COURSES_CONFIG.items():
         for fpath in [cfg.get("raw_file"), cfg.get("docx_file")]:

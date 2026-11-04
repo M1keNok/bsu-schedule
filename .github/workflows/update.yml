@@ -2,19 +2,29 @@ name: Update Schedule from Decanat
 
 on:
   schedule:
-    # Run every 15 minutes at off-peak minutes to avoid GitHub Actions runner queue delays
-    - cron: '12,27,42,57 * * * *'
+    # Frequently check during study/work hours (05:00-19:00 UTC = 08:00-22:00 Minsk)
+    - cron: '*/10 5-19 * * *'
+    # Less frequent at night
+    - cron: '*/30 0-4,20-23 * * *'
   workflow_dispatch:
+    inputs:
+      force:
+        description: 'Принудительно пересобрать расписание (игнорировать ETag)'
+        required: false
+        type: boolean
+        default: false
+  repository_dispatch:
+    types: [sync-schedule, force-sync]
 
 concurrency:
   group: schedule-sync
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 permissions:
   contents: write
 
 jobs:
-  build:
+  check-and-update:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
@@ -24,19 +34,54 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip'
 
-      - name: Install LibreOffice and Python packages
+      - name: Install fast checker dependencies
+        run: pip install requests
+
+      - name: Fast Dropbox check
+        id: dropbox_check
+        run: |
+          FORCE="${{ github.event.inputs.force }}"
+          EVENT="${{ github.event_name }}"
+          ACTION="${{ github.event.action }}"
+
+          if [ "$FORCE" = "true" ] || [ "$ACTION" = "force-sync" ]; then
+            echo "⚡ Принудительная пересборка запрошена."
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Быстрая проверка заголовков Dropbox (< 2 сек)
+          set +e
+          python dropbox_checker.py --check-only
+          EXIT_CODE=$?
+          set -e
+
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "🔔 В Dropbox обнаружены обновленные файлы деканата!"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ Все файлы в Dropbox без изменений. Пропуск установки LibreOffice и сборки."
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install LibreOffice and parser dependencies
+        if: steps.dropbox_check.outputs.has_changes == 'true'
         run: |
           sudo apt update
-          sudo apt install -y libreoffice-writer libreoffice-calc
-          pip install python-docx requests
+          sudo apt install -y --no-install-recommends libreoffice-writer libreoffice-calc
+          pip install python-docx
 
       - name: Run schedule builder
-        run: python build_schedule.py
+        if: steps.dropbox_check.outputs.has_changes == 'true'
+        run: |
+          python build_schedule.py
 
       - name: Commit and push changes
+        if: steps.dropbox_check.outputs.has_changes == 'true'
         run: |
           git config --global user.name "BSU Schedule Bot"
           git config --global user.email "bot@github.com"
-          git add schedule_data.json
+          git add schedule_data.json dropbox_state.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update schedule from Decanat [skip ci]" && git push)
