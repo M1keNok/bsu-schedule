@@ -843,34 +843,42 @@
     }
 
 
-    /* ─── Toast Notification ─────────────────────────────────────────────── */
-    .toast-notification {
-      position: fixed;
-      bottom: calc(24px + env(safe-area-inset-bottom, 24px));
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--glass-card);
-      backdrop-filter: blur(24px) saturate(190%);
-      -webkit-backdrop-filter: blur(24px) saturate(190%);
-      border: 1px solid var(--border-color);
-      box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.4), var(--glass-inner-bevel);
-      padding: 10px 18px;
-      border-radius: 16px;
-      font-size: 12.5px;
-      font-weight: 700;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      z-index: 100;
+    /* ─── Global App Toast (Centered, responsive, mobile-safe) ───────────────── */
+    #daisyToast {
+      position: fixed !important;
+      bottom: calc(20px + env(safe-area-inset-bottom, 16px)) !important;
+      left: 50% !important;
+      right: auto !important;
+      top: auto !important;
+      transform: translate(-50%, 14px) scale(0.96) !important;
+      width: max-content !important;
+      max-width: calc(100vw - 32px) !important;
+      z-index: 9999 !important;
+      pointer-events: none !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0 !important;
+      margin: 0 !important;
       opacity: 0;
-      pointer-events: none;
-      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s ease;
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease !important;
     }
-    .toast-notification.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-      pointer-events: auto;
+    #daisyToast.show {
+      opacity: 1 !important;
+      transform: translate(-50%, 0) scale(1) !important;
+    }
+    #daisyToast .alert {
+      max-width: calc(100vw - 32px) !important;
+      width: auto !important;
+      white-space: normal !important;
+      word-break: break-word !important;
+      text-align: center !important;
+      justify-content: center !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.45), var(--glass-inner-bevel) !important;
     }
 
     .past-day-card {
@@ -2717,28 +2725,27 @@
       tick();
     }
 
-    // ─── «Кнопка старосты»: Копирование расписания в буфер обмена ──────────
+    // ─── Toast Notifications ────────────────────────────────────────────────
     let _toastTimeout = null;
     function showToast(msg, type = 'info') {
       let toastContainer = document.getElementById('daisyToast');
       if (!toastContainer) {
         toastContainer = document.createElement('div');
         toastContainer.id = 'daisyToast';
-        toastContainer.className = 'toast toast-bottom toast-center z-[100] pb-6 pointer-events-none transition-all duration-300';
         document.body.appendChild(toastContainer);
       }
       toastContainer.innerHTML = `
-        <div class="alert alert-${type} shadow-2xl py-2.5 px-4 text-xs font-bold rounded-2xl border border-white/10 backdrop-blur-xl bg-base-200/90 text-base-content flex items-center gap-2">
+        <div class="alert alert-${type} py-2.5 px-4 text-xs font-bold rounded-2xl border border-white/10 backdrop-blur-xl bg-base-200/95 text-base-content flex items-center justify-center gap-2">
           <span>${msg}</span>
         </div>
       `;
-      toastContainer.style.opacity = '1';
-      toastContainer.style.transform = 'translateY(0)';
       if (_toastTimeout) clearTimeout(_toastTimeout);
+      requestAnimationFrame(() => {
+        toastContainer.classList.add('show');
+      });
       _toastTimeout = setTimeout(() => {
-        toastContainer.style.opacity = '0';
-        toastContainer.style.transform = 'translateY(12px)';
-      }, 2300);
+        toastContainer.classList.remove('show');
+      }, 2500);
     }
 
     function renderLessonDetails(detailsStr) {
