@@ -1239,19 +1239,19 @@
 
   <header class="header-bar">
     <div class="header-glass">
-      <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; margin-right: 4px;" class="cursor-pointer tap-scale" onclick="switchMainTab('settings')" title="Настройки профиля">
-        <div style="width: 32px; height: 32px; border-radius: 10px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-          <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <div style="display: flex; align-items: center; gap: 7px; min-width: 0; flex: 1;" class="cursor-pointer tap-scale" onclick="switchMainTab('settings')" title="Настройки профиля">
+        <div style="width: 28px; height: 28px; border-radius: 8px; background: var(--glass-card-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg style="width: 15px; height: 15px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10"></circle>
             <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor"></polygon>
           </svg>
         </div>
         <div style="min-width: 0; flex: 1;">
-          <div style="display: flex; align-items: center; gap: 6px;"><div id="headerTitle" style="font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">Загрузка...</div><span class="badge badge-warning badge-xs font-mono font-bold text-[9px] px-1 py-0 h-3.5" title="Preview Beta">PREVIEW</span></div>
-          <div id="headerSyncBadge" style="display: flex; align-items: center; gap: 4px; margin-top: 1.5px; min-width: 0;" class="cursor-pointer select-none active:opacity-75 transition-opacity" onclick="event.stopPropagation(); checkScheduleUpdates(true);" title="Нажмите для мгновенной проверки расписания">
+          <div style="display: flex; align-items: center; gap: 5px;"><div id="headerTitle" style="font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">Загрузка...</div><span class="badge badge-warning badge-xs font-mono font-bold text-[9px] px-1 py-0 h-3.5" title="Preview Beta">PREVIEW</span></div>
+          <div id="headerSyncBadge" style="display: flex; align-items: center; gap: 3.5px; margin-top: 1.5px; min-width: 0;" class="cursor-pointer select-none active:opacity-75 transition-opacity" onclick="event.stopPropagation(); checkScheduleUpdates(true);" title="Нажмите для мгновенной проверки расписания">
             <span id="headerSyncDot" style="width: 5px; height: 5px; border-radius: 50%; background: #10b981; animation: pulseAura 2s infinite; flex-shrink: 0;"></span>
             <span id="headerSync" style="font-size: 10px; color: var(--text-sub); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;">Загрузка...</span>
-            <svg id="headerSyncIcon" style="width: 9px; height: 9px; color: var(--text-sub); opacity: 0.7; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            <svg id="headerSyncIcon" style="width: 8.5px; height: 8.5px; color: var(--text-sub); opacity: 0.7; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
           </div>
         </div>
       </div>
@@ -3269,7 +3269,7 @@
       if (currentMainTab === 'settings') {
         headerTitle.textContent = 'Настройки';
         if (headerSync) {
-          headerSync.textContent = 'Параметры профиля';
+          headerSync.textContent = 'Параметры';
           headerSync.title = 'Параметры профиля';
         }
         return;
@@ -3304,10 +3304,10 @@
             || '';
 
           if (!navigator.onLine) {
-            headerSync.textContent = groupTime ? `Офлайн • ${groupTime}` : 'Офлайн (кэш)';
+            headerSync.textContent = groupTime ? `Офлайн (${groupTime})` : 'Офлайн (кэш)';
             headerSync.title = 'Интернет отключен • отображаются данные из локального кэша';
           } else if (groupTime) {
-            headerSync.textContent = `Обновлено: ${groupTime}`;
+            headerSync.textContent = groupTime;
             headerSync.title = `Расписание для ${currentProfile.group_name} (${currentProfile.course} курс) обновлено: ${groupTime}`;
           } else {
             headerSync.textContent = 'Синхронизировано';
