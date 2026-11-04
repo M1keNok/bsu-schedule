@@ -103,10 +103,11 @@ def load_saved_state(path: str = STATE_FILE) -> dict:
 def save_state(state: dict, path: str = STATE_FILE):
     minsk_tz = timezone(timedelta(hours=3))
     now_minsk = datetime.now(minsk_tz)
+    courses = state.get("courses", state) if isinstance(state, dict) else state
     full_state = {
         "last_checked_utc": datetime.now(timezone.utc).isoformat(),
         "last_checked_minsk": now_minsk.strftime("%Y-%m-%d %H:%M:%S MSK"),
-        "courses": state
+        "courses": courses
     }
     with open(path, "w", encoding="utf-8") as f:
         json.dump(full_state, f, ensure_ascii=False, indent=2)

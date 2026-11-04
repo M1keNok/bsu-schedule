@@ -1988,19 +1988,19 @@
           updateHeaderGroupTitle();
           renderView();
 
-          const courseTime = facultyData?.group_updated_times?.[currentProfile?.course]?.[currentProfile?.group_name]
+          const groupTime = facultyData?.group_updated_times?.[currentProfile?.course]?.[currentProfile?.group_name]
             || facultyData?.updated_times?.[currentProfile?.course]
-            || 'только что';
+            || '';
 
           triggerHaptic('success');
-          showToast(`🎉 Расписание обновлено! Деканат: ${courseTime}`, 'success');
+          showToast(groupTime ? `🎉 Расписание обновлено! (${groupTime})` : '🎉 Расписание обновлено!', 'success');
         } else {
           if (isManual) {
             triggerHaptic('light');
-            const courseTime = facultyData?.group_updated_times?.[currentProfile?.course]?.[currentProfile?.group_name]
+            const groupTime = facultyData?.group_updated_times?.[currentProfile?.course]?.[currentProfile?.group_name]
               || facultyData?.updated_times?.[currentProfile?.course]
-              || 'актуально';
-            showToast(`✔️ Расписание актуально (деканат: ${courseTime})`, 'info');
+              || '';
+            showToast(groupTime ? `✔️ Расписание актуально (${groupTime})` : '✔️ Расписание актуально', 'info');
           }
         }
       } catch (err) {
@@ -2016,65 +2016,6 @@
           setTimeout(() => {
             syncIcon.style.animation = '';
           }, 300);
-        }
-      }
-    }
-
-    async function triggerCloudDecanatSync() {
-      triggerHaptic('medium');
-      let token = localStorage.getItem('bsu_gh_sync_token');
-      if (!token) {
-        const input = prompt('Введите GitHub Personal Access Token для запуска облачного экшена:');
-        if (input && input.trim()) {
-          token = input.trim();
-          localStorage.setItem('bsu_gh_sync_token', token);
-        } else {
-          // Фоллбэк: выполняем проверку расписания без вызова Action
-          checkScheduleUpdates(true);
-          return;
-        }
-      }
-
-      const btn = document.getElementById('cloudSyncBtn');
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = `<span class="loading loading-spinner loading-xs"></span><span>Опрос Dropbox...</span>`;
-      }
-      showToast('📡 Сигнал отправлен в облако GitHub Actions...', 'info');
-
-      try {
-        const res = await fetch('https://api.github.com/repos/M1keNok/bsu-schedule/dispatches', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'token ' + token,
-            'Accept': 'application/vnd.github+json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ event_type: 'sync-schedule' })
-        });
-
-        if (res.status === 204 || res.ok) {
-          triggerHaptic('success');
-          showToast('⚡ Проверка Dropbox запущена в GitHub Actions! Расписание обновится через ~20-30 сек.', 'success');
-          setTimeout(() => checkScheduleUpdates(false), 15000);
-          setTimeout(() => checkScheduleUpdates(false), 30000);
-          setTimeout(() => checkScheduleUpdates(false), 45000);
-        } else {
-          if (res.status === 401 || res.status === 403) {
-            localStorage.removeItem('bsu_gh_sync_token');
-          }
-          throw new Error('Status: ' + res.status);
-        }
-      } catch (e) {
-        console.error('Cloud sync error:', e);
-        triggerHaptic('warning');
-        showToast('Не удалось запустить опрос в облаке (проверьте токен)', 'warning');
-      } finally {
-        if (btn) {
-          setTimeout(() => {
-            btn.disabled = false;
-            btn.innerHTML = `<svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a4 4 0 0 0-4-4 4 4 0 0 0-7.86 1A4.5 4.5 0 0 0 3 12.5a4.5 4.5 0 0 0 4.5 4.5H19a3 3 0 0 0 0-6z"/></svg><span>Опрос Dropbox</span>`;
-          }, 4000);
         }
       }
     }
@@ -3209,10 +3150,6 @@
         `;
       }
 
-      const decanatTimeText = facultyData?.group_updated_times?.[currentProfile.course]?.[currentProfile.group_name]
-        || facultyData?.updated_times?.[currentProfile.course]
-        || 'Актуально';
-
       const prevScroll = window.scrollY;
 
       body.innerHTML = `
@@ -3270,41 +3207,6 @@
             }).join('')}
           </div>
           <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px; min-height: 18px; line-height: 1.4;" class="truncate">${langHint}</div>
-        </div>
-
-        <div class="setting-group-card flex flex-col gap-2.5">
-          <div class="flex items-center justify-between">
-            <div class="section-title">Синхронизация с деканатом</div>
-            <span class="badge badge-success badge-sm font-bold gap-1 bg-emerald-500/15 border-emerald-500/30 text-emerald-400">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>Dropbox Live</span>
-            </span>
-          </div>
-
-          <div class="p-3 rounded-2xl bg-base-200/50 border border-base-content/10 flex flex-col gap-2">
-            <div class="flex items-center justify-between text-xs">
-              <span class="text-base-content/60">Деканат (${currentProfile.course} к., ${currentProfile.group_name ? currentProfile.group_name.replace(/^ГРУППА\s*/i, 'гр. ') : ''}):</span>
-              <span class="font-bold text-base-content/90 font-mono">${decanatTimeText}</span>
-            </div>
-            <div class="flex items-center justify-between text-xs">
-              <span class="text-base-content/60">Режим синхронизации:</span>
-              <span class="font-semibold text-emerald-400">Мгновенный (Smart ETag)</span>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <button type="button" onclick="checkScheduleUpdates(true)" class="btn btn-sm h-10 rounded-xl font-bold border border-base-content/10 btn-ghost bg-base-200/60 hover:bg-base-200 flex items-center justify-center gap-1.5">
-              <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-              <span>Проверить</span>
-            </button>
-            <button type="button" id="cloudSyncBtn" onclick="triggerCloudDecanatSync()" class="btn btn-sm h-10 rounded-xl font-bold btn-primary flex items-center justify-center gap-1.5 shadow-sm">
-              <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a4 4 0 0 0-4-4 4 4 0 0 0-7.86 1A4.5 4.5 0 0 0 3 12.5a4.5 4.5 0 0 0 4.5 4.5H19a3 3 0 0 0 0-6z"/></svg>
-              <span>Опрос Dropbox</span>
-            </button>
-          </div>
-          <div class="text-[10px] text-base-content/50 leading-tight">
-            Кнопка «Опрос Dropbox» отправляет мгновенный сигнал в GitHub Actions для немедленного обновления при публикации изменений деканатом.
-          </div>
         </div>
       `;
 
@@ -3390,19 +3292,19 @@
           headerTitle.innerHTML = `<span class="truncate">${titleText}</span>`;
         }
         if (headerSync) {
+          const groupTime = facultyData?.group_updated_times?.[currentProfile.course]?.[currentProfile.group_name]
+            || facultyData?.updated_times?.[currentProfile.course]
+            || '';
+
           if (!navigator.onLine) {
-            headerSync.textContent = 'Офлайн (кэш)';
+            headerSync.textContent = groupTime ? `Офлайн • ${groupTime}` : 'Офлайн (кэш)';
             headerSync.title = 'Интернет отключен • отображаются данные из локального кэша';
-          } else if (isGuest) {
-            headerSync.textContent = 'Режим просмотра';
-            headerSync.title = 'Вы просматриваете другую группу. При новом запуске откроется ваша основная группа.';
+          } else if (groupTime) {
+            headerSync.textContent = `Обновлено: ${groupTime}`;
+            headerSync.title = `Расписание для ${currentProfile.group_name} (${currentProfile.course} курс) обновлено: ${groupTime}`;
           } else {
-            const groupTime = facultyData?.group_updated_times?.[currentProfile.course]?.[currentProfile.group_name]
-              || facultyData?.updated_times?.[currentProfile.course]
-              || Object.values(facultyData?.updated_times || {})[0];
-            const text = groupTime ? `Деканат: ${groupTime}` : 'Синхронизировано';
-            headerSync.textContent = text;
-            headerSync.title = groupTime ? `Расписание для ${currentProfile.group_name} обновлено деканатом: ${groupTime}` : 'Расписание синхронизировано';
+            headerSync.textContent = 'Синхронизировано';
+            headerSync.title = `Расписание для ${currentProfile.group_name} (${currentProfile.course} курс) синхронизировано`;
           }
         }
       }

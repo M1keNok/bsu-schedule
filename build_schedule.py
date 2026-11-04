@@ -52,18 +52,30 @@ def download_file(course_id, cfg):
     with open(cfg["raw_file"], "wb") as f:
         f.write(res.content)
 
-def extract_decanat_modtime(docx_path):
+def extract_decanat_modtime(docx_path, is_converted=False):
     try:
         import docx
         doc = docx.Document(docx_path)
         dt = doc.core_properties.modified
         if dt:
-            if dt.tzinfo is not None:
-                minsk_tz = datetime.timezone(datetime.timedelta(hours=3))
-                dt = dt.astimezone(minsk_tz)
+            minsk_tz = datetime.timezone(datetime.timedelta(hours=3))
+            now_minsk = datetime.datetime.now(minsk_tz)
+            if is_converted:
+                # В файлах .doc, конвертированных LibreOffice, время из OLE-потока
+                # уже записано в локальном времени Минска.
+                local_dt = datetime.datetime(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second, tzinfo=minsk_tz)
             else:
-                dt = dt + datetime.timedelta(hours=3)
-            return format_datetime_ru(dt)
+                # В нативном .docx (4 курс) Word сохраняет время в UTC
+                if dt.tzinfo is not None:
+                    local_dt = dt.astimezone(minsk_tz)
+                else:
+                    local_dt = dt.replace(tzinfo=datetime.timezone.utc).astimezone(minsk_tz)
+
+            # Защита от опережения времени (время деканата не может быть в будущем)
+            if local_dt > now_minsk + datetime.timedelta(minutes=5):
+                local_dt = local_dt - datetime.timedelta(hours=3)
+
+            return format_datetime_ru(local_dt)
     except Exception as e:
         print(f"Не удалось извлечь время деканата из {docx_path}: {e}")
     return None
@@ -775,7 +787,7 @@ def finalize_schedule_metadata(final_courses, decanat_times, old_data):
                 old_h = old_day_hashes.get(cid, {}).get(g_name, {}).get(day_key)
                 old_dt = old_day_times.get(cid, {}).get(g_name, {}).get(day_key)
 
-                if old_h is None or old_h != cur_h:
+                if old_h is None or old_h != cur_h or old_dt in ("4 ноя в 18:37", "4 ноя в 18:38"):
                     day_time = course_decanat_time or old_dt or "Обновлено"
                     group_has_changed = True
                 else:
@@ -783,7 +795,7 @@ def finalize_schedule_metadata(final_courses, decanat_times, old_data):
 
                 merged_day_updated_times[cid][g_name][day_key] = day_time
 
-            if group_has_changed or not prev_grp_time:
+            if group_has_changed or not prev_grp_time or prev_grp_time in ("4 ноя в 18:37", "4 ноя в 18:38"):
                 merged_group_updated_times[cid][g_name] = course_decanat_time or prev_grp_time or "Обновлено"
             else:
                 merged_group_updated_times[cid][g_name] = prev_grp_time
@@ -804,7 +816,7 @@ def build_all():
     # Извлекаем фактическое время последнего обновления файла деканатом
     updated_times = {}
     for cid, cfg in COURSES_CONFIG.items():
-        decanat_time = extract_decanat_modtime(cfg["docx_file"])
+        decanat_time = extract_decanat_modtime(cfg["docx_file"], cfg.get("needs_conversion", False))
         if decanat_time:
             updated_times[cid] = decanat_time
             print(f"Курс {cid}: время обновления от деканата = {decanat_time}")
