@@ -1200,51 +1200,25 @@
       background: #06b6d4;
       box-shadow: 0 0 5px rgba(6, 182, 212, 0.7);
     }
-    .dynamic-text-root {
-      display: inline-flex;
-      align-items: center;
+    .day-timer-label {
       font-size: 11px;
       font-weight: 700;
-      line-height: 1;
       color: var(--text-main);
+      opacity: 0.92;
       letter-spacing: -0.15px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .day-timer-digits {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-main);
       font-variant-numeric: tabular-nums;
-      font-family: inherit;
-      position: relative;
-    }
-    .dynamic-char-slot {
-      position: relative;
-      display: inline-block;
-      overflow: hidden;
-      vertical-align: middle;
-      height: 14px;
-      line-height: 14px;
-    }
-    .dynamic-char-glyph {
-      display: block;
-      height: 14px;
-      line-height: 14px;
-      will-change: transform, opacity;
-      transform-origin: center center;
-      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
-    }
-    .dynamic-char-glyph.glyph-entering {
-      transform: translateY(100%);
-      opacity: 0;
-    }
-    .dynamic-char-glyph.glyph-visible {
-      transform: translateY(0);
-      opacity: 1;
-    }
-    .dynamic-char-glyph.glyph-leaving {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      transform: translateY(-100%);
-      opacity: 0;
-      pointer-events: none;
+      font-feature-settings: "tnum" 1;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      letter-spacing: 0.25px;
+      line-height: 1;
+      white-space: nowrap;
     }
 
   </style>
@@ -1405,7 +1379,8 @@
           <div id="dayLiveTimer">
             <div id="dayLiveBadge" class="day-live-timer-badge" onclick="handleLiveTimerClick(event)" title="Статус занятий">
               <span id="dayLiveDot" class="day-timer-dot dot-live"></span>
-              <span id="dayLiveDynamicText" class="dynamic-text-root font-semibold"></span>
+              <span id="dayLiveLabel" class="day-timer-label">До перерыва</span>
+              <span id="dayLiveDigits" class="day-timer-digits">00:00</span>
             </div>
           </div>
         </div>
@@ -2668,62 +2643,6 @@
       return `${pad2(mins)}м ${pad2(secs)}с`;
     }
 
-    /* ─── Kokonut UI Dynamic Text (Character Slot Roll Transitions) ──────── */
-    class KokonutDynamicText {
-      constructor(containerEl) {
-        this.container = containerEl;
-        this.currentText = '';
-        this.slots = [];
-      }
-
-      setText(newText) {
-        if (!newText || newText === this.currentText) return;
-        const oldChars = Array.from(this.currentText);
-        const newChars = Array.from(newText);
-
-        while (this.slots.length > newChars.length) {
-          const removed = this.slots.pop();
-          if (removed && removed.parentNode) removed.remove();
-        }
-
-        while (this.slots.length < newChars.length) {
-          const slot = document.createElement('span');
-          slot.className = 'dynamic-char-slot';
-          this.container.appendChild(slot);
-          this.slots.push(slot);
-        }
-
-        for (let i = 0; i < newChars.length; i++) {
-          const slot = this.slots[i];
-          const oldChar = oldChars[i];
-          const newChar = newChars[i];
-
-          if (oldChar === newChar && slot.querySelector('.dynamic-char-glyph')) {
-            continue;
-          }
-
-          const leavingGlyphs = slot.querySelectorAll('.dynamic-char-glyph:not(.glyph-leaving)');
-          leavingGlyphs.forEach(g => {
-            g.classList.add('glyph-leaving');
-            g.classList.remove('glyph-visible');
-            setTimeout(() => { if (g.parentNode) g.remove(); }, 300);
-          });
-
-          const newGlyph = document.createElement('span');
-          newGlyph.className = 'dynamic-char-glyph glyph-entering';
-          newGlyph.textContent = newChar === ' ' ? '\u00A0' : newChar;
-          slot.appendChild(newGlyph);
-
-          requestAnimationFrame(() => {
-            newGlyph.classList.remove('glyph-entering');
-            newGlyph.classList.add('glyph-visible');
-          });
-        }
-
-        this.currentText = newText;
-      }
-    }
-
     function handleLiveTimerClick(event) {
       if (event) event.stopPropagation();
       triggerHaptic('light');
@@ -2758,45 +2677,38 @@
         );
       }
 
+      const isLesson = event.type === 'lesson';
+      const labelText = isLesson ? 'До перерыва' : 'До пары';
+
       const pad2 = n => (n < 10 ? '0' : '') + n;
       const hours = Math.floor(event.secsLeft / 3600);
       const mins = Math.floor((event.secsLeft % 3600) / 60);
       const secs = event.secsLeft % 60;
       const days = Math.floor(event.secsLeft / 86400);
 
-      let text = '';
-      if (event.type === 'lesson') {
-        text = hours > 0
-          ? `До завершения ${hours}ч ${pad2(mins)}м`
-          : `До завершения ${pad2(mins)}:${pad2(secs)}`;
-      } else if (event.type === 'break') {
-        text = `До начала пары ${pad2(mins)}:${pad2(secs)}`;
-      } else if (event.type === 'before_first') {
-        if (hours > 0) {
-          text = `До 1-й пары ${hours}ч ${pad2(mins)}м`;
-        } else {
-          text = `До 1-й пары ${pad2(mins)}:${pad2(secs)}`;
-        }
-      } else { // upcoming
-        if (days > 0) {
-          text = `Пары через ${days}д`;
-        } else if (hours > 0) {
-          text = `До пар ${hours}ч ${pad2(mins)}м`;
-        } else {
-          text = `До пар ${pad2(mins)}:${pad2(secs)}`;
-        }
+      let timeText = '';
+      if (days > 0) {
+        timeText = `${days}д ${pad2(hours)}ч`;
+      } else if (hours > 0) {
+        timeText = `${pad2(hours)}:${pad2(mins)}:${pad2(secs)}`;
+      } else {
+        timeText = `${pad2(mins)}:${pad2(secs)}`;
       }
 
-      const textEl = document.getElementById('dayLiveDynamicText');
-      if (textEl) {
-        if (!_kokonutDynamicTimer) {
-          _kokonutDynamicTimer = new KokonutDynamicText(textEl);
-        }
-        _kokonutDynamicTimer.setText(text);
+      const labelEl = document.getElementById('dayLiveLabel');
+      if (labelEl && labelEl.textContent !== labelText) {
+        labelEl.textContent = labelText;
       }
 
-      const tooltipTime = hours > 0 ? `${hours} ч ${mins} мин` : `${mins} мин ${secs} сек`;
-      badgeEl.setAttribute('title', `${event.label || 'Статус'} — осталось ${tooltipTime} • Нажмите для перехода к сегодняшнему дню`);
+      const digitsEl = document.getElementById('dayLiveDigits');
+      if (digitsEl && digitsEl.textContent !== timeText) {
+        digitsEl.textContent = timeText;
+      }
+
+      const tooltipTime = days > 0
+        ? `${days} д ${hours} ч`
+        : (hours > 0 ? `${hours} ч ${mins} мин` : `${mins} мин ${secs} сек`);
+      badgeEl.setAttribute('title', `${labelText} — осталось ${tooltipTime} • Нажмите для перехода к сегодняшнему дню`);
     }
 
     let _currentLiveGroupSchedule = null;
@@ -3974,9 +3886,8 @@
 
         // Если у обеих подгрупп один и тот же тип занятия (например, у обоих лабораторная или у обоих практика) —
         // выносим плашку типа занятия общей в заголовок карточки
-        const hasCommonType = items.length === 2 &&
-          items[0].type && items[1].type &&
-          items[0].type.label === items[1].type.label;
+        const hasCommonType = items && items.length >= 2 &&
+          items.every(it => it && it.type && it.type.label && it.type.label === items[0].type?.label);
         const commonType = hasCommonType ? items[0].type : null;
 
         // Если все занятия в ячейке дистанционные (ДО) — выносим плашку ДО общей в заголовок карточки
@@ -4031,7 +3942,7 @@
                 sgNum: 1,
                 room: item1.room,
                 title: item1.title,
-                type: item1.type,
+                type: commonType ? null : item1.type,
                 teacher: t1.teacher,
                 rank: t1.rank,
                 url: item1.url,
@@ -4041,7 +3952,7 @@
                 sgNum: 2,
                 room: item2.room,
                 title: item2.title,
-                type: item2.type,
+                type: commonType ? null : item2.type,
                 teacher: t2.teacher,
                 rank: t2.rank,
                 url: item2.url,
@@ -4925,14 +4836,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v36') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v37') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=36')
+        navigator.serviceWorker.register('./sw-preview.js?v=37')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
