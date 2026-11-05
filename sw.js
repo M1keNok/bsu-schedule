@@ -2,12 +2,13 @@
 // Стратегия: Network-First для данных и html-оболочки (всегда свежий интерфейс при наличии сети, мгновенный откат на кэш в офлайне),
 //             Cache-First для внешних CDN библиотек (Tailwind CSS, daisyUI, Telegram SDK).
 
-const CACHE_NAME = 'bsu-schedule-v29';
+const CACHE_NAME = 'bsu-schedule-v30';
 const SHELL_ASSETS = [
   './',
   './index.html',
   './motion.js',
-  './schedule_data.json'
+  './schedule_data.json',
+  './dropbox_state.json'
 ];
 
 const CDN_ASSETS = [
@@ -43,7 +44,7 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
-        keys.filter(k => k.startsWith('bsu-schedule-v') && k !== CACHE_NAME).map(k => caches.delete(k))
+        keys.filter(k => k.startsWith('bsu-schedule-v') && !k.startsWith('bsu-schedule-preview-') && k !== CACHE_NAME).map(k => caches.delete(k))
       )
     ).then(() => self.clients.claim())
   );
