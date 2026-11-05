@@ -1146,64 +1146,65 @@
       transform: scale(1.06);
     }
 
-    /* ─── Kokonut UI Dynamic Text Header Pill (Zero-Shift Live Status) ───── */
-    .header-timer-pill {
+    /* ─── Compact Day Live Timer (Liquid Glass & Kokonut UI Dynamic Text) ─── */
+    #dayLiveTimer {
       display: inline-flex;
       align-items: center;
-      gap: 3.5px;
-      padding: 1.5px 7px 1.5px 6px;
+      flex-shrink: 0;
+    }
+    .day-live-timer-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5.5px;
+      padding: 2.5px 8.5px 2.5px 7.5px;
       border-radius: 9999px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-sizing: border-box;
+      background: rgba(20, 20, 24, 0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.15);
       line-height: 1;
-      height: 18px;
-      cursor: pointer;
       user-select: none;
       -webkit-user-select: none;
-      transition: all 0.2s ease;
-      flex-shrink: 0;
+      vertical-align: middle;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease, opacity 0.2s ease;
       white-space: nowrap;
     }
-    html:not(.dark) .header-timer-pill {
-      background: rgba(0, 0, 0, 0.05);
-      border: 1px solid rgba(0, 0, 0, 0.1);
+    html:not(.dark) .day-live-timer-badge {
+      background: rgba(244, 244, 245, 0.88);
+      border-color: rgba(0, 0, 0, 0.12);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.8);
     }
-    .header-timer-pill:hover {
-      background: rgba(255, 255, 255, 0.13);
-    }
-    html:not(.dark) .header-timer-pill:hover {
-      background: rgba(0, 0, 0, 0.08);
-    }
-    .header-timer-pill:active {
+    .day-live-timer-badge:active {
       transform: scale(0.96);
       opacity: 0.8;
     }
-    .header-timer-dot {
-      width: 5px;
-      height: 5px;
+    .day-timer-dot {
+      width: 6px;
+      height: 6px;
       border-radius: 9999px;
       flex-shrink: 0;
     }
-    .header-timer-dot.dot-live {
+    .day-timer-dot.dot-live {
       background: #10b981;
-      box-shadow: 0 0 5px rgba(16, 185, 129, 0.8);
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
       animation: pulseAura 2s infinite;
     }
-    .header-timer-dot.dot-break {
+    .day-timer-dot.dot-break {
       background: #f59e0b;
-      box-shadow: 0 0 5px rgba(245, 158, 11, 0.8);
+      box-shadow: 0 0 6px rgba(245, 158, 11, 0.8);
       animation: pulseAura 2s infinite;
     }
-    .header-timer-dot.dot-upcoming {
+    .day-timer-dot.dot-upcoming {
       background: #06b6d4;
-      box-shadow: 0 0 4px rgba(6, 182, 212, 0.7);
+      box-shadow: 0 0 5px rgba(6, 182, 212, 0.7);
     }
     .dynamic-text-root {
       display: inline-flex;
       align-items: center;
-      font-size: 10px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
       line-height: 1;
       color: var(--text-main);
       letter-spacing: -0.15px;
@@ -1216,13 +1217,13 @@
       display: inline-block;
       overflow: hidden;
       vertical-align: middle;
-      height: 12px;
-      line-height: 12px;
+      height: 14px;
+      line-height: 14px;
     }
     .dynamic-char-glyph {
       display: block;
-      height: 12px;
-      line-height: 12px;
+      height: 14px;
+      line-height: 14px;
       will-change: transform, opacity;
       transform-origin: center center;
       transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
@@ -1267,12 +1268,6 @@
             <svg id="headerSyncIcon" style="width: 8.5px; height: 8.5px; color: var(--text-sub); opacity: 0.7; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
           </div>
         </div>
-      </div>
-
-      <!-- Live Status Timer Pill (Kokonut UI Dynamic Text) -->
-      <div id="headerLiveTimerPill" class="header-timer-pill" onclick="handleHeaderTimerClick(event)" title="Статус занятий">
-        <span id="headerTimerDot" class="header-timer-dot dot-live"></span>
-        <span id="headerTimerText" class="dynamic-text-root font-semibold"></span>
       </div>
 
       <!-- Right Action Controls (Dock, Help, Theme) -->
@@ -1407,6 +1402,12 @@
         <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0;">
           <h2 id="dayFullTitle" style="font-size: 15px; font-weight: 800; letter-spacing: -0.2px;">...</h2>
           <div id="dayStatusBadge"></div>
+          <div id="dayLiveTimer">
+            <div id="dayLiveBadge" class="day-live-timer-badge" onclick="handleLiveTimerClick(event)" title="Статус занятий">
+              <span id="dayLiveDot" class="day-timer-dot dot-live"></span>
+              <span id="dayLiveDynamicText" class="dynamic-text-root font-semibold"></span>
+            </div>
+          </div>
         </div>
         <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
           <div id="dayLessonsCount" style="font-size: 11.5px; font-weight: 700; color: var(--text-sub); flex-shrink: 0;"></div>
@@ -2723,7 +2724,7 @@
       }
     }
 
-    function handleHeaderTimerClick(event) {
+    function handleLiveTimerClick(event) {
       if (event) event.stopPropagation();
       triggerHaptic('light');
       if (currentMainTab !== 'schedule') {
@@ -2734,27 +2735,24 @@
         selectDayIndex(todayIdx, 'light');
       }
     }
+    const handleHeaderTimerClick = handleLiveTimerClick;
 
     function updateLiveStatusBanner(groupSchedule) {
-      const pillEl = document.getElementById('headerLiveTimerPill');
-      if (!pillEl) return;
+      const badgeEl = document.getElementById('dayLiveBadge');
+      if (!badgeEl) return;
 
-      if (currentMainTab === 'settings') {
-        pillEl.style.display = 'none';
-        return;
-      }
-
-      const event = getNextEventCountdown(groupSchedule);
+      const schedule = groupSchedule || _currentLiveGroupSchedule;
+      const event = getNextEventCountdown(schedule);
       if (!event) {
-        pillEl.style.display = 'none';
+        badgeEl.style.display = 'none';
         return;
       }
 
-      pillEl.style.display = 'inline-flex';
+      badgeEl.style.display = 'inline-flex';
 
-      const dotEl = document.getElementById('headerTimerDot');
+      const dotEl = document.getElementById('dayLiveDot');
       if (dotEl) {
-        dotEl.className = 'header-timer-dot ' + (
+        dotEl.className = 'day-timer-dot ' + (
           event.type === 'lesson' ? 'dot-live' :
           (event.type === 'break' ? 'dot-break' : 'dot-upcoming')
         );
@@ -2768,14 +2766,16 @@
 
       let text = '';
       if (event.type === 'lesson') {
-        text = `Пара ${pad2(mins)}:${pad2(secs)}`;
+        text = hours > 0
+          ? `До завершения ${hours}ч ${pad2(mins)}м`
+          : `До завершения ${pad2(mins)}:${pad2(secs)}`;
       } else if (event.type === 'break') {
-        text = `Перерыв ${pad2(mins)}:${pad2(secs)}`;
+        text = `До начала пары ${pad2(mins)}:${pad2(secs)}`;
       } else if (event.type === 'before_first') {
         if (hours > 0) {
-          text = `До пар ${hours}ч ${pad2(mins)}м`;
+          text = `До 1-й пары ${hours}ч ${pad2(mins)}м`;
         } else {
-          text = `До пар ${pad2(mins)}:${pad2(secs)}`;
+          text = `До 1-й пары ${pad2(mins)}:${pad2(secs)}`;
         }
       } else { // upcoming
         if (days > 0) {
@@ -2787,7 +2787,7 @@
         }
       }
 
-      const textEl = document.getElementById('headerTimerText');
+      const textEl = document.getElementById('dayLiveDynamicText');
       if (textEl) {
         if (!_kokonutDynamicTimer) {
           _kokonutDynamicTimer = new KokonutDynamicText(textEl);
@@ -2796,28 +2796,37 @@
       }
 
       const tooltipTime = hours > 0 ? `${hours} ч ${mins} мин` : `${mins} мин ${secs} сек`;
-      pillEl.setAttribute('title', `${event.label} — ${tooltipTime} • Нажмите для перехода к расписанию`);
+      badgeEl.setAttribute('title', `${event.label || 'Статус'} — осталось ${tooltipTime} • Нажмите для перехода к сегодняшнему дню`);
     }
 
+    let _currentLiveGroupSchedule = null;
+
     function startLiveStatusTimer(groupSchedule) {
-      if (_liveStatusTimer) { clearTimeout(_liveStatusTimer); _liveStatusTimer = null; }
-      if (_liveTimeoutTimer) { clearTimeout(_liveTimeoutTimer); _liveTimeoutTimer = null; }
+      if (groupSchedule) {
+        _currentLiveGroupSchedule = groupSchedule;
+      }
+
+      if (_liveTimeoutTimer) {
+        // Таймер уже запущен и тикает в постоянном ритме — синхронизируем данные без перезапуска
+        updateLiveStatusBanner(_currentLiveGroupSchedule);
+        return;
+      }
 
       function tick() {
         const todayIdx = currentDaysList.findIndex(d => d.isToday);
-        updateLiveStatusBanner(groupSchedule);
+        updateLiveStatusBanner(_currentLiveGroupSchedule);
 
         // Если открыт день «Сегодня», проверяем, не сменилась ли текущая пара
         if (todayIdx !== -1 && selectedDayIndex === todayIdx) {
           const todayDay = currentDaysList[todayIdx];
-          const slots = todayDay.rawKey ? getProcessedDaySlots(todayDay.rawKey, groupSchedule) : [];
+          const slots = todayDay.rawKey ? getProcessedDaySlots(todayDay.rawKey, _currentLiveGroupSchedule) : [];
           const activeLiveSlot = slots.find(s => s.items?.length && isLessonLive(s.timeStr))?.timeStr || null;
           if (activeLiveSlot !== _lastLiveSlotKey) {
             _lastLiveSlotKey = activeLiveSlot;
             const viewport = document.getElementById('scheduleViewport');
             if (viewport) {
               viewport.innerHTML = '';
-              const newPage = buildDayPage(selectedDayIndex, groupSchedule);
+              const newPage = buildDayPage(selectedDayIndex, _currentLiveGroupSchedule);
               viewport.appendChild(newPage);
             }
           }
@@ -3716,19 +3725,19 @@
       const dayHeaderRow = document.getElementById('dayHeaderRow');
 
       if (dayHeaderRow && currentSlideDirection !== 'none') {
-        if (window.Motion?.animate) {
-          Motion.animate(dayHeaderRow, {
+        const titleElements = [dayFullTitle, badgeBox, lessonsCountBox].filter(Boolean);
+        if (window.Motion?.animate && titleElements.length > 0) {
+          Motion.animate(titleElements, {
             opacity: [0.35, 1],
-            filter: ['blur(4px)', 'blur(0px)'],
             transform: ['translate3d(0, -3px, 0)', 'translate3d(0, 0, 0)']
           }, {
-            duration: 0.38,
+            duration: 0.28,
             ease: [0.16, 1, 0.3, 1]
           });
-        } else {
-          dayHeaderRow.style.animation = 'none';
-          void dayHeaderRow.offsetWidth;
-          dayHeaderRow.style.animation = 'fadeSettle 0.22s cubic-bezier(0.16, 1, 0.3, 1) both';
+        } else if (dayFullTitle) {
+          dayFullTitle.style.animation = 'none';
+          void dayFullTitle.offsetWidth;
+          dayFullTitle.style.animation = 'fadeSettle 0.22s cubic-bezier(0.16, 1, 0.3, 1) both';
         }
       }
 
@@ -4916,14 +4925,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v35') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v36') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=35')
+        navigator.serviceWorker.register('./sw-preview.js?v=36')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
