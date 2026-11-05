@@ -3937,13 +3937,6 @@
           return it.isRemote;
         });
 
-        const liveBadgeHTML = isLive ? `
-          <span class="badge badge-accent badge-sm font-bold gap-1 text-white shadow-sm flex-shrink-0">
-            <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-            <span>Идёт пара</span>
-          </span>
-        ` : '';
-
         const commonTypeBadge = commonType ? `
           <span class="badge badge-sm font-bold flex-shrink-0" style="color: ${commonType.color}; background: ${commonType.bg}; border: 1px solid ${commonType.border};">${commonType.label}</span>
         ` : '';
@@ -3968,7 +3961,6 @@
               <span class="badge ${isLive ? 'badge-accent font-bold text-white shadow-sm' : 'badge-ghost font-bold font-mono'} badge-sm flex-shrink-0">${timeStr}</span>
               ${commonTypeBadge}
               ${commonRemoteBadge}
-              ${liveBadgeHTML}
             </div>
             ${topRoomBadge}
           </div>
@@ -4884,14 +4876,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v38') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v39') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=38')
+        navigator.serviceWorker.register('./sw-preview.js?v=39')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
