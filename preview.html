@@ -981,6 +981,22 @@
       border-color: rgba(8, 145, 178, 0.30);
       color: #0e7490;
     }
+    .badge-do-xs {
+      font-size: 8.5px !important;
+      padding: 0.5px 5px !important;
+      border-radius: 4.5px !important;
+      gap: 2.5px !important;
+      height: 15px !important;
+      line-height: 15px !important;
+    }
+    .subgroup-box-remote {
+      border-color: rgba(6, 182, 212, 0.35) !important;
+      background: rgba(6, 182, 212, 0.05) !important;
+    }
+    html:not(.dark) .subgroup-box-remote {
+      border-color: rgba(8, 145, 178, 0.28) !important;
+      background: rgba(8, 145, 178, 0.04) !important;
+    }
 
     .moodle-link-btn {
       display: inline-flex;
@@ -2143,8 +2159,12 @@
         const lines2 = rawLines.slice(idx2).join('\n');
         const sg1 = cleanTeacherAndRoom(lines1, 0);
         const sg2 = cleanTeacherAndRoom(lines2, 1);
-        if (!sg1.room && sg2.room) sg1.room = sg2.room;
-        if (!sg2.room && sg1.room) sg2.room = sg1.room;
+        const isRemote1 = isRemoteLesson(lines1);
+        const isRemote2 = isRemoteLesson(lines2);
+        sg1.isRemote = isRemote1;
+        sg2.isRemote = isRemote2;
+        if (!sg1.room && sg2.room && !isRemote1 && !isRemote2) sg1.room = sg2.room;
+        if (!sg2.room && sg1.room && !isRemote1 && !isRemote2) sg2.room = sg1.room;
         return [sg1, sg2];
       }
 
@@ -2236,7 +2256,11 @@
             }
           }
         }
-        return teachersFound.map(t => ({ teacher: t.teacher, room: t.room }));
+        return teachersFound.map(t => {
+          const rawTeacherText = (combined[t.rawLineIdx] || '') + ' ' + (combined[t.rawLineIdx + 1] || '');
+          const isRemote = isRemoteLesson(rawTeacherText) || t.room === 'Онлайн';
+          return { teacher: t.teacher, room: t.room, isRemote };
+        });
       }
 
       return null;
@@ -2354,16 +2378,20 @@
 
       if (isSameSubject) {
         const lType = parsedItems[0].type || parsedItems[1].type;
-        const isRemote = parsedItems[0].isRemote || parsedItems[1].isRemote;
+        const isRemote0 = !!parsedItems[0].isRemote;
+        const isRemote1 = !!parsedItems[1].isRemote;
+        const isRemoteBoth = isRemote0 && isRemote1;
         const url = parsedItems[0].url || parsedItems[1].url;
         const sg1 = cleanTeacherAndRoom(parsedItems[0].raw, 0);
         const sg2 = cleanTeacherAndRoom(parsedItems[1].raw, 1);
-        if (!sg1.room && sg2.room) sg1.room = sg2.room;
-        if (!sg2.room && sg1.room) sg2.room = sg1.room;
+        sg1.isRemote = isRemote0;
+        sg2.isRemote = isRemote1;
+        if (!sg1.room && sg2.room && !isRemote0 && !isRemote1) sg1.room = sg2.room;
+        if (!sg2.room && sg1.room && !isRemote0 && !isRemote1) sg2.room = sg1.room;
         return [{
           title: parsedItems[0].title,
           type: lType,
-          isRemote,
+          isRemote: isRemoteBoth,
           url,
           subgroup: null, // Общая пара для обеих подгрупп: плашка типа общая, без плашки 1 подгруппы в заголовке
           subgroups: [sg1, sg2]
@@ -2386,10 +2414,11 @@
         // Проверяем, разделена ли пара на подгруппы (разные преподаватели/аудитории)
         const detectedSubgroups = extractSubgroupsFromLesson(p.raw);
         if (detectedSubgroups) {
+          const bothRemote = detectedSubgroups.every(sg => sg.isRemote);
           return {
             title: p.title,
             type: p.type,
-            isRemote: p.isRemote,
+            isRemote: bothRemote,
             url: p.url,
             subgroup: p.subgroup,
             subgroups: detectedSubgroups
@@ -3794,11 +3823,18 @@
       return result;
     }
 
-    function renderSubgroupBlock({ sgNum, room, title, type, teacher, rank, url, isRemote }) {
+    function renderSubgroupBlock({ sgNum, room, title, type, teacher, rank, url, isRemote, showCommonRemote }) {
       const roomText = room || (isRemote ? 'Онлайн' : null);
       const roomBadge = roomText
         ? `<span class="badge badge-ghost font-bold badge-xs font-mono flex-shrink-0 text-[10px] px-1.5 py-0 h-4 leading-4 max-w-[110px] truncate" title="${roomText}">${roomText}</span>`
         : '';
+
+      const doBadge = (isRemote && !showCommonRemote) ? `
+        <span class="badge-do badge-do-xs flex-shrink-0" title="Дистанционное обучение / ДО">
+          <svg class="w-2.5 h-2.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          <span>ДО</span>
+        </span>
+      ` : '';
 
       const typeBadge = type ? `
         <span class="badge badge-xs font-bold flex-shrink-0" style="color: ${type.color}; background: ${type.bg}; border: 1px solid ${type.border};">${type.label}</span>
@@ -3821,13 +3857,16 @@
       ` : '';
 
       return `
-        <div class="subgroup-box min-w-0 h-full flex flex-col justify-between">
+        <div class="subgroup-box ${isRemote ? 'subgroup-box-remote' : ''} min-w-0 h-full flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between gap-1 pb-1.5 border-b border-base-content/10 min-w-0">
-              <span class="subgroup-pill subgroup-pill-compact font-extrabold flex-shrink-0" title="${sgNum} подгруппа">
-                <span class="sg-dot"></span>
-                <span>${sgNum} п/г</span>
-              </span>
+              <div class="flex items-center gap-1.5 min-w-0 flex-wrap">
+                <span class="subgroup-pill subgroup-pill-compact font-extrabold flex-shrink-0" title="${sgNum} подгруппа">
+                  <span class="sg-dot"></span>
+                  <span>${sgNum} п/г</span>
+                </span>
+                ${doBadge}
+              </div>
               ${roomBadge}
             </div>
             ${titleHtml}
@@ -3891,7 +3930,12 @@
         const commonType = hasCommonType ? items[0].type : null;
 
         // Если все занятия в ячейке дистанционные (ДО) — выносим плашку ДО общей в заголовок карточки
-        const hasCommonRemote = items.length > 0 && items.every(it => it.isRemote);
+        const hasCommonRemote = items && items.length > 0 && items.every(it => {
+          if (it.subgroups && it.subgroups.length > 0) {
+            return it.subgroups.every(sg => sg.isRemote);
+          }
+          return it.isRemote;
+        });
 
         const liveBadgeHTML = isLive ? `
           <span class="badge badge-accent badge-sm font-bold gap-1 text-white shadow-sm flex-shrink-0">
@@ -3946,7 +3990,8 @@
                 teacher: t1.teacher,
                 rank: t1.rank,
                 url: item1.url,
-                isRemote: item1.isRemote
+                isRemote: item1.isRemote,
+                showCommonRemote: hasCommonRemote
               })}
               ${renderSubgroupBlock({
                 sgNum: 2,
@@ -3956,7 +4001,8 @@
                 teacher: t2.teacher,
                 rank: t2.rank,
                 url: item2.url,
-                isRemote: item2.isRemote
+                isRemote: item2.isRemote,
+                showCommonRemote: hasCommonRemote
               })}
             </div>
           `;
@@ -4013,6 +4059,7 @@
                   ${item.subgroups.map((sg, sgIdx) => {
                     const sgNum = sgIdx + 1;
                     const t = parseTeacherAndRank(sg.teacher);
+                    const sgRemote = sg.isRemote !== undefined ? sg.isRemote : item.isRemote;
                     return renderSubgroupBlock({
                       sgNum,
                       room: sg.room,
@@ -4021,7 +4068,8 @@
                       teacher: t.teacher,
                       rank: t.rank,
                       url: null,
-                      isRemote: item.isRemote
+                      isRemote: sgRemote,
+                      showCommonRemote: hasCommonRemote
                     });
                   }).join('')}
                 </div>
@@ -4836,14 +4884,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v37') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v38') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=37')
+        navigator.serviceWorker.register('./sw-preview.js?v=38')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
