@@ -203,6 +203,7 @@ def clean_cell_text(text):
     text = re.sub(r"(ИСТОРИЧЕ)\s*\n\s*(СКАЯ)", r"\1\2", text, flags=re.I)
     text = re.sub(r"(ЯЗЫК\s+ПРОФЕССИО)\s*\n\s*(НАЛЬНОГО)", r"\1\2", text, flags=re.I)
     text = re.sub(r"(ГРУНТОВЕ)\s*\n\s*(ДЕНИЯ)", r"\1\2", text, flags=re.I)
+    text = re.sub(r"(ПРИРОДОПОЛЬЗОВА)\s*\n\s*(НИИ)", r"\1\2", text, flags=re.I)
 
     legit = [
         'социально-эконом',
@@ -278,6 +279,16 @@ def parse_docx(path):
     if not os.path.exists(path):
         return {}
     doc = Document(path)
+    # Collect valid dates from table day headers to help repair Decanat month typos (e.g., "СУББОТА 14.10" -> "СУББОТА 14.11").
+    valid_doc_dates = []
+    for t in doc.tables:
+        for r in t.rows[:4]:
+            if r.cells:
+                cand = re.sub(r"\s+", " ", r.cells[0].text).strip().upper()
+                dt = parse_day_date(cand)
+                if dt and is_valid_day_dow(cand, dt):
+                    valid_doc_dates.append(dt)
+
     res = {}
     for table in doc.tables:
         if len(table.rows) < 3:
@@ -321,7 +332,7 @@ def parse_docx(path):
                 continue
             day_txt = re.sub(r"\s+", " ", cells[0].text).strip().upper()
             if day_txt and "ВРЕМЯ" not in day_txt and "ДНИ" not in day_txt and len(day_txt) > 2:
-                cur_day = day_txt
+                cur_day = repair_day_typo(day_txt, valid_doc_dates)
             if not cur_day:
                 continue
             time_txt = cells[1].text.strip()
@@ -400,7 +411,7 @@ def parse_docx(path):
                                 clean_sub = re.sub(r"^[12]\s*подгруппа\s*", "", sub, flags=re.I).strip()
                                 clean_sub = re.sub(r"^\d{1,2}[.:]\d{2}\s*[-–—]\s*\d{1,2}[.:]\d{2}\s*", "", clean_sub).strip()
                                 clean_sub = re.sub(r"^\d{4}\s*[-–—]\s*\d{4}\s*", "", clean_sub).strip()
-                                if not clean_sub:
+                                if not clean_sub or re.fullmatch(r"(?:\d{1,2}[./]\d{2}\s+)?зач[её]т(?:\s+\d{1,2}[./]\d{2})?", clean_sub, flags=re.I):
                                     continue
                                 if sub and sub not in res[g_name][cur_day][slot_time]:
                                     res[g_name][cur_day][slot_time].append(sub)
@@ -522,13 +533,48 @@ def is_valid_day_dow(day_key, ref_date=None):
                 return False
     return True
 
+def repair_day_typo(day_key, valid_doc_dates=None):
+    """Repair Decanat month typo (e.g. СУББОТА 14.10 -> СУББОТА 14.11) when weekday contradicts date."""
+    if not day_key or is_valid_day_dow(day_key):
+        return day_key
+    m = re.search(r"(\d{1,2})[.](\d{1,2})(?!\.\d)", day_key)
+    if not m:
+        return day_key
+    d, mo = int(m.group(1)), int(m.group(2))
+    DOW_MAP = {
+        'ПОНЕДЕЛЬНИК': 0, 'ВТОРНИК': 1, 'СРЕДА': 2, 'ЧЕТВЕРГ': 3,
+        'ПЯТНИЦА': 4, 'СУББОТА': 5, 'ВОСКРЕСЕНЬЕ': 6
+    }
+    target_dow = next((idx for name, idx in DOW_MAP.items() if name in day_key.upper()), None)
+    if target_dow is None:
+        return day_key
+
+    anchor = sorted(valid_doc_dates)[len(valid_doc_dates) // 2] if valid_doc_dates else datetime.date.today()
+    cand_dates = []
+    for delta_mo in (-1, 0, 1):
+        cand_mo = ((anchor.month - 1 + delta_mo) % 12) + 1
+        cand_y = anchor.year + ((anchor.month - 1 + delta_mo) // 12)
+        try:
+            dt = datetime.date(cand_y, cand_mo, d)
+        except ValueError:
+            continue
+        if dt.weekday() == target_dow and abs((dt - anchor).days) <= 21 and cand_mo != mo:
+            cand_dates.append((abs((dt - anchor).days), cand_mo))
+
+    if not cand_dates:
+        return day_key
+    cand_dates.sort()
+    best_mo = cand_dates[0][1]
+    return day_key[:m.start()] + f"{d:02d}.{best_mo:02d}" + day_key[m.end():]
+
 def parse_thursday_kurchatova_block(lessons_list, default_sg1_type):
+    """Split Course 1 Group 9 Thursday Kurschatova block into subgroup 1 and subgroup 2."""
     # default_sg1_type is 'ПРАКТИКУМ' for morning, 'ПРАКТИКА' for afternoon
     novikova_item = None
-    davydova_item = None
+    partner_item = None
 
     for l in lessons_list:
-        clean = re.sub(r'^\d{1,2}[.:]\d{2}\s*[-–]\s*\d{1,2}[.:]\d{2}\s*\n?', '', l).strip()
+        clean = re.sub(r'^\d{1,2}[.:]\d{2}\s*[-–—]\s*\d{1,2}[.:]\d{2}\s*\n?', '', l).strip()
         clean = re.sub(r'^[12]\s*подгруппа\s*\n?', '', clean).strip()
 
         # Check if this item is a combined double-lesson cell
@@ -536,29 +582,29 @@ def parse_thursday_kurchatova_block(lessons_list, default_sg1_type):
         parts = [p for p in parts if p.startswith('ПРАКТИКА') or p.startswith('ПРАКТИКУМ')]
         if len(parts) >= 2:
             for p in parts:
-                if 'Новикова' in p or '716' in p:
+                if 'Новикова' in p or '716' in p or 'ПРАКТИКУМ' in p:
                     novikova_item = p
-                elif 'Давыдова' in p or '719' in p:
-                    davydova_item = p
-            if novikova_item and davydova_item:
+                elif '719' in p or 'Давыдова' in p or 'Пышняк' in p or 'Дашкевич' in p or 'ПРАКТИКА' in p:
+                    partner_item = p
+            if novikova_item and partner_item:
                 break
         else:
-            if 'Новикова' in clean or '716' in clean:
+            if 'Новикова' in clean or '716' in clean or 'ПРАКТИКУМ' in clean:
                 novikova_item = clean
-            elif 'Давыдова' in clean or '719' in clean:
-                davydova_item = clean
+            elif '719' in clean or 'Давыдова' in clean or 'Пышняк' in clean or 'Дашкевич' in clean or 'ПРАКТИКА' in clean:
+                partner_item = clean
 
-    if not novikova_item or not davydova_item:
+    if not novikova_item or not partner_item:
         return []
 
     novikova_clean = re.sub(r'^[12]\s*подгруппа\s*\n?', '', novikova_item).strip()
-    davydova_clean = re.sub(r'^[12]\s*подгруппа\s*\n?', '', davydova_item).strip()
+    partner_clean = re.sub(r'^[12]\s*подгруппа\s*\n?', '', partner_item).strip()
 
     if default_sg1_type == 'ПРАКТИКУМ':
         sg1 = '1 подгруппа\n' + novikova_clean
-        sg2 = '2 подгруппа\n' + davydova_clean
+        sg2 = '2 подгруппа\n' + partner_clean
     else:
-        sg1 = '1 подгруппа\n' + davydova_clean
+        sg1 = '1 подгруппа\n' + partner_clean
         sg2 = '2 подгруппа\n' + novikova_clean
 
     return [sg1, sg2]
@@ -635,7 +681,7 @@ def normalize_course1_group9_days(days_dict):
             new_slots = {}
             # Morning block (8.30-11.30) -> Pair 1 (08:30–09:55) and Pair 2 (10:05–11:30)
             all_am = []
-            for s in ['08:30–09:55', '08:10–09:30', '09:40–11:00', '10:05–11:30']:
+            for s in ['08:30–11:30', '08:30–09:55', '08:10–09:30', '09:40–11:00', '10:05–11:30']:
                 all_am.extend(slots.get(s, []))
 
             morning_items = parse_thursday_kurchatova_block(all_am, 'ПРАКТИКУМ')
@@ -645,7 +691,7 @@ def normalize_course1_group9_days(days_dict):
 
             # Afternoon block (11.50-14.50) -> Pair 3 (11:50–13:15) and Pair 4 (13:25–14:50)
             all_pm = []
-            for s in ['11:50–13:15', '11:20–12:40', '12:50–14:10', '13:25–14:50', '14:20–15:40']:
+            for s in ['11:50–14:50', '11:50–13:15', '11:20–12:40', '12:50–14:10', '13:25–14:50', '14:20–15:40']:
                 all_pm.extend(slots.get(s, []))
 
             afternoon_items = parse_thursday_kurchatova_block(all_pm, 'ПРАКТИКА')
@@ -653,7 +699,8 @@ def normalize_course1_group9_days(days_dict):
                 new_slots['11:50–13:15'] = list(afternoon_items)
                 new_slots['13:25–14:50'] = list(afternoon_items)
 
-            days_dict[day_key] = new_slots
+            if new_slots:
+                days_dict[day_key] = new_slots
 
 def merge_schedule_history(new_data, existing_path="schedule_data.json", max_history_days=7):
     today = datetime.date.today()

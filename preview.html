@@ -1612,6 +1612,7 @@
         [/гидро-эколог[а-яё]*/gi, 'гидроэкология'],
         [/автоматизи-?рова[н]+ые/gi, 'автоматизированные'],
         [/геоинформа-?ци[о]?нное/gi, 'геоинформационное'],
+        [/природопользова\s+нии/gi, 'природопользовании'],
         [/иностраный\s+язык/gi, 'иностранный язык'],
         [/генезис\s+месторожде-?ни[еяй]/gi, 'генезис месторождений'],
         [/картография\s+препод.*/gi, 'картография'],
@@ -2192,17 +2193,20 @@
         return [sg1, sg2];
       }
 
-      // 2. Объединяем строки, где звание преподавателя стоит на отдельной строке перед ФИО
+      // 2. Объединяем строки, где звание преподавателя стоит на отдельной строке перед ФИО (не дублируя звание)
       const combined = [];
-      let i = 0;
-      while (i < rawLines.length) {
-        const line = rawLines[i];
-        if (rankRegex.test(line) && i + 1 < rawLines.length) {
-          combined.push(line + ' ' + rawLines[i + 1]);
-          i += 2;
+      let pendingRank = '';
+      for (const line of rawLines) {
+        if (rankRegex.test(line)) {
+          pendingRank = line;
+          continue;
+        }
+        if (pendingRank) {
+          const nextStartsWithRank = /^(?:старш(?:ий|ая|\.)?|ст\.?\s*препод|препод|доцент|профессор|ассистент|зам\.?\s*декана|зав\.?\s*каф)/i.test(line);
+          combined.push(nextStartsWithRank ? line : (pendingRank + ' ' + line));
+          pendingRank = '';
         } else {
           combined.push(line);
-          i += 1;
         }
       }
 
@@ -4930,14 +4934,14 @@
     if ('caches' in window) {
       caches.keys().then(keys => {
         keys.forEach(k => {
-          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v39') caches.delete(k);
+          if (k.startsWith('bsu-schedule-preview-') && k !== 'bsu-schedule-preview-v41') caches.delete(k);
         });
       });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw-preview.js?v=39')
+        navigator.serviceWorker.register('./sw-preview.js?v=41')
           .then(reg => {
             reg.update();
             reg.addEventListener('updatefound', () => {
