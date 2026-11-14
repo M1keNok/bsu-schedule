@@ -1,7 +1,7 @@
 // BSU Schedule - Service Worker (STAGING / PREVIEW BETA)
 // Изолированный кэш для тестирования новых фичей без влияния на боевую версию студентов.
 
-const CACHE_NAME = 'bsu-schedule-preview-v39';
+const CACHE_NAME = 'bsu-schedule-preview-v40';
 const SHELL_ASSETS = [
   './preview.html',
   './motion.js',

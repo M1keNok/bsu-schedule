@@ -244,6 +244,36 @@ def clean_cell_text(text):
     lines = [re.sub(r"\s+", " ", l).strip() for l in text.split("\n") if l.strip()]
     return "\n".join([l for l in lines if not (len(re.sub(r'[:. –—-]', '', l)) in (7, 8) and re.sub(r'[:. –—-]', '', l).isdigit())])
 
+def normalize_explicit_subgroup(lesson):
+    """Extract an explicit '1/2 подгруппа' marker line anywhere in a lesson and move it to the top."""
+    if not lesson:
+        return lesson, None
+    lines = [l.strip() for l in lesson.split("\n") if l.strip()]
+    explicit_sg = None
+    kept_lines = []
+    for l in lines:
+        m = re.match(r"^([12])\s*(?:подгруппа|п/г)$", l, re.I)
+        if m:
+            if explicit_sg is None:
+                explicit_sg = m.group(1)
+            continue
+        kept_lines.append(l)
+    if explicit_sg and kept_lines:
+        return f"{explicit_sg} подгруппа\n" + "\n".join(kept_lines), explicit_sg
+    return lesson, None
+
+def is_non_subgroup_subject(text):
+    """Return True for foreign languages, stream translations, and PE (never auto-tagged by table row)."""
+    if not text:
+        return False
+    if detect_lesson_language(text) is not None:
+        return True
+    if re.search(r"физическ(?:ая|ой)?\s+культур|спорт\s*комплекс|\bфиз-?р\b|\bфизвоспитан", text, re.I):
+        return True
+    if re.search(r"научно-техническ\w*\s+перевод", text, re.I):
+        return True
+    return False
+
 def parse_docx(path):
     if not os.path.exists(path):
         return {}
@@ -268,7 +298,6 @@ def parse_docx(path):
             for tc in row._tr.findall('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tc'):
                 gs = tc.find('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tcPr/{http://schemas.openxmlformats.org/wordprocessingml/2006/main}gridSpan')
                 span = int(gs.get('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val')) if gs is not None else 1
-                cell_obj = Document(path).tables[0].rows[0].cells[0]  # dummy
                 txt = re.sub(r"\s+", " ", row.cells[c_idx].text).strip().upper()
                 x1 = x_coords[c_idx]
                 x2 = x_coords[min(c_idx + span, len(x_coords) - 1)]
@@ -338,24 +367,27 @@ def parse_docx(path):
                         continue
 
                     # Subgroup detection:
-                    # In university schedule tables, when a slot has 2 rows:
-                    # Row 0 = Subgroup 1, Row 1 = Subgroup 2.
-                    # If the cell is vertically merged across rows, both subgroups attend together.
-                    is_vertically_merged = False
-                    if num_rows == 2:
-                        other_r_idx = 1 if r_sub_idx == 0 else 0
-                        other_cell_text = clean_cell_text(rows[other_r_idx].cells[c_idx - span].text)
-                        if other_cell_text == lesson:
-                            is_vertically_merged = True
+                    # 1. Respect explicit "1 подгруппа" / "2 подгруппа" markers anywhere in the cell text.
+                    lesson, explicit_sg = normalize_explicit_subgroup(lesson)
+                    slot_time = format_time(custom_time if custom_time else cur_time)
+                    is_time_shifted = bool(custom_time and slot_time != cur_time)
 
+                    # 2. In university schedule tables, when a slot has 2 subgroup rows (Row 0 = Subgroup 1, Row 1 = Subgroup 2):
+                    # If the cell is vertically merged across rows, both subgroups attend together.
+                    # Cells shifted to a different custom_time (e.g. 17:30-18:50 placed in Row 1) are NOT subgroup 2.
                     subgroup_prefix = ""
-                    if num_rows == 2 and not is_vertically_merged:
-                        if not re.search(r'русск|немец|франц|англ|иностранн|культ', lesson, re.I):
-                            subgroup_prefix = f"{r_sub_idx + 1} подгруппа\n"
+                    if not explicit_sg and not is_time_shifted and num_rows >= 2 and r_sub_idx in (0, 1):
+                        other_r_idx = 1 if r_sub_idx == 0 else 0
+                        other_raw_cell = rows[other_r_idx].cells[c_idx - span].text
+                        other_cell_text = clean_cell_text(other_raw_cell)
+                        other_custom_time = extract_custom_cell_time(other_raw_cell, cur_time)
+                        other_is_time_shifted = bool(other_custom_time and format_time(other_custom_time) != cur_time)
+                        is_vertically_merged = (other_cell_text == clean_cell_text(raw_cell))
+                        if not is_vertically_merged and not other_is_time_shifted:
+                            if not is_non_subgroup_subject(lesson):
+                                subgroup_prefix = f"{r_sub_idx + 1} подгруппа\n"
 
                     tagged_lesson = (subgroup_prefix + lesson) if (subgroup_prefix and not lesson.startswith(subgroup_prefix)) else lesson
-
-                    slot_time = format_time(custom_time if custom_time else cur_time)
 
                     for g_name in matching_groups:
                         res.setdefault(g_name, {}).setdefault(cur_day, {}).setdefault(slot_time, [])
@@ -641,10 +673,12 @@ def merge_schedule_history(new_data, existing_path="schedule_data.json", max_his
         for slot, lessons in slots_dict.items():
             if not lessons:
                 continue
-            combined_text = " ".join(lessons)
-            custom_time = extract_custom_cell_time(combined_text, slot)
-            actual_slot = custom_time if custom_time else slot
-            normalized.setdefault(actual_slot, []).extend([l for l in lessons if l not in normalized.get(actual_slot, [])])
+            for l in lessons:
+                custom_time = extract_custom_cell_time(l, slot)
+                actual_slot = custom_time if custom_time else slot
+                bucket = normalized.setdefault(actual_slot, [])
+                if l not in bucket:
+                    bucket.append(l)
 
         def sort_slot_key(slot_str):
             m = re.match(r"(\d{1,2})[:.](\d{2})", slot_str)
@@ -699,35 +733,24 @@ def merge_schedule_history(new_data, existing_path="schedule_data.json", max_his
                             if "12:50–14:10" in slots and not slots["12:50–14:10"]:
                                 del slots["12:50–14:10"]
 
-            # Subgroup tagging for historical slots:
-            # 1. Group 6 Saturday Topography is exclusively for Subgroup 2
-            if cid == "1" and g_name == "ГРУППА 6":
-                for day_key, slots in merged_days.items():
-                    if "СУББОТА" in day_key.upper():
-                        for slot in ["09:40–11:00", "11:20–12:40"]:
-                            if slot in slots:
-                                slots[slot] = [
-                                    ("2 подгруппа\n" + l) if not l.startswith("2 подгруппа") and not l.startswith("1 подгруппа") else l
-                                    for l in slots[slot]
-                                ]
-
-            # 2. When a slot has 2 distinct academic items, slot 0 is 1st subgroup, slot 1 is 2nd subgroup
+            # Normalize explicit subgroup markers and tag 2-item academic slots
             for day_key, slots in merged_days.items():
                 for slot, lessons in list(slots.items()):
                     # Purge any phantom entries that have no content besides subgroup prefix
                     valid_lessons = []
                     for l in lessons:
-                        clean_l = re.sub(r"^[12]\s*подгруппа\s*", "", l, flags=re.I).strip()
+                        l_norm, _ = normalize_explicit_subgroup(l)
+                        clean_l = re.sub(r"^[12]\s*подгруппа\s*", "", l_norm, flags=re.I).strip()
                         clean_l = re.sub(r"^\d{1,2}[.:]\d{2}\s*[-–—]\s*\d{1,2}[.:]\d{2}\s*", "", clean_l).strip()
                         clean_l = re.sub(r"^\d{4}\s*[-–—]\s*\d{4}\s*", "", clean_l).strip()
                         if clean_l:
-                            valid_lessons.append(l)
+                            valid_lessons.append(l_norm)
                     slots[slot] = valid_lessons
                     lessons = valid_lessons
 
                     if len(lessons) == 2:
                         l0, l1 = lessons[0], lessons[1]
-                        is_lang_pe = any(re.search(r'русск|немец|франц|англ|иностранн|культ', l, re.I) for l in [l0, l1])
+                        is_lang_pe = any(is_non_subgroup_subject(l) for l in [l0, l1])
                         if not is_lang_pe:
                             if not l0.startswith("1 подгруппа") and not l0.startswith("2 подгруппа"):
                                 lessons[0] = "1 подгруппа\n" + l0
