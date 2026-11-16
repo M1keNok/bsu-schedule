@@ -433,8 +433,8 @@ def detect_lesson_language(text):
     # 1. French: teacher Гулезова or word франц
     if "гулезов" in lower or "франц" in lower:
         return "FR"
-    # 2. German: teachers Пригодич, Хадасевич or word нем (avoiding неметаллическ)
-    if ("нем" in lower and "неметал" not in lower) or "пригодич" in lower or "хадасевич" in lower:
+    # 2. German: teachers Пригодич, Хадасевич/Ходасевич or word нем (avoiding неметаллическ)
+    if ("нем" in lower and "неметал" not in lower) or "пригодич" in lower or "хадасевич" in lower or "ходасевич" in lower:
         return "DE"
     # 3. Russian as foreign language (RKI)
     if "русск" in lower or "рки" in lower:
@@ -443,7 +443,7 @@ def detect_lesson_language(text):
     # 4. English: teachers or explicit tokens or generic foreign language
     if any(t in lower for t in ["шарейко", "селиванова", "дворкина", "боровикова", "давыдова", "пышняк", "англ", "eduengscience"]):
         return "EN"
-    if "иностранн" in lower or "язык профессионального общения" in lower or "практика иностранного языка" in lower:
+    if "иностранн" in lower or "язык профессионального общения" in lower or "практика иностранного языка" in lower or "практикум иностранного языка" in lower:
         return "EN"
     return None
 
